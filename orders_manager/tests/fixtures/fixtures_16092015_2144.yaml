@@ -1,0 +1,457 @@
+-   fields: {app_label: admin, model: logentry}
+    model: contenttypes.contenttype
+    pk: 1
+-   fields: {app_label: auth, model: permission}
+    model: contenttypes.contenttype
+    pk: 2
+-   fields: {app_label: auth, model: group}
+    model: contenttypes.contenttype
+    pk: 3
+-   fields: {app_label: auth, model: user}
+    model: contenttypes.contenttype
+    pk: 4
+-   fields: {app_label: contenttypes, model: contenttype}
+    model: contenttypes.contenttype
+    pk: 5
+-   fields: {app_label: sessions, model: session}
+    model: contenttypes.contenttype
+    pk: 6
+-   fields: {app_label: orders_manager, model: userprofile}
+    model: contenttypes.contenttype
+    pk: 7
+-   fields: {app_label: orders_manager, model: clientchild}
+    model: contenttypes.contenttype
+    pk: 8
+-   fields: {app_label: orders_manager, model: client}
+    model: contenttypes.contenttype
+    pk: 9
+-   fields: {app_label: orders_manager, model: character}
+    model: contenttypes.contenttype
+    pk: 10
+-   fields: {app_label: orders_manager, model: additionalservice}
+    model: contenttypes.contenttype
+    pk: 11
+-   fields: {app_label: orders_manager, model: program}
+    model: contenttypes.contenttype
+    pk: 12
+-   fields: {app_label: orders_manager, model: programprice}
+    model: contenttypes.contenttype
+    pk: 13
+-   fields: {app_label: orders_manager, model: animatorprogrambonus}
+    model: contenttypes.contenttype
+    pk: 14
+-   fields: {app_label: orders_manager, model: discount}
+    model: contenttypes.contenttype
+    pk: 15
+-   fields: {app_label: orders_manager, model: order}
+    model: contenttypes.contenttype
+    pk: 16
+-   fields: {birthday: 2008-03-10, name: Sasha}
+    model: orders_manager.clientchild
+    pk: 1
+-   fields: {birthday: 2002-06-03, name: Sirozha}
+    model: orders_manager.clientchild
+    pk: 2
+-   fields: {birthday: 2010-10-23, name: "\u0422\u0430\u043D\u044F"}
+    model: orders_manager.clientchild
+    pk: 3
+-   fields: {birthday: 2009-04-16, name: "\u0421\u0432\u0435\u0442\u0430"}
+    model: orders_manager.clientchild
+    pk: 4
+-   fields:
+        children: [1, 2]
+        comments: some comments
+        email: misha@client.com
+        facebook_link: null
+        instagram_link: null
+        name: "\u041C\u0438\u0448\u0430"
+        odnoklassniki_link: null
+        phone: 123-456-789
+        phone_2: 987-654-321
+        secondby_link: null
+        vk_link: http://vk.com/mishanya
+    model: orders_manager.client
+    pk: 1
+-   fields:
+        children: [3, 4]
+        comments: some comments
+        email: lena@client.com
+        facebook_link: null
+        instagram_link: null
+        name: "\u041B\u0435\u043D\u0430"
+        odnoklassniki_link: null
+        phone: 123-879-456
+        phone_2: ''
+        secondby_link: null
+        vk_link: http://vk.com/lenka
+    model: orders_manager.client
+    pk: 2
+-   fields: {codename: add_logentry, content_type: 1, name: Can add log entry}
+    model: auth.permission
+    pk: 1
+-   fields: {codename: change_logentry, content_type: 1, name: Can change log entry}
+    model: auth.permission
+    pk: 2
+-   fields: {codename: delete_logentry, content_type: 1, name: Can delete log entry}
+    model: auth.permission
+    pk: 3
+-   fields: {codename: add_permission, content_type: 2, name: Can add permission}
+    model: auth.permission
+    pk: 4
+-   fields: {codename: change_permission, content_type: 2, name: Can change permission}
+    model: auth.permission
+    pk: 5
+-   fields: {codename: delete_permission, content_type: 2, name: Can delete permission}
+    model: auth.permission
+    pk: 6
+-   fields: {codename: add_group, content_type: 3, name: Can add group}
+    model: auth.permission
+    pk: 7
+-   fields: {codename: change_group, content_type: 3, name: Can change group}
+    model: auth.permission
+    pk: 8
+-   fields: {codename: delete_group, content_type: 3, name: Can delete group}
+    model: auth.permission
+    pk: 9
+-   fields: {codename: add_user, content_type: 4, name: Can add user}
+    model: auth.permission
+    pk: 10
+-   fields: {codename: change_user, content_type: 4, name: Can change user}
+    model: auth.permission
+    pk: 11
+-   fields: {codename: delete_user, content_type: 4, name: Can delete user}
+    model: auth.permission
+    pk: 12
+-   fields: {codename: add_contenttype, content_type: 5, name: Can add content type}
+    model: auth.permission
+    pk: 13
+-   fields: {codename: change_contenttype, content_type: 5, name: Can change content
+            type}
+    model: auth.permission
+    pk: 14
+-   fields: {codename: delete_contenttype, content_type: 5, name: Can delete content
+            type}
+    model: auth.permission
+    pk: 15
+-   fields: {codename: add_session, content_type: 6, name: Can add session}
+    model: auth.permission
+    pk: 16
+-   fields: {codename: change_session, content_type: 6, name: Can change session}
+    model: auth.permission
+    pk: 17
+-   fields: {codename: delete_session, content_type: 6, name: Can delete session}
+    model: auth.permission
+    pk: 18
+-   fields: {codename: add_userprofile, content_type: 7, name: Can add user profile}
+    model: auth.permission
+    pk: 19
+-   fields: {codename: change_userprofile, content_type: 7, name: Can change user
+            profile}
+    model: auth.permission
+    pk: 20
+-   fields: {codename: delete_userprofile, content_type: 7, name: Can delete user
+            profile}
+    model: auth.permission
+    pk: 21
+-   fields: {codename: add_client, content_type: 8, name: Can add client}
+    model: auth.permission
+    pk: 22
+-   fields: {codename: change_client, content_type: 8, name: Can change client}
+    model: auth.permission
+    pk: 23
+-   fields: {codename: delete_client, content_type: 8, name: Can delete client}
+    model: auth.permission
+    pk: 24
+-   fields: {codename: add_clientchild, content_type: 9, name: Can add client child}
+    model: auth.permission
+    pk: 25
+-   fields: {codename: change_clientchild, content_type: 9, name: Can change client
+            child}
+    model: auth.permission
+    pk: 26
+-   fields: {codename: delete_clientchild, content_type: 9, name: Can delete client
+            child}
+    model: auth.permission
+    pk: 27
+-   fields: {codename: add_character, content_type: 10, name: Can add character}
+    model: auth.permission
+    pk: 28
+-   fields: {codename: change_character, content_type: 10, name: Can change character}
+    model: auth.permission
+    pk: 29
+-   fields: {codename: delete_character, content_type: 10, name: Can delete character}
+    model: auth.permission
+    pk: 30
+-   fields: {codename: add_additionalservice, content_type: 11, name: Can add additional
+            service}
+    model: auth.permission
+    pk: 31
+-   fields: {codename: change_additionalservice, content_type: 11, name: Can change
+            additional service}
+    model: auth.permission
+    pk: 32
+-   fields: {codename: delete_additionalservice, content_type: 11, name: Can delete
+            additional service}
+    model: auth.permission
+    pk: 33
+-   fields: {codename: assign_service, content_type: 11, name: Can assign service}
+    model: auth.permission
+    pk: 34
+-   fields: {codename: add_programprice, content_type: 12, name: Can add program price}
+    model: auth.permission
+    pk: 35
+-   fields: {codename: change_programprice, content_type: 12, name: Can change program
+            price}
+    model: auth.permission
+    pk: 36
+-   fields: {codename: delete_programprice, content_type: 12, name: Can delete program
+            price}
+    model: auth.permission
+    pk: 37
+-   fields: {codename: add_animatorprogrambonus, content_type: 13, name: Can add animator
+            program bonus}
+    model: auth.permission
+    pk: 38
+-   fields: {codename: change_animatorprogrambonus, content_type: 13, name: Can change
+            animator program bonus}
+    model: auth.permission
+    pk: 39
+-   fields: {codename: delete_animatorprogrambonus, content_type: 13, name: Can delete
+            animator program bonus}
+    model: auth.permission
+    pk: 40
+-   fields: {codename: add_program, content_type: 14, name: Can add program}
+    model: auth.permission
+    pk: 41
+-   fields: {codename: change_program, content_type: 14, name: Can change program}
+    model: auth.permission
+    pk: 42
+-   fields: {codename: delete_program, content_type: 14, name: Can delete program}
+    model: auth.permission
+    pk: 43
+-   fields: {codename: add_discount, content_type: 15, name: Can add discount}
+    model: auth.permission
+    pk: 44
+-   fields: {codename: change_discount, content_type: 15, name: Can change discount}
+    model: auth.permission
+    pk: 45
+-   fields: {codename: delete_discount, content_type: 15, name: Can delete discount}
+    model: auth.permission
+    pk: 46
+-   fields: {codename: add_order, content_type: 16, name: Can add order}
+    model: auth.permission
+    pk: 47
+-   fields: {codename: change_order, content_type: 16, name: Can change order}
+    model: auth.permission
+    pk: 48
+-   fields: {codename: delete_order, content_type: 16, name: Can delete order}
+    model: auth.permission
+    pk: 49
+-   fields: {codename: see_all_orders, content_type: 16, name: Can see all orders}
+    model: auth.permission
+    pk: 50
+-   fields: {codename: see_my_orders, content_type: 16, name: Can see my orders}
+    model: auth.permission
+    pk: 51
+-   fields: {codename: assign_order, content_type: 16, name: Can assign orders}
+    model: auth.permission
+    pk: 52
+-   fields: {codename: see_all_debt_orders, content_type: 16, name: Can see all dept
+            orders of executor}
+    model: auth.permission
+    pk: 53
+-   fields: {codename: delete_all_orders_until_today, content_type: 16, name: Can
+            delete all orders of executor until today}
+    model: auth.permission
+    pk: 54
+-   fields: {codename: see_my_debt_orders, content_type: 16, name: Can see my dept
+            orders}
+    model: auth.permission
+    pk: 55
+-   fields: {codename: change_order, content_type: 4, name: ''}
+    model: auth.permission
+    pk: 56
+-   fields: {codename: assign_service, content_type: 4, name: ''}
+    model: auth.permission
+    pk: 57
+-   fields: {codename: see_all_debt_orders, content_type: 4, name: ''}
+    model: auth.permission
+    pk: 58
+-   fields: {codename: delete_all_orders_until_today, content_type: 4, name: ''}
+    model: auth.permission
+    pk: 59
+-   fields: {codename: add_order, content_type: 4, name: ''}
+    model: auth.permission
+    pk: 60
+-   fields: {codename: delete_order, content_type: 4, name: ''}
+    model: auth.permission
+    pk: 61
+-   fields: {codename: see_all_orders, content_type: 4, name: ''}
+    model: auth.permission
+    pk: 62
+-   fields: {codename: assign_order, content_type: 4, name: ''}
+    model: auth.permission
+    pk: 63
+-   fields:
+        name: manager
+        permissions: []
+    model: auth.group
+    pk: 1
+-   fields:
+        name: animator
+        permissions: []
+    model: auth.group
+    pk: 2
+-   fields:
+        name: photographer
+        permissions: []
+    model: auth.group
+    pk: 3
+-   fields:
+        date_joined: 2015-09-16 11:44:33.066181+00:00
+        email: admin@admin.com
+        first_name: ''
+        groups: []
+        is_active: true
+        is_staff: true
+        is_superuser: true
+        last_login: null
+        last_name: ''
+        password: pbkdf2_sha256$20000$DfUT27m8TQpM$/wb1DTPDlAovbz+XfGCHb+ddvskjcEyFZDAcnSqDOyI=
+        user_permissions: []
+        username: admin
+    model: auth.user
+    pk: 1
+-   fields:
+        date_joined: 2015-09-16 11:44:57.632100+00:00
+        email: vasya@manager.com
+        first_name: Vasya
+        groups: [1]
+        is_active: true
+        is_staff: false
+        is_superuser: false
+        last_login: null
+        last_name: Klushkin
+        password: pbkdf2_sha256$20000$z5ryXNLidFWz$pQcBpJKIWuzj6bz/n7lUwuhdfQYc14fhaoJwNum1eBI=
+        user_permissions: [60, 63, 57, 56, 59, 61, 58, 62]
+        username: vasya_manager
+    model: auth.user
+    pk: 2
+-   fields:
+        date_joined: 2015-09-16 12:11:16.853840+00:00
+        email: petya@manager.com
+        first_name: Petya
+        groups: [1]
+        is_active: true
+        is_staff: false
+        is_superuser: false
+        last_login: null
+        last_name: Volkov
+        password: pbkdf2_sha256$20000$mT0XnKWfIMHI$6RCG7Y0fp4//oTlvOqmVDWW5EB1u3edNZqHm2Mt9iqU=
+        user_permissions: [60, 63, 57, 56, 59, 61, 58, 62]
+        username: petya_manager
+    model: auth.user
+    pk: 5
+-   fields:
+        date_joined: 2015-09-16 12:11:16.903147+00:00
+        email: luba@animator.com
+        first_name: Luba
+        groups: [2]
+        is_active: true
+        is_staff: false
+        is_superuser: false
+        last_login: null
+        last_name: Golubeva
+        password: pbkdf2_sha256$20000$1alelG5JcZMQ$1aTTr/lzHVrO0EFGwGDzVIIC1ciGVvBiW1vValvIcr0=
+        user_permissions: []
+        username: luba_animator
+    model: auth.user
+    pk: 6
+-   fields:
+        date_joined: 2015-09-16 12:11:16.942490+00:00
+        email: yura@animator.com
+        first_name: Yura
+        groups: [2]
+        is_active: true
+        is_staff: false
+        is_superuser: false
+        last_login: null
+        last_name: Kokarev
+        password: pbkdf2_sha256$20000$F6r4rP2nhQEp$mMCrgQD0hc6dfZROz0BpMHUEc0zJLE0XJtqTs3nA8GA=
+        user_permissions: []
+        username: yura_animator
+    model: auth.user
+    pk: 7
+-   fields:
+        date_joined: 2015-09-16 12:11:16.975403+00:00
+        email: knopa@animator.com
+        first_name: Serg
+        groups: [2]
+        is_active: true
+        is_staff: false
+        is_superuser: false
+        last_login: null
+        last_name: Knopa
+        password: pbkdf2_sha256$20000$PYYORSkP5qRJ$LfhocQtVOBuZbB7mK7hXjiOCpHxlHqJPiU062hyoDMA=
+        user_permissions: []
+        username: knopa_animator
+    model: auth.user
+    pk: 8
+-   fields:
+        date_joined: 2015-09-16 12:11:17.007468+00:00
+        email: oleg@photographer.com
+        first_name: Oleg
+        groups: [3]
+        is_active: true
+        is_staff: false
+        is_superuser: false
+        last_login: null
+        last_name: Golovach
+        password: pbkdf2_sha256$20000$gsMPDO4mSpeY$tfiNV9gJPEwrrOjpdFoYUycVJ5cCzllLoHgqhoUQcw4=
+        user_permissions: []
+        username: oleg_photographer
+    model: auth.user
+    pk: 9
+-   fields:
+        date_joined: 2015-09-16 12:11:17.047206+00:00
+        email: jeka@photographer.com
+        first_name: Jenya
+        groups: [3]
+        is_active: true
+        is_staff: false
+        is_superuser: false
+        last_login: null
+        last_name: Ukrop
+        password: pbkdf2_sha256$20000$333zQhIMd4K8$UySe6Y+UOxEZvFoSSXKM0vpkBRk049u5FsfUIq6JRM8=
+        user_permissions: []
+        username: jenya_photographer
+    model: auth.user
+    pk: 10
+-   fields: {address: some address, created: !!timestamp '2015-09-16 11:44:57.679193+00:00',
+        weekends: '["sunday", "monday"]'}
+    model: orders_manager.userprofile
+    pk: 2
+-   fields: {address: some_address, created: !!timestamp '2015-09-16 12:11:16.883121+00:00',
+        weekends: '["sunday", "saturday"]'}
+    model: orders_manager.userprofile
+    pk: 5
+-   fields: {address: some_address, created: !!timestamp '2015-09-16 12:11:16.932319+00:00',
+        weekends: '["sunday", "saturday"]'}
+    model: orders_manager.userprofile
+    pk: 6
+-   fields: {address: some_address, created: !!timestamp '2015-09-16 12:11:16.969923+00:00',
+        weekends: '["sunday", "saturday"]'}
+    model: orders_manager.userprofile
+    pk: 7
+-   fields: {address: some_address, created: !!timestamp '2015-09-16 12:11:17.001543+00:00',
+        weekends: '["sunday", "saturday"]'}
+    model: orders_manager.userprofile
+    pk: 8
+-   fields: {address: some_address, created: !!timestamp '2015-09-16 12:11:17.035699+00:00',
+        weekends: '["sunday", "saturday"]'}
+    model: orders_manager.userprofile
+    pk: 9
+-   fields: {address: some_address, created: !!timestamp '2015-09-16 12:11:17.073435+00:00',
+        weekends: '["sunday", "saturday"]'}
+    model: orders_manager.userprofile
+    pk: 10
