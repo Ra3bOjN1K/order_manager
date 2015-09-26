@@ -22,6 +22,7 @@ class UserProfileManager(models.Manager):
         profile = UserProfile()
         profile.user = user
         profile.address = kwargs.get('address')
+        profile.phone = kwargs.get('phone')
         profile.set_weekends(kwargs.get('weekends'))
         profile.save()
         return user
@@ -41,16 +42,19 @@ class UserProfileManager(models.Manager):
         ProjectManager.assign_role_to_user(user)
         return user.profile
 
+    def _all_active(self):
+        return super(UserProfileManager, self).filter(user__is_active=True)
+
     def all_animators(self):
-        return super(UserProfileManager, self).filter(
+        return self._all_active().filter(
             user__groups__name='animator').all()
 
     def all_managers(self):
-        return super(UserProfileManager, self).filter(
+        return self._all_active().filter(
             user__groups__name='manager').all()
 
-    def all_photographer(self):
-        return super(UserProfileManager, self).filter(
+    def all_photographers(self):
+        return self._all_active().filter(
             user__groups__name='photographer').all()
 
 

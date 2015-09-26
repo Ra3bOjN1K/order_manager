@@ -4,14 +4,29 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
 
+from rolepermissions.shortcuts import get_user_role
+
 from orders_manager.managers import UserProfileManager, ClientManager, \
     ProgramManager, AdditionalServiceManager, OrdersManager
-from orders_manager.utils.data_utils import calculate_age
+from orders_manager.utils.data_utils import calculate_age, \
+    day_of_month_full_name
+from orders_manager.roles import ROLES
+
+DAY_MULTIPLE_CHOICES = (
+    ('mon', 'ПН'),
+    ('tue', 'ВТ'),
+    ('wed', 'СР'),
+    ('thu', 'ЧТ'),
+    ('fri', 'ПТ'),
+    ('sat', 'СБ'),
+    ('sun', 'ВС'),
+)
 
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, related_name='profile')
     address = models.TextField(null=False, blank=False)
+    phone = models.CharField(max_length=20, null=False, blank=False)
     weekends = models.CharField(max_length=200, null=False, blank=False)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -23,6 +38,16 @@ class UserProfile(models.Model):
     def get_weekends(self):
         return json.loads(self.weekends)
 
+    def get_weekends_names(self):
+        weekends = json.loads(self.weekends)
+
+        def weekend_name(w_code):
+            return {key: val for key, val in DAY_MULTIPLE_CHOICES}[w_code]
+
+        return ', '.join(
+            [day_of_month_full_name(weekend_name(code)) for code in weekends]
+        )
+
     def get_username(self):
         return self.user.username
 
@@ -32,17 +57,36 @@ class UserProfile(models.Model):
     def get_last_name(self):
         return self.user.last_name
 
+    def get_full_name(self):
+        full_name = ''
+        if self.user.last_name:
+            full_name += '%s ' % self.user.last_name
+        if self.user.first_name:
+            full_name += self.user.first_name
+        return full_name.strip()
+
     def get_address(self):
         return self.address
 
     def get_email(self):
         return self.user.email
 
+    def get_phone(self):
+        return self.phone
+
     def get_bonus_for_program(self, program_id):
         bonus = AnimatorBonuses.objects.filter(
             Q(program__id=program_id) & Q(executor__id=self.user.id)
         ).first()
         return bonus.bonus if bonus else 0
+
+    def get_role_name(self):
+        role_code = get_user_role(self.user).get_name()
+        return {key: val for key, val in ROLES}[role_code]
+
+    def make_inactive(self):
+        self.user.is_active = False
+        self.user.save()
 
 
 class ClientChild(models.Model):
@@ -80,11 +124,6 @@ class AdditionalService(models.Model):
     executors = models.ManyToManyField(User, related_name='services')
 
     objects = AdditionalServiceManager()
-
-    class Meta:
-        permissions = (
-            ("assign_service", "Can assign service"),
-        )
 
 
 class Program(models.Model):
@@ -158,16 +197,5 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     objects = OrdersManager()
-
-    class Meta:
-        permissions = (
-            ("see_all_orders", "Can see all orders"),
-            ("see_my_orders", "Can see my orders"),
-            ("assign_order", "Can assign orders"),
-            ("see_all_debt_orders", "Can see all dept orders of executor"),
-            ("delete_all_orders_until_today", "Can delete all orders of "
-                                              "executor until today"),
-            ("see_my_debt_orders", "Can see my dept orders"),
-        )
 
 # TODO: Добавить справочник "ГДЕ НАШЛИ"

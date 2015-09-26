@@ -1,0 +1,82 @@
+@import 'settings';
+@import 'compass/utilities/general/clearfix';
+@import '../fonts/arnamuserif/arnamuserif.css';
+
+body {
+  @include legacy-pie-clearfix();
+  @include init-flex-position(column);
+  @include align-items(center);
+  background: #fafafa;
+  color: #666;
+  font-family: arian_amu_serifregular, serif;
+  font-size: 11pt;
+  margin: 0;
+  padding: 0;
+}
+
+.page-container {
+  @include init-flex-position(column);
+  background: #efefef;
+  border: 1px solid #ccc;
+  margin-top: .5em;
+  max-width: $page-container-min-width;
+  min-height: $page-container-min-height;
+  min-width: $page-container-min-width;
+  padding: .5em;
+}
+
+@mixin menu-btn-default {
+  @include noselect();
+  @include align-self(center);
+  @include single-box-shadow(.6px, .6px, 4px, .4px, #888);
+  background: #eee;
+  //border: 1px solid #ccc;
+  border: 1px solid darken(#72899C, 3%);
+  border-radius: 2px;
+  color: #777;
+  line-height: 1;
+  margin: 0 .2em;
+  padding: .4em;
+  text-decoration: none;
+}
+
+.nav_menu {
+  @include init-flex-position(row);
+  @include justify-content(space-between);
+  @include single-box-shadow(.6px, .6px, 4px, .4px, #666);
+  background: #72899C;
+  border: 1px solid darken(#72899C, 4%);
+  margin: .5em 0;
+  padding-left: .2em;
+
+  .menu-btn {
+    @include menu-btn-default();
+  }
+
+  .user-control-panel {
+    @include flex(1 1);
+    @include init-flex-position(row);
+    @include justify-content(flex-end);
+    height: 2em;
+    margin-right: .2em;
+    padding: .5em 0;
+
+    .profile-link {
+      color: #eee;
+      margin: auto .4em;
+    }
+
+    .logout-btn {
+      @include menu-btn-default();
+    }
+  }
+
+  .active {
+    @include single-box-shadow(.6px, .6px, 4px, .4px, darken(#72899C, 2%));
+    background: lighten(#72899C, 16%);
+    border: 1px solid darken(#72899C, 8%);
+    color: #f2f2f2;
+    cursor: default;
+    pointer-events: none;
+  }
+}

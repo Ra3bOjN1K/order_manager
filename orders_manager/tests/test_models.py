@@ -8,7 +8,7 @@ from orders_manager.models import UserProfile, Client, ClientChild, \
 
 
 class UserRolesTestCase(TestCase):
-    fixtures = ['orders_manager/tests/fixtures/fixtures_17092015_1344.yaml']
+    fixtures = ['orders_manager/tests/fixtures/fixtures_20092015_2253.yaml']
 
     #####################################
     # Creating users with roles
@@ -19,6 +19,7 @@ class UserRolesTestCase(TestCase):
         'first_name': 'John',
         'last_name': 'Trivolta',
         'email': 'john@trivolta.com',
+        'phone': '+375(29)218-63-45',
         'password': 'some_password',
         'weekends': ['sunday', 'monday'],
         'address': 'Minsk, st.SomeStreet',
@@ -35,6 +36,7 @@ class UserRolesTestCase(TestCase):
         self.assertEqual(self.user_info.get('last_name'),
                          animator.get_last_name())
         self.assertEqual(self.user_info.get('email'), animator.get_email())
+        self.assertEqual(self.user_info.get('phone'), animator.get_phone())
         self.assertEqual(self.user_info.get('weekends'),
                          animator.get_weekends())
         self.assertEqual(self.user_info.get('address'), animator.get_address())
@@ -67,7 +69,7 @@ class UserRolesTestCase(TestCase):
                                  m.get_username().endswith('_manager')]))
 
     def test_get_all_photographer(self):
-        photographers = UserProfile.objects.all_photographer()
+        photographers = UserProfile.objects.all_photographers()
         self.assertEqual(2, len([p for p in photographers if
                                  p.get_username().endswith('_photographer')]))
 
@@ -154,7 +156,7 @@ class ClientTestCase(TestCase):
 # ==============================================================================
 
 class ProgramTestCase(TestCase):
-    fixtures = ['orders_manager/tests/fixtures/fixtures_17092015_1344.yaml']
+    fixtures = ['orders_manager/tests/fixtures/fixtures_20092015_2253.yaml']
 
     program_info = {
         'title': 'Маша и медведь',
@@ -208,7 +210,7 @@ class ProgramTestCase(TestCase):
 # ==============================================================================
 
 class AdditionalServicesTestCase(TestCase):
-    fixtures = ['orders_manager/tests/fixtures/fixtures_17092015_1344.yaml']
+    fixtures = ['orders_manager/tests/fixtures/fixtures_20092015_2253.yaml']
 
     service_info = {
         'name': 'Some service',
@@ -229,7 +231,7 @@ class AdditionalServicesTestCase(TestCase):
 # ==============================================================================
 
 class OrdersTestCase(TestCase):
-    fixtures = ['orders_manager/tests/fixtures/fixtures_17092015_1344.yaml']
+    fixtures = ['orders_manager/tests/fixtures/fixtures_20092015_2253.yaml']
 
     order_info = {
         'code': '',

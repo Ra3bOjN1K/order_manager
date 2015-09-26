@@ -33,7 +33,13 @@ def calculate_age(born):
         return today.year - born.year
 
 
-if __name__ == '__main__':
-    for i in range(10):
-        val = generate_str()
-        print(val)
+def day_of_month_full_name(short_name):
+    return {
+        'ПН': 'Понедельник',
+        'ВТ': 'Вторник',
+        'СР': 'Среда',
+        'ЧТ': 'Четверг',
+        'ПТ': 'Пятница',
+        'СБ': 'Суббота',
+        'ВС': 'Воскресенье'
+    }.get(short_name, 'Unknown short_name \'%s\'' % short_name)

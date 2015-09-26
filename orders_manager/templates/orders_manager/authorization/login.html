@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{% block title %}Авторизация пользователя{% endblock %}</title>
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/login.css" %}"/>
+</head>
+<body>
+<div class="page-container">
+    <form action="{% url 'orders_manager:login' %}" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="field_label">
+                {{ field.label }}
+            </div>
+            <div class="register__{{ field.label }}">
+                {{ field }}
+            </div>
+            {% if field.errors %}
+                <div class="field_error">
+                    {{ field.errors|striptags }}
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+            <div class="field_error">
+                {{ error|escape }}
+            </div>
+        {% endfor %}
+        <button type="submit">Войти</button>
+    </form>
+</div>
+</body>
+<script type="text/javascript"
+        src="{% static "orders_manager/js/jquery.js" %}"></script>
+</html>

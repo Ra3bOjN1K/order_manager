@@ -1,0 +1,210 @@
+.content {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -moz-box-shadow: 0.6px 0.6px 4px 0.4px #ddd;
+  -webkit-box-shadow: 0.6px 0.6px 4px 0.4px #ddd;
+  box-shadow: 0.6px 0.6px 4px 0.4px #ddd;
+  background: #fafafa;
+  border: 1px solid #ccc;
+  font-size: 13pt;
+  height: 28em;
+  margin: 2em 1em;
+}
+
+.profile-control-panel {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  background: #e1e1e1;
+  border-right: 1px solid #aaa;
+  margin: 0;
+  min-width: 162px;
+  padding: .5em;
+}
+
+.profile-info {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  border-radius: 2px;
+  height: 18em;
+  margin-left: 10em;
+  margin-top: 4em;
+  padding: .5em;
+}
+.profile-info .line {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-align-items: center;
+  align-items: center;
+}
+.profile-info .line .line__lbl {
+  color: #777;
+  font-size: 12pt;
+  width: 12em;
+}
+.profile-info .line .line__lbl__address {
+  -webkit-align-self: flex-start;
+  align-self: flex-start;
+  color: #777;
+  font-size: 12pt;
+  width: 12em;
+}
+.profile-info .line .line__val {
+  background: #fff;
+  border: 1px solid #ccc;
+  color: #555;
+  margin: .1em;
+  padding: .2em;
+  width: 26em;
+}
+
+.change-password-btn {
+  -webkit-align-self: flex-start;
+  align-self: flex-start;
+  -moz-box-shadow: 0.6px 0.6px 4px 0.4px #ccc;
+  -webkit-box-shadow: 0.6px 0.6px 4px 0.4px #ccc;
+  box-shadow: 0.6px 0.6px 4px 0.4px #ccc;
+  background: #EDDAA6;
+  border: 1px solid #bbb;
+  color: #777;
+  font-size: 12pt;
+  padding: .4em 1em;
+  text-align: center;
+  text-decoration: none;
+  width: 8em;
+}
+
+.change-pwd-form {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  -webkit-align-items: center;
+  align-items: center;
+  margin-top: 5em;
+  padding: 2em;
+}
+.change-pwd-form .change-pwd-line {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: .5em;
+  width: 500px;
+}
+.change-pwd-form .change-pwd-line .change-pwd-line__lbl {
+  color: #567996;
+  margin-top: 2px;
+  font-size: 11pt;
+  width: 146px;
+}
+.change-pwd-form .change-pwd-line .change-pwd-line__val input {
+  color: #546f8b;
+  font-size: 14pt;
+  height: 1.4em;
+  padding-left: .4em;
+  width: 300px;
+}
+.change-pwd-form .field_error {
+  -webkit-align-self: center;
+  align-self: center;
+  color: #C45C5C;
+  font-size: 10pt;
+  margin-bottom: 6px;
+  margin-top: 4px;
+  width: 300px;
+}
+.change-pwd-form .action-btns {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-justify-content: center;
+  justify-content: center;
+  margin-top: 1.2em;
+}
+.change-pwd-form .action-btns button {
+  -moz-box-shadow: 0.6px 0.6px 4px 0.4px #ddd;
+  -webkit-box-shadow: 0.6px 0.6px 4px 0.4px #ddd;
+  box-shadow: 0.6px 0.6px 4px 0.4px #ddd;
+  background: transparent;
+  border: 1px solid #aaaaaa;
+  color: #666;
+  font-family: arian_amu_serifregular, serif;
+  font-weight: 400;
+  font-size: 12pt;
+  margin: 0 .2em;
+  padding: .4em;
+  text-align: center;
+  text-decoration: none;
+  background: #EDDAA6;
+  cursor: pointer;
+}
+.change-pwd-form .action-btns .cancel-btn {
+  -moz-box-shadow: 0.6px 0.6px 4px 0.4px #ddd;
+  -webkit-box-shadow: 0.6px 0.6px 4px 0.4px #ddd;
+  box-shadow: 0.6px 0.6px 4px 0.4px #ddd;
+  background: transparent;
+  border: 1px solid #aaaaaa;
+  color: #666;
+  font-family: arian_amu_serifregular, serif;
+  font-weight: 400;
+  font-size: 12pt;
+  margin: 0 .2em;
+  padding: .4em;
+  text-align: center;
+  text-decoration: none;
+  background: #e2e2e2;
+  width: 5em;
+}

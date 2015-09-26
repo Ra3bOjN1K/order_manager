@@ -1,0 +1,65 @@
+@import 'settings';
+
+body {
+  @include legacy-pie-clearfix();
+  @include init-flex-position(column);
+  background: #efefef;
+  margin: 0;
+  padding: 0;
+}
+
+
+form {
+  @include align-self(center);
+  @include init-flex-position(column);
+  @include single-box-shadow(1px, 1px, 10px, .6px, #ccc);
+  background: #e8e8e8;
+  border: 1px solid lighten(#6D7D8F, 20%);
+  margin: 15% auto;
+  padding: 36px 48px 16px 48px;
+  width: 360px;
+
+  .field_label {
+    color: #6D7D8F;
+    font-size: 12pt;
+    margin-top: 4px;
+    padding-left: 2px;
+  }
+
+  input, select {
+    @include box-sizing(border-box);
+    background: #f2f2f2;
+    border: 1px solid darken(#E1E7ED, 30%);
+    color: #6C7F94;
+    font-family: 'Andada SC', andadaregular, sans-serif;
+    font-size: 14pt;
+    height: 32px;
+    padding: 0 8px;
+    width: 100%;
+  }
+
+  input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #f6f6f6 inset;
+    -webkit-text-fill-color: #6C7F94 !important;
+  }
+
+  .field_error {
+    color: #C45C5C;
+    font-size: 13px;
+    padding: 2px 4px;
+  }
+
+  button {
+    @include align-self(center);
+    @include single-box-shadow(.3px, .3px, 2px, .3px, #bbb);
+    background: #607E9E;
+    border: 1px solid darken(#607E9E, 6%);
+    color: #eee;
+    cursor: hand;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 24px;
+    min-width: 164px;
+    padding: 12px 8px;
+  }
+}

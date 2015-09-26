@@ -1,0 +1,27 @@
+{% load static %}
+
+{% for user in users %}
+    <div class="line-user">
+        <div class="user-info">
+            <span class="user-info__full_name">
+                {{ user.get_full_name }}
+            </span>
+            <span class="user-info__lbl">Тел.:</span>
+            <span class="user-info__phone">
+                {{ user.get_phone }}
+            </span>
+            <span class="user-info__lbl">Email:</span>
+            <span class="user-info__email">
+                {{ user.get_email }}
+            </span>
+        </div>
+        <div class="user-control">
+            <a class="line-user__show-btn"
+               href="{% url "orders_manager:user_profile" user.get_username %}"><img src="{% static "orders_manager/img/show_user_info.png" %}"></a>
+            <a class="line-user__edit-btn"
+               href="{% url "orders_manager:edit_user" user.get_username %}"><img src="{% static "orders_manager/img/edit-user.png" %}"></a>
+            <a class="line-user__delete-btn"
+               href="javascript:delete_user('{{ user.get_username }}')"><img src="{% static "orders_manager/img/delete-user.png" %}"></a>
+        </div>
+    </div>
+{% endfor %}

@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{% block title %}Менеджер заказов{% endblock %}</title>
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/base.css" %}"/>
+    {% block extrastyle %}{% endblock %}
+    {% load permission_tags %}
+</head>
+<body>
+<div class="page-container">
+    {% block page-header %}
+        <div class="nav_menu">
+            <a class="menu-btn"
+               href="{% url "orders_manager:orders_list" %}">Главная</a>
+            {% if request.user|can:"see_customers_list" %}
+                <a class="menu-btn"
+                   href="{% url "orders_manager:customers_list" %}">Заказчики</a>
+            {% endif %}
+            {% if request.user|can:"see_handbooks_list" %}
+                <a class="menu-btn"
+                   href="{% url "orders_manager:handbooks_list" %}">Справочники</a>
+            {% endif %}
+            {% if request.user|can:"see_profiles_list" %}
+                <a class="menu-btn"
+                   href="{% url "orders_manager:profiles_list" %}">Пользователи</a>
+            {% endif %}
+
+            <div class="user-control-panel">
+                {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
+                        <span class="profile-link">{{ user.username }}</span>
+                    {% else %}
+                        <a class="profile-link"
+                           href="{% url "orders_manager:my_profile" %}">
+                            {{ user.profile.get_full_name }}
+                        </a>
+                    {% endif %}
+                    <a class="logout-btn"
+                       href="{% url "orders_manager:logout" %}">Выйти</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endblock %}
+    <div class="content">
+        {% block page-content %}{% endblock %}
+    </div>
+</div>
+</body>
+<script type="text/javascript"
+        src="{% static "orders_manager/js/jquery.js" %}"></script>
+<script type="text/javascript">
+    function MakeActiveMenuBtn() {
+        $('.menu-btn[href*="' + location.pathname + '"]').addClass('active');
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        MakeActiveMenuBtn();
+    })
+</script>
+{% block extrascripts %}{% endblock %}
+</html>

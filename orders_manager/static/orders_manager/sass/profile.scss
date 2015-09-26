@@ -1,0 +1,193 @@
+@import 'settings';
+
+.content {
+  @include init-flex-position(column);
+  @include single-box-shadow(.6px, .6px, 4px, .4px, #ddd);
+  background: #fafafa;
+  border: 1px solid #ccc;
+  font-size: 13pt;
+  margin: .8em 1em 2em;
+  min-height: 30em;
+  padding-bottom: 3em;
+}
+
+.profile-control-panel {
+  @include init-flex-position(row);
+  //background: #e3e3e3;
+  margin: 0;
+  min-height: 2em;
+  padding: .5em;
+}
+
+.profile-control-panel__empty {
+  @include single-box-shadow(.6px, .6px, 4px, .4px, #bbb);
+  background: #99AD97;
+  border: 1px solid darken(#99AD97, 12%);
+  margin-bottom: 4.9em;
+  min-height: .1em;
+}
+
+.control-panel__border {
+  border-color: #fff;
+  margin: 0 0 2em;
+  padding: 0;
+}
+
+///////////////////////////////
+// Change password form style
+///////////////////////////////
+
+#change-pwd-form {
+  @include init-flex-position(column);
+  @include flex(1 1);
+  @include align-items(center);
+  margin-top: 3em;
+  padding: 2em;
+}
+
+.change-password-btn {
+  @include align-self(flex-start);
+  @include single-box-shadow(.6px, .6px, 4px, .4px, #ccc);
+  background: #EDDAA6;
+  border: 1px solid #bbb;
+  color: #777;
+  font-size: 12pt;
+  padding: .4em .5em;
+  text-align: center;
+  text-decoration: none;
+  width: 8em;
+}
+
+//==============================================================================
+
+///////////////////////////////
+// Profile form styles
+//////////////////////////////
+
+.profile-form {
+  @include init-flex-position(column);
+  @include flex(1 1);
+  @include align-items(center);
+}
+
+.form-line {
+  @include init-flex-position(row);
+  @include align-items(flex-start);
+  margin-bottom: .5em;
+  width: 500px;
+
+  .form-field__lbl {
+    color: #567996;
+    font-size: 11pt;
+    padding-top: .4em;
+    width: 146px;
+  }
+
+  .form-field__val, .form-field__ch_val {
+    @include flex(1 1);
+    @include init-flex-position(column);
+
+    input, textarea {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      color: #546f8b;
+      font-family: arian_amu_serifregular, serif;
+      font-size: 13pt;
+      height: 1.4em;
+      padding-left: .4em;
+    }
+
+    textarea {
+      font-size: 12pt;
+      height: 4em;
+    }
+  }
+}
+
+.form-field__error {
+  color: #C45C5C;
+  font-size: 10pt;
+}
+
+@mixin def-action-btn {
+  @include single-box-shadow(.6px, .6px, 4px, .4px, #ddd);
+  background: transparent;
+  border: 1px solid #aaaaaa;
+  color: #666;
+  font-family: arian_amu_serifregular, serif;
+  font-weight: 400;
+  font-size: 12pt;
+  margin: 0 .2em;
+  padding: .4em;
+  text-align: center;
+  text-decoration: none;
+}
+
+.action-btns {
+  @include init-flex-position(row);
+
+  button {
+    @include def-action-btn();
+    background: #EDDAA6;
+    cursor: pointer;
+  }
+
+  .cancel-btn {
+    @include def-action-btn();
+    background: #e2e2e2;
+    width: 5em;
+  }
+}
+
+//////////////////////////////////////////
+// Checkbox and radio to btn group styles
+//////////////////////////////////////////
+
+.multiple-btns-group, .radio-btns-group {
+  @include init-flex-position(row);
+  @include justify-content(space-around);
+  @include align-items(center);
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  height: 1.6em;
+  padding: .2em 1em;
+
+  div {
+    @include noselect();
+    margin: 0 2px;
+
+    label {
+      @include init-flex-position(row);
+      float: left;
+    }
+  }
+
+  span {
+    @include single-box-shadow(.6px, .6px, 4px, .4px, #ddd);
+    background: #ddd;
+    border: 1px solid #aaa;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 12pt;
+    padding: .1em .4em;
+    transition-duration: .2s;
+  }
+
+  input {
+    position: absolute;
+    visibility: hidden;
+  }
+
+  input:disabled + span {
+    cursor: default;
+  }
+
+  input:checked + span {
+    @include single-box-shadow(.6px, .6px, 4px, .4px, #eee);
+    background: lighten(#72899C, 10%);
+    border: 1px solid #888;
+    color: #eee;
+  }
+}

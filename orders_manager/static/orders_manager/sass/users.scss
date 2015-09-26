@@ -1,0 +1,168 @@
+@import 'settings';
+
+.users-block {
+  margin: 2em 3em 2em;
+
+  hr {
+    border-color: #fff;
+    margin: .1em 0 .6em;
+  }
+}
+
+.users-block__title {
+  @include init-flex-position(row);
+  @include justify-content(space-between);
+  @include align-items(center);
+  color: #546f8b;
+  font-size: 12pt;
+
+  .add-user-btn {
+    @include noselect();
+    @include single-box-shadow(.6px, .6px, 2px, .3px, #aaa);
+    background: #8AAD89;
+    border: 1px solid darken(#8AAD89, 6%);
+    border-radius: 2px;
+    color: #f6f6f6;
+    font-size: 10pt;
+    line-height: 1;
+    margin-bottom: .08em;
+    margin-right: .3em;
+    padding: .06em .2em;
+    text-decoration: none;
+  }
+}
+
+.user-list {
+  @include init-flex-position(column);
+  margin: 0 1em;
+
+  .empty-list {
+    @include align-self(flex-start);
+    //text-decoration: underline;
+    font-size: 10pt;
+    background: #fcfcfc;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    padding: .8em 2em;
+  }
+
+  .line-user {
+    @include init-flex-position(row);
+    @include align-items(center);
+  }
+
+  .user-info {
+    @include init-flex-position(row);
+    //background: #fcfcfc;
+    background: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    color: #777;
+    //font-size: 10pt;
+    margin-bottom: .2em;
+    margin-right: .6em;
+    padding: .2em;
+    width: 1060px;
+
+    .user-info__lbl {
+      margin-left: 2em;
+      margin-right: .5em;
+    }
+
+    .user-info__full_name {
+      color: #555;
+      //font-size: 11pt;
+      margin-left: .4em;
+      width: 18em;
+    }
+
+    .user-info__phone {
+      margin-right: 1em;
+      width: 10em;
+    }
+
+    .user-info__email {
+      margin-right: 1em;
+      width: 16em;
+    }
+  }
+
+  .user-control {
+    a {
+      margin: .1em;
+    }
+
+    img {
+      @include single-box-shadow(1.2px, 1.2px, 2px, .3px, #ccc);
+      background: #f6f6f6;
+      border-radius: 1px;
+      height: 14px;
+      padding: .1em;
+      width: auto;
+    }
+  }
+}
+
+.pop-message {
+  @include init-flex-position(column);
+  @include align-items(center);
+  @include justify-content(center);
+  background-color: rgba(#222, .2);
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+
+  .msg-window {
+    @include init-flex-position(column);
+    @include justify-content(space-between);
+    @include single-box-shadow(4px, 4px, 6px, 1px, #999);
+    background: #eaeaea;
+    border: 2px solid #72899C;
+    border-radius: 2px;
+    height: 8em;
+    margin-bottom: 12em;
+    text-align: center;
+    width: 26em;
+  }
+
+  .msg-window__btns {
+    @include init-flex-position(row);
+    @include justify-content(center);
+    margin-bottom: 1em;
+  }
+
+  .msg-window__notice {
+    color: #444;
+    padding: 2em .4em;
+  }
+
+  a {
+    @include single-box-shadow(.6px, .6px, 2px, .6px, #ccc);
+    @include noselect();
+    border: 1px solid #72899C;
+    border-radius: 2px;
+    color: #6C7F94;
+    cursor: pointer;
+    cursor: hand;
+    margin: 0 .2em;
+    padding: .2em;
+    text-decoration: none;
+    width: 4em;
+  }
+
+  .cancel-btn {
+    background: lighten(#72899C, 16%);
+    color: #f2f2f2;
+  }
+
+  .accept-btn {
+    background: #f7f7f7;
+    color: lighten(#72899C, 2%);
+  }
+}
+
+.hidden {
+  display: none;
+}
