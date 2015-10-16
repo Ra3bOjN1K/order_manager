@@ -1,0 +1,288 @@
+@import 'settings';
+
+.content {
+  @include justify-content(flex-start);
+}
+
+.handbook-block {
+  @include flex(1 1);
+  @include init-flex-position(column);
+  @include single-box-shadow(.6px, .6px, 4px, .2px, #ddd);
+  background: #fafafa;
+  border: 1px solid #ccc;
+  font-size: 13pt;
+  min-height: 27em;
+  padding: 0 .8em;
+
+  .handbook__title {
+    @include init-flex-position(row);
+    color: #555;
+    font-size: 10pt;
+    margin: .8em .8em 0 2em;
+    min-height: 1em;
+
+    .program__name {
+      @include flex(1 1);
+      margin-bottom: .1em;
+    }
+  }
+
+  .empty-program-list {
+    @include init-flex-position(column);
+    @include align-items(center);
+    background: #fff;
+    border: 1px solid #ccc;
+    font-size: 11pt;
+    height: 4em;
+    margin: .5em 1em;
+
+    span {
+      @include flex(1 1);
+      display: block;
+      padding: 1.2em;
+    }
+  }
+
+  .programs-list {
+    //border: 1px solid #aaaaaa;
+    margin: .8em .5em 2em;
+    max-height: 26.3em;
+    overflow-y: auto;
+    padding: 0 .5em;
+
+    .program-line {
+      @include noselect();
+      @include init-flex-position(row);
+      @include align-items(center);
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      cursor: hand;
+      cursor: pointer;
+      font-size: 11pt;
+      height: 1.4em;
+      margin: .2em 0;
+      padding: .1em;
+      transition-duration: .3s;
+    }
+
+    .program-line__name {
+      @include flex(1 1);
+      margin-left: .4em;
+    }
+
+    a {
+      line-height: .8;
+      margin: .05em .2em;
+    }
+
+    img {
+      @include single-box-shadow(1.2px, 1.2px, 2px, .3px, #ccc);
+      background: #f6f6f6;
+      border-radius: 1px;
+      height: 14px;
+      padding: .1em;
+      width: auto;
+    }
+
+    .checked {
+      background: lighten(#72899C, 36%);
+      border: 1px solid #aaa;
+      color: #444;
+
+      img {
+        @include single-box-shadow(1.2px, 1.2px, 2px, .3px, #888);
+      }
+    }
+  }
+}
+
+.create-program-btn {
+  @include align-self(flex-start);
+  @include single-box-shadow(.6px, .6px, 4px, .2px, #ccc);
+  border: 1px solid darken(#72899C, 10%);
+  line-height: 0;
+  text-align: center;
+  text-decoration: none;
+
+  img {
+    height: 1em;
+    margin: 0;
+    width: auto;
+  }
+}
+
+.prices-block {
+  @include init-flex-position(column);
+  @include single-box-shadow(.6px, .6px, 4px, .2px, #ddd);
+  background: #f2f2f2;
+  border: 1px solid #ccc;
+  margin-left: 1em;
+  margin-right: .5em;
+  width: 18.6em;
+
+  .prices-block__name {
+    background: lighten(#72899C, 26%);
+    border-bottom: 1px solid #aaa;
+    color: darken(#72899C, 18%);
+    font-size: 11pt;
+    padding: .2em 0;
+    text-align: center;
+  }
+
+  .new-price-block {
+    @include init-flex-position(column);
+    background: #fcfcfc;
+    border-bottom: 1px solid #aaa;
+    padding: .2em 0;
+  }
+
+  .new-price-form {
+    @include init-flex-position(row);
+    @include align-items(center);
+    margin: 0 .6em 0 .6em;
+    padding: .4em;
+
+    .form-line {
+      @include flex(1 1);
+      @include init-flex-position(row);
+      @include align-items(center);
+      margin-right: .4em;
+      text-decoration: underline;
+    }
+
+    .form-field__lbl {
+      font-size: 10pt;
+    }
+
+    input {
+      border: 1px solid #888;
+      color: #555;
+      font-size: 11pt;
+      height: 1.5em;
+      margin-right: .2em;
+      text-align: center;
+      width: 5em;
+    }
+
+    a {
+      @include noselect();
+      @include single-box-shadow(.6px, .6px, 4px, .2px, #ddd);
+      @include align-self(center);
+      background: lighten(#7eab7e, 16%);
+      border: 1px solid darken(#7eab7e, 6%);
+      color: darken(#72899C, 26%);
+      cursor: hand;
+      cursor: pointer;
+      font-size: 8pt;
+      margin-left: .5em;
+      padding: .3em .5em;
+      text-decoration: none;
+    }
+  }
+
+  .prices__title {
+    @include init-flex-position(row);
+    font-size: 10pt;
+    margin: .8em .9em 0;
+    min-height: 1em;
+    width: 18em;
+
+    .program__duration {
+      margin-left: 1em;
+      width: 10em;
+    }
+  }
+
+  .empty-price-list {
+    @include single-box-shadow(.6px, .6px, 4px, .2px, #ddd);
+    background: #fdfdfd;
+    border: 1px solid #bbb;
+    border-radius: 2px;
+    color: #555;
+    font-size: 10pt;
+    margin: 2em;
+    padding: 1.4em .5em;
+    text-align: center;
+  }
+}
+
+.prices {
+  @include init-flex-position(column);
+  margin: .3em 1em 2.2em;
+  min-height: 21em;
+  padding: .2em;
+
+  .price-form {
+    @include init-flex-position(row);
+    @include single-box-shadow(.6px, .6px, 2px, .2px, #ddd);
+    background: #fdfdfd;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    height: 1.6em;
+    margin-bottom: .2em;
+  }
+
+  .form-line {
+    @include init-flex-position(row);
+    @include align-items(center);
+
+    .form-field__lbl {
+      font-size: 10pt;
+    }
+
+    input {
+      background: transparent;
+      border-color: transparent;
+      border-bottom: 1px solid #888;
+      color: #333;
+      font-family: arian_amu_serifregular, serif;
+      font-size: 11pt;
+      margin-right: .2em;
+      text-align: center;
+    }
+
+    input[id^=id_][id$=duration] {
+      margin-left: 1em;
+      width: 2.4em;
+    }
+
+    input[id^=id_][id$=price] {
+      width: 5em;
+    }
+  }
+
+  .form-line:first-child {
+    margin-right: 2em;
+  }
+
+  .price-control-box {
+    @include flex(1 1);
+    @include init-flex-position(row);
+    @include justify-content(flex-end);
+
+    a {
+      @include align-self(center);
+      @include single-box-shadow(.6px, .6px, 2px, .2px, #e1e1e1);
+      background: #f8f8f8;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      cursor: pointer;
+      cursor: hand;
+      line-height: 0;
+      margin-right: .4em;
+      padding: .06em;
+    }
+
+    img {
+      height: .5em;
+      width: auto;
+    }
+  }
+}
+
+.control-panel__border {
+  border-bottom-color: #fff;
+  border-top-color: #ccc;
+  margin: .1em .8em .1em;
+}

@@ -4,9 +4,11 @@ from django import forms
 
 from rolepermissions.shortcuts import get_user_role
 
-from orders_manager.models import UserProfile, DAY_MULTIPLE_CHOICES, ROLES
-from orders_manager.form_fields import CheckboxToButtonSelectMultiple, \
-    RadioButtonToButtonSelect
+from orders_manager.models import UserProfile, ROLES, Program, ProgramPrice, \
+    Order, ClientChild, Client, AdditionalService
+from orders_manager.form_fields import RadioButtonToButtonSelect, \
+    ExecutorsMultipleChoiceField, ClientChildrenMultipleChoiceField, \
+    AddressMultiTextInput, ServicesMultipleChoiceField
 from orders_manager.roles import set_user_role
 
 
@@ -68,12 +70,6 @@ class UserProfileForm(forms.Form):
                                      'cols': 20}),
         label='Адрес:'
     )
-    weekends = forms.MultipleChoiceField(
-        choices=DAY_MULTIPLE_CHOICES,
-        label="Выходные:",
-        required=False,
-        widget=CheckboxToButtonSelectMultiple()
-    )
     role = forms.ChoiceField(
         choices=ROLES,
         label="Должность:",
@@ -131,7 +127,6 @@ class ShowUserProfileForm(UserProfileForm):
             'last_name': user.get_last_name(),
             'phone': user.get_phone(),
             'address': user.get_address(),
-            'weekends': user.get_weekends(),
             'role': user.get_role_name(),
         }
 
@@ -222,7 +217,6 @@ class UpdateUserProfileForm(UserProfileForm):
             'last_name': user.get_last_name(),
             'phone': user.get_phone(),
             'address': user.get_address(),
-            'weekends': user.get_weekends(),
             'role': get_user_role(user.user).get_name()
         }
 
@@ -239,6 +233,171 @@ class UpdateUserProfileForm(UserProfileForm):
             self.user.phone = self.cleaned_data.get('phone')
             self.user.address = self.cleaned_data.get('address')
             set_user_role(self.user, self.cleaned_data.get('role'))
-            self.user.set_weekends(self.cleaned_data.get('weekends'))
             self.user.user.save()
             self.user.save()
+
+
+class ProgramModelForm(forms.ModelForm):
+    class Meta:
+        model = Program
+        fields = '__all__'
+
+    num_executors = forms.CharField(
+        widget=forms.NumberInput(
+            attrs={'min': 1, 'value': 1}
+        ),
+        label='Количество исполнителей:'
+    )
+
+    possible_program_executors = forms.ModelMultipleChoiceField(
+        queryset=UserProfile.objects.all_executors(),
+        widget=ExecutorsMultipleChoiceField(),
+        label='Возможные исполнители:'
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.program = kwargs.pop('program', None)
+        if self.program:
+            initial = kwargs.pop('initial', {})
+            initial.update({
+                'title': self.program.title,
+                'characters': self.program.characters,
+                'num_executors': self.program.num_executors,
+                'possible_program_executors':
+                    self.program.possible_executors.all()
+            })
+            kwargs['initial'] = initial
+
+        super(ProgramModelForm, self).__init__(*args, **kwargs)
+
+        self.fields['title'].label = "Имя программы:"
+        self.fields['characters'].label = "Персонажи:"
+
+    def validate_unique(self):
+        if self.program:
+            return True
+        return super(ProgramModelForm, self).validate_unique()
+
+    def save(self, commit=True):
+        if self.program:
+            data = {
+                'title': self.cleaned_data.get('title'),
+                'characters': self.cleaned_data.get('characters'),
+                'num_executors': self.cleaned_data.get('num_executors'),
+                'possible_program_executors': self.cleaned_data.get(
+                    'possible_program_executors'),
+            }
+            return Program.objects.update_or_create(**data)
+        return super(ProgramModelForm, self).save(commit)
+
+
+class ProgramPriceForm(forms.Form):
+    program_id = forms.IntegerField(required=True, widget=forms.HiddenInput())
+    duration = forms.CharField(required=True, widget=forms.TextInput(
+        attrs={
+            'placeholder': 'Длит.'
+        }
+    ), label='мин.')
+    price = forms.IntegerField(required=True, widget=forms.TextInput(
+        attrs={
+            'placeholder': 'Цена'
+        }
+    ), label='руб.')
+
+    def clean_program_id(self):
+        if not self.cleaned_data.get('program_id'):
+            raise forms.ValidationError('Обязательное поле.')
+        return self.cleaned_data.get('program_id')
+
+    def clean_duration(self):
+        if not self.cleaned_data.get('duration'):
+            raise forms.ValidationError('Обязательное поле.')
+        return self.cleaned_data.get('duration')
+
+    def clean_price(self):
+        if not self.cleaned_data.get('price'):
+            raise forms.ValidationError('Обязательное поле.')
+        return self.cleaned_data.get('price')
+
+    def validate_unique(self):
+        if self.cleaned_data['program_id'] and self.cleaned_data['duration']:
+            return True
+        return super(ProgramPriceForm, self).validate_unique()
+
+    def save(self, commit=True):
+        return ProgramPrice.objects.update_or_create(
+            program_id=self.cleaned_data['program_id'],
+            duration=self.cleaned_data['duration'],
+            price=self.cleaned_data['price']
+        )
+
+
+class OrderModelForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        exclude = ('code', 'author', 'status')
+
+    def __init__(self, *args, **kwargs):
+        from orders_manager.utils.data_utils import format_date
+
+        celebrate_date = kwargs.pop('celebrate_date', None)
+
+        super(OrderModelForm, self).__init__(*args, **kwargs)
+
+        self.fields['client'].widget = forms.TextInput()
+        self.fields['client_children'] = forms.ModelMultipleChoiceField(
+            queryset=ClientChild.objects.none(),
+            widget=ClientChildrenMultipleChoiceField(),
+            label='Виновник(-и) торжества:'
+        )
+        if celebrate_date:
+            self.fields['celebrate_date'].widget = forms.TextInput(
+                attrs={
+                    'value': format_date(
+                        celebrate_date,
+                        'Дата: %d.%m.%Y   Время: %H:%M'
+                    )
+                }
+            )
+        self.fields['address'].widget = AddressMultiTextInput()
+        self.fields['program'].queryset = Program.objects.all()
+        self.fields['possible_program_executors'] = \
+            forms.ModelMultipleChoiceField(
+                queryset=UserProfile.objects.none(),
+                widget=ExecutorsMultipleChoiceField(),
+                label='Возможные исполнители программы:'
+            )
+        self.fields['additional_services'] = \
+            forms.ModelMultipleChoiceField(
+                queryset=AdditionalService.objects.all(),
+                widget=ServicesMultipleChoiceField(),
+                label='Список дополнительнх услуг:'
+            )
+        self.fields['possible_services_executors'] = \
+            forms.ModelMultipleChoiceField(
+                queryset=UserProfile.objects.none(),
+                widget=ExecutorsMultipleChoiceField(),
+                label='Исполнители дополнительнх услуг:'
+            )
+        self.fields['duration'] = forms.ChoiceField(label='Продолжительность:')
+        self.fields['price'].widget = forms.TextInput(
+            attrs={'readonly': True}
+        )
+        self.fields['total_price'].widget = forms.TextInput(
+            attrs={'readonly': True},
+        )
+        self.fields['total_price_with_discounts'].widget = forms.TextInput(
+            attrs={'readonly': True}
+        )
+
+
+class ClientModelForm(forms.ModelForm):
+    child_name = forms.CharField(max_length=64, label='Имя ребенка')
+    child_age = forms.CharField(max_length=8, label='Полных лет ребенку')
+
+    class Meta:
+        model = Client
+        fields = ('name', 'phone')
+
+    def __init__(self, *args, **kwargs):
+        super(ClientModelForm, self).__init__(*args, **kwargs)

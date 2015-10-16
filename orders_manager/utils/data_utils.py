@@ -15,8 +15,25 @@ def generate_str(num_chars=3):
 
 
 def format_date(date_time=None, pattern='%Y%m%d_%H%M%S'):
+    from django.conf import settings
+    import pytz
+
+    if date_time and isinstance(date_time, str):
+        date_time = datetime.datetime.strptime(
+            date_time,
+            '%a, %d %b %Y %H:%M:%S %Z'
+        )
     date_time = date_time or datetime.datetime.now()
+    date_time = pytz.timezone(settings.TIME_ZONE).fromutc(date_time)
+
     return date_time.strftime(pattern)
+
+
+def trim_phone_number(phone):
+    if phone:
+        import re
+        return re.sub("\D", "", phone)
+    return None
 
 
 def calculate_age(born):
@@ -33,13 +50,5 @@ def calculate_age(born):
         return today.year - born.year
 
 
-def day_of_month_full_name(short_name):
-    return {
-        'ПН': 'Понедельник',
-        'ВТ': 'Вторник',
-        'СР': 'Среда',
-        'ЧТ': 'Четверг',
-        'ПТ': 'Пятница',
-        'СБ': 'Суббота',
-        'ВС': 'Воскресенье'
-    }.get(short_name, 'Unknown short_name \'%s\'' % short_name)
+if __name__ == '__main__':
+    pass

@@ -1,0 +1,26 @@
+{% extends "orders_manager/bbase.html" %}
+
+{% load static %}
+
+{% block title %}Список исполнителей{% endblock %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/handbooks.css" %}"/>
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/popup_messages_styles.css" %}"/>
+{% endblock %}
+
+{% block page-content %}
+    {% include "orders_manager/handbooks/hb_menu.html" %}
+    <div class="handbook-block">
+        <div class="handbook__title">
+            <span class="program__name"></span>
+        </div>
+        <hr class="control-panel__border">
+        <div class="handbook__details"></div>
+    </div>
+{% endblock %}
+{% block extrascripts %}
+    <script src="{% static "orders_manager/js/popup_messages.js" %}"></script>
+{% endblock %}

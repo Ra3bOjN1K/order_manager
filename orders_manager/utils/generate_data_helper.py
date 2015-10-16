@@ -1,27 +1,73 @@
 # -*- coding: utf-8 -*-
 
-from mixer.main import mixer
+
+class CommonDataGenerator:
+    first_names = (
+        'Александр', 'Михаил', 'Сергей', 'Юрий', 'Евгений', 'Степан', 'Егор',
+        'Константин', 'Николай', 'Владимир', 'Влад', 'Артем', 'Дмитрий', 'Петр',
+        'Василий', 'Олег', 'Семен', 'Антон'
+    )
+
+    last_names = (
+        'Попов', 'Грачев', 'Сюткин', 'Морозов', 'Коваль', 'Овечко', 'Синица',
+        'Готовкин', 'Висловух', 'Руденок', 'Кокарев', 'Петроченко', 'Форточкин',
+        'Открывашка', 'Шидловский', 'Утюгов', 'Кортавко', 'Яблонский',
+        'Лысковец', 'Барташевич', 'Врублевский', 'Жулев', 'Карнацевич',
+        'Мармеладов', 'Торопунько'
+    )
+
+    def generate_first_name(self):
+        from random import choice
+        return choice(self.first_names)
+
+    def generate_last_name(self):
+        from random import choice
+        return choice(self.last_names)
+
+    def generate_full_name(self):
+        return '{0} {1}'.format(self.generate_last_name(),
+                                self.generate_first_name())
+
+    def generate_phone(self):
+        from random import randint, choice
+        country_code = '+375'
+        provider_code = ('29', '33', '44')
+
+        def gen_str_with_num():
+            return str(randint(0, 99)).ljust(2, '0')
+
+        return '{}({}){}-{}-{}'.format(
+            country_code, choice(provider_code), randint(100, 999),
+            gen_str_with_num(), gen_str_with_num())
+
+    def generate_birthday(self, min_age, max_age):
+        from datetime import date
+        from random import randint
+
+        td = date.today()
+        start_date = td.replace(
+            year=(td.year - randint(min_age, max_age))).toordinal()
+        end_date = td.replace(year=td.year - min_age).toordinal()
+        random_day = date.fromordinal(randint(start_date, end_date))
+
+        return random_day.strftime('%Y-%m-%d')
+
+    def generate_date_in_future(self, num_days_for_start=2,
+                                num_days_for_end=10):
+        from datetime import date, timedelta
+        from random import randint
+
+        future_date = date.today() + timedelta(
+            days=randint(num_days_for_start, num_days_for_end))
+
+        return future_date.strftime('%Y-%m-%d')
 
 
 class UserProfileGenerator:
     MANAGER, ANIMATOR, PHOTOGRAPHER = ('manager', 'animator', 'photographer')
 
-    user_first_names = (
-        'Александр', 'Михаил', 'Сергей', 'Юрий', 'Евгений', 'Степан', 'Егор',
-        'Константин', 'Николай', 'Владимир', 'Влад', 'Артем', 'Дмитрий', 'Петр',
-        'Василий', 'Олег', 'Семен'
-    )
-
-    user_last_names = (
-        'Попов', 'Грачев', 'Сюткин', 'Морозов', 'Коваль', 'Овечко', 'Синица',
-        'Готовкин', 'Висловух', 'Руденок', 'Кокарев', 'Петроченко', 'Форточкин',
-        'Открывашка', 'Шидловский', 'Утюгов', 'Кортавко', 'Яблонский',
-        'Лысковец', 'Барташевич', 'Врублевский', 'Жулев', 'Карнацевич'
-    )
-
     def _generate_user_weekends_str(self):
         import random
-        import json
 
         days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
         weekends = []
@@ -31,36 +77,30 @@ class UserProfileGenerator:
             for day in days:
                 weekends.append([f_day, day])
 
-        return json.dumps(random.choice(weekends))
+        return random.choice(weekends)
 
     def generate(self, role, num=1):
-        from random import choice
+        from mixer.main import mixer
         from orders_manager.models import UserProfile
 
         class Scheme:
             username = str
-            first_name = str
-            last_name = str
             email = str
-            phone = str
             address = str
+
+        common_gen = CommonDataGenerator()
 
         profiles = []
 
         for _ in range(num):
-            data = mixer.blend(
-                Scheme,
-                first_name=choice(self.user_first_names),
-                last_name=choice(self.user_last_names),
-                phone=mixer.FAKE
-            )
+            data = mixer.blend(Scheme)
 
             user_info = {
                 'username': data.username,
-                'first_name': data.first_name,
-                'last_name': data.last_name,
+                'first_name': common_gen.generate_first_name(),
+                'last_name': common_gen.generate_last_name(),
                 'email': data.email,
-                'phone': data.phone,
+                'phone': common_gen.generate_phone(),
                 'password': '12345',
                 'weekends': self._generate_user_weekends_str(),
                 'address': data.address,
@@ -77,3 +117,223 @@ class UserProfileGenerator:
                     UserProfile.objects.create_photographer(**user_info))
 
         return profiles
+
+
+class PossibleExecutorsMixin:
+    def __init__(self):
+        from orders_manager.models import UserProfile
+        self.executors = UserProfile.objects.all_executors()
+
+    def _get_num_executors(self):
+        from random import randint
+        len_ex = len(self.executors)
+
+        if not len_ex:
+            raise AttributeError('Create executors before!')
+
+        return randint(1, len_ex if len_ex < 3 else 3)
+
+    def _get_possible_executors(self, min_num):
+        from random import randint, choice
+        ex = set()
+        num_ex = randint(min_num, len(self.executors))
+        while len(ex) < num_ex:
+            ex.add(choice(self.executors))
+        return list(ex)
+
+
+class ProgramGenerator(PossibleExecutorsMixin):
+    characters = (
+        'Кот в сапогах', 'Клоун', 'Дед Мороз', 'Снегурка', 'Собака', 'Гном',
+        'Колобок', 'Иван-Дурак', 'Баба-Яга', 'Кащей', 'Буратино', 'Волк',
+        'Поросенок', 'Чебурашка'
+    )
+
+    def _get_characters(self, num_characters):
+        from random import choice
+        items = set()
+        while len(items) < num_characters:
+            items.add(choice(self.characters))
+        return list(items)
+
+    def _get_title(self, characters):
+        if len(characters) == 1:
+            return characters[0]
+        return '{0} и {1}'.format(', '.join(characters[:-1]), characters[-1])
+
+    def generate(self, num=1):
+        from orders_manager.models import Program
+        programs = {}
+
+        while len(programs) < num:
+            num_executors = self._get_num_executors()
+            characters = self._get_characters(num_executors)
+            title = self._get_title(characters)
+            possible_executors = self._get_possible_executors(
+                num_executors)
+
+            data_info = {
+                'title': title,
+                'characters': ', '.join(characters),
+                'num_executors': num_executors,
+                'possible_executors': possible_executors
+            }
+            programs.update({tuple(characters): data_info})
+
+        res = []
+
+        price_gen = ProgramPriceGenerator()
+
+        for _, data in programs.items():
+            program = Program.objects.create(**data)
+            price_gen.generate(program)
+            res.append(program)
+
+        return res
+
+
+class ProgramPriceGenerator:
+    def generate(self, program):
+        from random import randint
+        from orders_manager.models import ProgramPrice
+
+        k = randint(1000, 1700) / 1000.0
+
+        for i in range(randint(3, 6), randint(7, 20), 3):
+            duration = i * 10
+            price = int(duration * 12.5 * k / 10) * 10
+            ProgramPrice.objects.create(**{
+                'program_id': program.id,
+                'duration': duration,
+                'price': price
+            })
+
+
+class AdditionalServicesGenerator(PossibleExecutorsMixin):
+    services_names = 'Гелевые шары', 'Сахарная вата', 'Надувные персонажи'
+
+    def _generate_service_price(self):
+        from random import randint
+        return (randint(300000, 1000000) // 100) * 100
+
+    def generate(self, num=3):
+        from random import choice
+        from orders_manager.models import AdditionalService
+        services = {}
+
+        while len(services) < num:
+            service_name = choice(self.services_names)
+            num_executors = self._get_num_executors()
+            possible_executors = self._get_possible_executors(num_executors)
+
+            data_info = {
+                'title': service_name,
+                'num_executors': num_executors,
+                'possible_executors': possible_executors,
+                'price': self._generate_service_price()
+            }
+            services.update({service_name: data_info})
+
+        return [AdditionalService.objects.create(**data) for k, data in
+                services.items()]
+
+
+class DiscountsGenerator:
+    def generate(self):
+        from orders_manager.models import Discount
+        discounts = []
+        for name, val in (('Скидка №1', 5),
+                          ('Скидка №2', 10),
+                          ('Скидка №3', 50)):
+            discounts.append(Discount.objects.create(name=name, value=val))
+        return discounts
+
+
+class ClientChildGenerator:
+    child_names = (
+        'Миша', 'Таня', 'Катя', 'Толя', 'Юра', 'Саша', 'Рита',
+        'Ваня', 'Руслан', 'Костя', 'Егор', 'Армен', 'Света', 'Оля', 'Кирилл',
+        'Сергей', 'Женя', 'Артем', 'Юра', 'Вова', 'Иван', 'Слава', 'Кеша',
+        'Люба', 'Лена', 'Ира', 'Кенни', 'Эрик', 'Стэн', 'Баттерс', 'Кайл',
+        'Вэнди', 'Вася'
+    )
+
+    def generate(self, client, num=1):
+        from random import choice, randint
+        from orders_manager.models import ClientChild
+
+        names = set()
+        while len(names) < num:
+            names.add(choice(self.child_names))
+
+        common_gen = CommonDataGenerator()
+
+        children = []
+
+        for name in names:
+            data = {
+                'name': name,
+                'age': randint(2, 10),
+                'celebrate_date': common_gen.generate_date_in_future(
+                    num_days_for_start=10, num_days_for_end=90),
+                'client_id': client.id
+                # 'birthday': common_gen.generate_birthday(3, 9)
+            }
+            ClientChild.objects.update_or_create(**data)
+
+        return children
+
+
+class ClientGenerator:
+    def generate(self, num=1):
+        from random import randint
+        from mixer.main import mixer
+        from orders_manager.models import Client
+
+        class Scheme:
+            username = str
+            email = str
+            comments = str
+
+        common_gen = CommonDataGenerator()
+
+        clients = []
+
+        while len(clients) < num:
+
+            data = mixer.blend(
+                Scheme,
+                username=mixer.FAKE,
+                email=mixer.FAKE,
+                comments=mixer.FAKE
+            )
+
+            info = {
+                'name': common_gen.generate_full_name(),
+                'phone': common_gen.generate_phone(),
+                'phone_2': common_gen.generate_phone(),
+                'email': data.email,
+                'vk_link': 'http://vk.com/' + data.username,
+                'odnoklassniki_link': 'http://odnoklassniki.ru/' + data.username,
+                'instagram_link': 'http://instagram.com/' + data.username,
+                'facebook_link': 'http://facebook.com/' + data.username,
+                'secondby_link': 'http://secondby.in/' + data.username,
+                'comments': data.comments
+            }
+
+            client = Client.objects.update_or_create(**info)
+            client.children = [x.id for x in ClientChildGenerator().generate(
+                client, randint(1, 4))]
+            clients.append(client)
+
+        return clients
+
+
+def populate_database():
+    UserProfileGenerator().generate(UserProfileGenerator.MANAGER, num=5)
+    UserProfileGenerator().generate(UserProfileGenerator.ANIMATOR, num=7)
+    UserProfileGenerator().generate(UserProfileGenerator.PHOTOGRAPHER, num=3)
+    ProgramGenerator().generate(20)
+    AdditionalServicesGenerator().generate()
+    DiscountsGenerator().generate()
+    ClientGenerator().generate(16)

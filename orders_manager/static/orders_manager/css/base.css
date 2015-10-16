@@ -1,4 +1,14 @@
 @import url(../fonts/arnamuserif/arnamuserif.css);
+::selection {
+  background: #90C3D4;
+  /* Safari */
+}
+
+::-moz-selection {
+  background: #90C3D4;
+  /* Firefox */
+}
+
 body {
   *zoom: 1;
   display: -moz-box;
@@ -138,11 +148,11 @@ body:after {
   text-decoration: none;
 }
 .nav_menu .active {
-  -moz-box-shadow: 0.6px 0.6px 4px 0.4px #6c8498;
-  -webkit-box-shadow: 0.6px 0.6px 4px 0.4px #6c8498;
-  box-shadow: 0.6px 0.6px 4px 0.4px #6c8498;
+  -moz-box-shadow: 0.6px 0.6px 4px 0.4px transparent;
+  -webkit-box-shadow: 0.6px 0.6px 4px 0.4px transparent;
+  box-shadow: 0.6px 0.6px 4px 0.4px transparent;
   background: #a2b1be;
-  border: 1px solid #5f7587;
+  border: 1px solid #5a6f81;
   color: #f2f2f2;
   cursor: default;
   pointer-events: none;

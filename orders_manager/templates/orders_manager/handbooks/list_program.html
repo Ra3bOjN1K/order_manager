@@ -1,0 +1,81 @@
+{% extends "orders_manager/bbase.html" %}
+
+{% load static %}
+
+{% block title %}Список программ{% endblock %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/handbooks.css" %}"/>
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/hb_programs.css" %}"/>
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/popup_messages_styles.css" %}"/>
+{% endblock %}
+
+{% block page-content %}
+    {% include "orders_manager/handbooks/hb_menu.html" %}
+    <div class="handbook-block">
+        <div class="handbook__title">
+            <span class="program__name">Название программы:</span>
+            <a class="create-program-btn"
+               href="{% url "orders_manager:create_program" %}">
+                <img src="{% static "orders_manager/img/add_blue.png" %}">
+            </a>
+        </div>
+        <hr class="control-panel__border">
+        <div class="handbook__details">
+            {% if not programs_list %}
+                <div class="empty-program-list">
+                    <span>Список програм пуст..</span>
+                </div>
+            {% else %}
+                <div class="programs-list">
+                    {% for program in programs_list %}
+                        <div class="program-line" id="program-{{ program.id }}">
+                            <span class="program-line__name">{{ program.title }}</span>
+                            <a class="program-line__edit-btn"
+                               href="{% url "orders_manager:edit_program" program.id %}"><img
+                                    src="{% static "orders_manager/img/edit.png" %}"></a>
+                            <a class="program-line__delete-btn"
+                               href="javascript:DeleteProgram({{ program.id }})"><img
+                                    src="{% static "orders_manager/img/delete.png" %}"></a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="prices-block">
+        <span class="prices-block__name">Расценки для программы</span>
+
+        <div class="new-price-block">
+            <form action="" method="post" class="new-price-form">
+                {% csrf_token %}
+                {% for field in new_price_form %}
+                    {% if not field.is_hidden %}
+                        <div class="form-line">
+                            <div class="form-field__val">{{ field }}</div>
+                            <div class="form-field__lbl">{{ field.label }}</div>
+                        </div>
+                        {% if field.errors %}
+                            <div class="form-field__error">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                <a id="send-new-price-form-btn">Добавить</a>
+            </form>
+        </div>
+        <div class="prices__title">
+            <span class="program__duration">Длительность:</span>
+            <span class="program__price">Цена:</span>
+        </div>
+        <hr class="control-panel__border">
+        <div class="prices__body"></div>
+    </div>
+{% endblock %}
+{% block extrascripts %}
+    <script src="{% static "orders_manager/js/popup_messages.js" %}"></script>
+    <script src="{% static "orders_manager/js/manage_program_prices.js" %}"></script>
+    <script>InitPricesOnProgramClick()</script>
+{% endblock %}

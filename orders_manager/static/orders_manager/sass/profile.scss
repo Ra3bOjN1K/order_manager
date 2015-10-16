@@ -7,7 +7,7 @@
   border: 1px solid #ccc;
   font-size: 13pt;
   margin: .8em 1em 2em;
-  min-height: 30em;
+  min-height: 27em;
   padding-bottom: 3em;
 }
 
@@ -98,6 +98,11 @@
       padding-left: .4em;
     }
 
+    input:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+      -webkit-text-fill-color: #546f8b !important;
+    }
+
     textarea {
       font-size: 12pt;
       height: 4em;
@@ -111,6 +116,9 @@
 }
 
 @mixin def-action-btn {
+  @include init-flex-position(row);
+  @include align-items(center);
+  @include justify-content(center);
   @include single-box-shadow(.6px, .6px, 4px, .4px, #ddd);
   background: transparent;
   border: 1px solid #aaaaaa;
@@ -120,7 +128,6 @@
   font-size: 12pt;
   margin: 0 .2em;
   padding: .4em;
-  text-align: center;
   text-decoration: none;
 }
 

@@ -1,0 +1,15 @@
+{% load orders_manager_tags %}
+
+{% if price_formset %}
+    <div class="prices">
+        {% if price_formset.forms %}
+            {{ price_formset.management_form }}
+            {% for price_form in price_formset %}
+                {% show_program_price_form price_form %}
+            {% endfor %}
+        {% endif %}
+    </div>
+{% else %}
+    <div class="empty-price-list">Для этой программы цены еще не были заданы.
+    </div>
+{% endif %}

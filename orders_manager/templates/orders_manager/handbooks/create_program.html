@@ -1,0 +1,56 @@
+{% extends "orders_manager/bbase.html" %}
+
+{% load static %}
+
+{% block title %}Создание программы{% endblock %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/handbooks.css" %}"/>
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/hb_program_create.css" %}"/>
+{% endblock %}
+
+{% block page-content %}
+    {% include "orders_manager/handbooks/hb_menu.html" %}
+    <div class="program-block">
+        <div class="program-block__control-panel">
+            <div class="action-btns">
+                <a class="cancel-btn"
+                   href="{% url 'orders_manager:programs_handbook' %}">
+                    <div>Отмена</div>
+                </a>
+                <button type="submit"
+                        form="program-form">Сохранить</button>
+            </div>
+        </div>
+        <hr class="control-panel__border">
+        <form action="" method="post" id="program-form"
+              class="program-form">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-line">
+                    <div class="form-field__lbl">{{ field.label }}</div>
+                    {% if field.field.choices %}
+                        <div class="form-field__ch_val">
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="form-field__error">{{ field.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="form-field__val">
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="form-field__error">{{ field.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="form-field__error">{{ error|escape }}</div>
+            {% endfor %}
+        </form>
+    </div>
+{% endblock %}

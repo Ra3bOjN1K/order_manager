@@ -6,25 +6,29 @@
     <title>{% block title %}Менеджер заказов{% endblock %}</title>
     <link rel="stylesheet" type="text/css"
           href="{% static "orders_manager/css/base.css" %}"/>
+    <link rel="shortcut icon"
+          href="{% static 'orders_manager/img/favicon.png' %}"
+          type="image/png" />
     {% block extrastyle %}{% endblock %}
     {% load permission_tags %}
+    {% load orders_manager_tags %}
 </head>
 <body>
 <div class="page-container">
     {% block page-header %}
         <div class="nav_menu">
-            <a class="menu-btn"
+            <a class="menu-btn{% menu_btn_active "orders_list" %}"
                href="{% url "orders_manager:orders_list" %}">Главная</a>
             {% if request.user|can:"see_customers_list" %}
-                <a class="menu-btn"
+                <a class="menu-btn{% menu_btn_active "customers_list" %}"
                    href="{% url "orders_manager:customers_list" %}">Заказчики</a>
             {% endif %}
             {% if request.user|can:"see_handbooks_list" %}
-                <a class="menu-btn"
+                <a class="menu-btn{% menu_btn_active "handbooks_list" %}"
                    href="{% url "orders_manager:handbooks_list" %}">Справочники</a>
             {% endif %}
             {% if request.user|can:"see_profiles_list" %}
-                <a class="menu-btn"
+                <a class="menu-btn{% menu_btn_active "profiles_list" %}"
                    href="{% url "orders_manager:profiles_list" %}">Пользователи</a>
             {% endif %}
 
@@ -51,15 +55,7 @@
 </body>
 <script type="text/javascript"
         src="{% static "orders_manager/js/jquery.js" %}"></script>
-<script type="text/javascript">
-    function MakeActiveMenuBtn() {
-        $('.menu-btn[href*="' + location.pathname + '"]').addClass('active');
-    }
-</script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        MakeActiveMenuBtn();
-    })
-</script>
+<script type="text/javascript"
+        src="{% static "orders_manager/js/order_manager.js" %}"></script>
 {% block extrascripts %}{% endblock %}
 </html>

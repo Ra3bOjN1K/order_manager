@@ -1,0 +1,20 @@
+{% load static %}
+
+<form action="" method="post" class="price-form">
+    {% csrf_token %}
+
+    {% for field in price_form %}
+        {% if not field.is_hidden %}
+            <div class="form-line">
+                <div class="form-field__val">{{ field }}</div>
+                <div class="form-field__lbl">{{ field.label }}</div>
+            </div>
+            {% if field.errors %}
+                <div class="form-field__error">{{ field.errors|striptags }}</div>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    <div class="price-control-box">
+        <a class="delete-btn"><img src="{% static "orders_manager/img/del.png" %}"></a>
+    </div>
+</form>

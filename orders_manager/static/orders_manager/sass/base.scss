@@ -2,6 +2,13 @@
 @import 'compass/utilities/general/clearfix';
 @import '../fonts/arnamuserif/arnamuserif.css';
 
+::selection {
+  background: #90C3D4; /* Safari */
+}
+::-moz-selection {
+  background: #90C3D4; /* Firefox */
+}
+
 body {
   @include legacy-pie-clearfix();
   @include init-flex-position(column);
@@ -72,9 +79,10 @@ body {
   }
 
   .active {
-    @include single-box-shadow(.6px, .6px, 4px, .4px, darken(#72899C, 2%));
+    //@include single-box-shadow(.6px, .6px, 4px, .4px, darken(#72899C, 2%));
+    @include single-box-shadow(.6px, .6px, 4px, .4px, transparent);
     background: lighten(#72899C, 16%);
-    border: 1px solid darken(#72899C, 8%);
+    border: 1px solid darken(#72899C, 10%);
     color: #f2f2f2;
     cursor: default;
     pointer-events: none;

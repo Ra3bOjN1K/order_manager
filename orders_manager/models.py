@@ -7,46 +7,27 @@ from django.contrib.auth.models import User
 from rolepermissions.shortcuts import get_user_role
 
 from orders_manager.managers import UserProfileManager, ClientManager, \
-    ProgramManager, AdditionalServiceManager, OrdersManager
-from orders_manager.utils.data_utils import calculate_age, \
-    day_of_month_full_name
+    ProgramManager, AdditionalServiceManager, OrdersManager, \
+    ClientChildrenManager, ProgramPriceManager
+from orders_manager.utils.data_utils import calculate_age
 from orders_manager.roles import ROLES
 
-DAY_MULTIPLE_CHOICES = (
-    ('mon', 'ПН'),
-    ('tue', 'ВТ'),
-    ('wed', 'СР'),
-    ('thu', 'ЧТ'),
-    ('fri', 'ПТ'),
-    ('sat', 'СБ'),
-    ('sun', 'ВС'),
-)
+
+class Weekends(models.Model):
+    date = models.DateField()
 
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, related_name='profile')
     address = models.TextField(null=False, blank=False)
     phone = models.CharField(max_length=20, null=False, blank=False)
-    weekends = models.CharField(max_length=200, null=False, blank=False)
+    weekends = models.ManyToManyField(Weekends)
     created = models.DateTimeField(auto_now_add=True)
 
     objects = UserProfileManager()
 
-    def set_weekends(self, days):
-        self.weekends = json.dumps(days)
-
-    def get_weekends(self):
-        return json.loads(self.weekends)
-
-    def get_weekends_names(self):
-        weekends = json.loads(self.weekends)
-
-        def weekend_name(w_code):
-            return {key: val for key, val in DAY_MULTIPLE_CHOICES}[w_code]
-
-        return ', '.join(
-            [day_of_month_full_name(weekend_name(code)) for code in weekends]
-        )
+    def __str__(self):
+        return self.get_username()
 
     def get_username(self):
         return self.user.username
@@ -89,18 +70,10 @@ class UserProfile(models.Model):
         self.user.save()
 
 
-class ClientChild(models.Model):
-    name = models.CharField(max_length=64, null=False, blank=False)
-    birthday = models.DateField(null=False, blank=False)
-
-    def age(self):
-        return calculate_age(self.birthday)
-
-
 class Client(models.Model):
-    name = models.CharField(max_length=64, null=False, blank=False)
-    children = models.ManyToManyField(ClientChild, related_name='parents')
-    phone = models.CharField(max_length=20, null=False, blank=False)
+    name = models.CharField(max_length=64, verbose_name='Имя заказчика')
+    phone = models.CharField(max_length=20, verbose_name='Телефон заказчика',
+                             unique=True)
     phone_2 = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     vk_link = models.CharField(max_length=64, null=True, blank=True)
@@ -112,43 +85,74 @@ class Client(models.Model):
 
     objects = ClientManager()
 
+    def __str__(self):
+        return self.name
 
-class Character(models.Model):
+
+class ClientChild(models.Model):
     name = models.CharField(max_length=64)
+    birthday = models.DateField(null=False, blank=False)
+    client = models.ForeignKey(Client, related_name='children')
+
+    objects = ClientChildrenManager()
+
+    class Meta:
+        unique_together = ('client', 'name')
+
+    def __str__(self):
+        return self.name
+
+    def age(self):
+        return calculate_age(self.birthday)
 
 
 class AdditionalService(models.Model):
-    name = models.CharField(max_length=200, null=False, blank=False)
+    title = models.CharField(max_length=200, null=False, blank=False)
     price = models.FloatField(null=False, blank=False)
-    description = models.TextField(null=True, blank=True)
-    executors = models.ManyToManyField(User, related_name='services')
+    num_executors = models.PositiveSmallIntegerField(default=1)
+    possible_executors = models.ManyToManyField(UserProfile,
+                                                related_name='services')
 
     objects = AdditionalServiceManager()
 
+    def __str__(self):
+        return self.title
+
 
 class Program(models.Model):
-    title = models.CharField(max_length=200, null=False, blank=False)
-    characters = models.ManyToManyField(Character, related_name='orders')
-    num_executors = models.SmallIntegerField(null=False, blank=False)
-    possible_executors = models.ManyToManyField(User, related_name='programs')
-    executors = models.ManyToManyField(User, related_name='orders')
+    title = models.CharField(max_length=200, unique=True)
+    characters = models.CharField(max_length=250)
+    num_executors = models.PositiveSmallIntegerField(default=1)
+    possible_executors = models.ManyToManyField(UserProfile,
+                                                related_name='programs')
 
     objects = ProgramManager()
 
+    class Meta:
+        verbose_name = "Программа"
+
+    def __str__(self):
+        return self.title
+
     def get_all_prices(self):
-        return ProgramPrice.objects.filter(program__pk=self.id).all()
+        return ProgramPrice.objects.filter(program__pk=self.id).order_by(
+            'duration').all()
 
     def get_price(self, duration):
         price = ProgramPrice.objects.filter(
             Q(program__id=self.id) & Q(duration=duration)
         ).first()
-        return price.price if price else 0
+        if not price:
+            raise AttributeError('Duration for this program has not been set..')
+        return price.price
 
 
 class ProgramPrice(models.Model):
-    program = models.ForeignKey(Program)
-    duration = models.FloatField(null=False, blank=False)
-    price = models.FloatField(null=False, blank=False)
+    program = models.ForeignKey(Program, related_name='prices')
+    duration = models.IntegerField(null=False, blank=False)
+    price = models.IntegerField(null=False, blank=False)
+
+    objects = ProgramPriceManager()
 
     class Meta:
         unique_together = ('program', 'duration')
@@ -156,7 +160,7 @@ class ProgramPrice(models.Model):
 
 class AnimatorBonuses(models.Model):
     program = models.ForeignKey(Program)
-    executor = models.ForeignKey(User)
+    executor = models.ForeignKey(UserProfile)
     bonus = models.FloatField(null=False, blank=False)
 
     class Meta:
@@ -167,35 +171,61 @@ class Discount(models.Model):
     name = models.CharField(max_length=64, null=False, blank=False)
     value = models.SmallIntegerField(null=False, blank=False)
 
+    def __str__(self):
+        return self.name
+
 
 class Order(models.Model):
-    STATUSES = (
-        ('soon', 'Скоро'),
-        ('today', 'Сегодня'),
-        ('gone', 'Прошло')
-    )
-
     code = models.CharField(max_length=12, unique=True)
     author = models.ForeignKey(User, null=False, blank=False)
-    client = models.ForeignKey(Client)
-    client_children = models.ManyToManyField(ClientChild)
-    celebrate_date = models.DateField()
-    celebrate_time = models.TimeField()
-    celebrate_place = models.CharField(max_length=64, null=False, blank=False)
-    address = models.TextField(null=False, blank=False)
-    program = models.ForeignKey(Program)
-    duration = models.FloatField(null=False, blank=False)
-    price = models.FloatField()
-    additional_services = models.ManyToManyField(AdditionalService,
-                                                 related_name='orders')
-    details = models.TextField()
-    executor_comment = models.TextField()
-    discounts = models.ManyToManyField(Discount, related_name='orders')
-    total_price = models.FloatField()
-    total_price_with_discounts = models.FloatField()
-    status = models.CharField(max_length=5, choices=STATUSES)
+    client = models.ForeignKey(Client, verbose_name='Заказчик')
+    client_children = models.ManyToManyField(
+        ClientChild,
+        verbose_name='Виновник(-и) торжества'
+    )
+    celebrate_date = models.DateTimeField(verbose_name='Дата торжества')
+    celebrate_place = models.CharField(
+        max_length=64,
+        null=True,
+        blank=True,
+        verbose_name='Место проведения'
+    )
+    _address = models.TextField(
+        name='address',
+        verbose_name='Адрес проведения',
+        default='{"address": {"city": "г.Минск", "street": "ул. Маяковского", "house": "16б", "housing": "2", "apartment": "46", "description": "Как проехать?"}}')
+    program = models.ForeignKey(Program, verbose_name='Программа')
+    program_executors = models.ManyToManyField(UserProfile,
+                                               related_name='orders')
+    duration = models.IntegerField(verbose_name='Продолжительность')
+    price = models.IntegerField(verbose_name='Стоимость')
+    additional_services = models.ManyToManyField(
+        AdditionalService,
+        related_name='orders',
+        verbose_name='Дополнительные услуги'
+    )
+    services_executors = models.ManyToManyField(UserProfile)
+    details = models.TextField(verbose_name='Подробности')
+    executor_comment = models.TextField(verbose_name='Комментарии исполнителя')
+    discount = models.ForeignKey(Discount, related_name='orders',
+                                 verbose_name='Скидка')
+    total_price = models.FloatField(verbose_name='Цена')
+    total_price_with_discounts = models.FloatField(
+        verbose_name='Цена с учетом скидки'
+    )
     created = models.DateTimeField(auto_now_add=True)
 
     objects = OrdersManager()
 
-# TODO: Добавить справочник "ГДЕ НАШЛИ"
+
+class AddressParser:
+    class Address:
+        def __init__(self, data):
+            self.__dict__.update(data)
+
+    def parse_string(self, address_str):
+        address_dict = json.loads(address_str)
+        return self.Address(address_dict.get('address'))
+
+    def to_string(self, address):
+        pass

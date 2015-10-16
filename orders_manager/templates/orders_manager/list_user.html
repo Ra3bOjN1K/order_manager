@@ -1,0 +1,68 @@
+{% extends "orders_manager/bbase.html" %}
+
+{% load static %}
+{% load orders_manager_tags %}
+
+{% block title %}Список пользователей{% endblock %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/users.css" %}"/>
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/popup_messages_styles.css" %}"/>
+{% endblock %}
+
+{% block page-content %}
+    <div class="users-block">
+        <div class="users-block__title">
+            <span class="user-block__label">Список менеджеров:</span>
+            <a class="add-user-btn" href="{% url "orders_manager:create_manager" %}">
+                Добавить менеджера
+            </a>
+        </div>
+        <hr>
+        <div class="user-list">
+            {% if managers %}
+                {% show_user_info_line managers %}
+            {% else %}
+                <span class="empty-list">Список менеджеров пуст..</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="users-block">
+        <div class="users-block__title">
+            <span class="user-block__label">Список аниматоров:</span>
+            <a class="add-user-btn" href="{% url "orders_manager:create_animator" %}">
+                Добавить аниматора
+            </a>
+        </div>
+        <hr>
+        <div class="user-list">
+            {% if animators %}
+                {% show_user_info_line animators %}
+            {% else %}
+                <span class="empty-list">Список аниматоров пуст..</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="users-block">
+        <div class="users-block__title">
+            <span class="user-block__label">Список фотографов:</span>
+            <a class="add-user-btn" href="{% url "orders_manager:create_photographer" %}">
+                Добавить фотографа
+            </a>
+        </div>
+        <hr>
+        <div class="user-list">
+            {% if photographers %}
+                {% show_user_info_line photographers %}
+            {% else %}
+                <span class="empty-list">Список фотографов пуст..</span>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascripts %}
+    <script src="{% static "orders_manager/js/popup_messages.js" %}"></script>
+{% endblock %}

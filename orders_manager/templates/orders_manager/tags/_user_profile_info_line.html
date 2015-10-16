@@ -17,11 +17,12 @@
         </div>
         <div class="user-control">
             <a class="line-user__show-btn"
-               href="{% url "orders_manager:user_profile" user.get_username %}"><img src="{% static "orders_manager/img/show_user_info.png" %}"></a>
+               href="{% url "orders_manager:user_profile" user.get_username %}"><img src="{% static "orders_manager/img/show_info.png" %}"></a>
             <a class="line-user__edit-btn"
-               href="{% url "orders_manager:edit_user" user.get_username %}"><img src="{% static "orders_manager/img/edit-user.png" %}"></a>
+               href="{% url "orders_manager:edit_user" user.get_username %}"><img src="{% static "orders_manager/img/edit.png" %}"></a>
             <a class="line-user__delete-btn"
-               href="javascript:delete_user('{{ user.get_username }}')"><img src="{% static "orders_manager/img/delete-user.png" %}"></a>
+               href="javascript:DeleteUser('{{ user.get_username }}')"><img
+                    src="{% static "orders_manager/img/delete.png" %}"></a>
         </div>
     </div>
 {% endfor %}

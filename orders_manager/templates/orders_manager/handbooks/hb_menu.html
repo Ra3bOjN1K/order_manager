@@ -1,0 +1,16 @@
+{% load orders_manager_tags %}
+
+<div class="all-handbooks-panel">
+    <a class="handbook__btn{% hbook_active "programs_handbook" %}"
+       href="{% url "orders_manager:programs_handbook" %}">Программы</a>
+    <a class="handbook__btn{% hbook_active "additional_services_handbook" %}"
+       href="{% url "orders_manager:additional_services_handbook" %}">Доп.
+        услуги</a>
+    <a class="handbook__btn{% hbook_active "executors_handbook" %}"
+       href="{% url "orders_manager:executors_handbook" %}">Исполнители</a>
+{#    <a class="handbook__btn{% hbook_active "revenue_percent_handbook" %}"#}
+{#       href="{% url "orders_manager:revenue_percent_handbook" %}">Процент#}
+{#        исполнителя</a>#}
+    <a class="handbook__btn{% hbook_active "discounts_handbook" %}"
+       href="{% url "orders_manager:discounts_handbook" %}">Скидки</a>
+</div>
