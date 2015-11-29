@@ -6,52 +6,15 @@
 
 {% block extrastyle %}
     <link rel="stylesheet" type="text/css"
-          href="{% static "orders_manager/js/scheduler/dhtmlxscheduler.css" %}"/>
-    <link rel="stylesheet" type="text/css"
-          href="{% static "orders_manager/css/jquery-ui.css" %}"/>
-    <link rel="stylesheet" type="text/css"
-          href="{% static "orders_manager/js/dtpicker/dtpicker.css" %}"/>
-    <link rel="stylesheet" type="text/css"
-          href="{% static "orders_manager/css/popup_messages_styles.css" %}"/>
+          href="{% static "vendors/css/fullcalendar.min.css" %}"/>
     <link rel="stylesheet" type="text/css"
           href="{% static "orders_manager/css/orders.css" %}"/>
-    <style type="text/css" media="screen">
-        html, body {
-            margin: 0px;
-            padding: 0px;
-            height: 100%;
-            overflow: hidden;
-        }
-    </style>
 {% endblock %}
 
-{% block page-content %}
-    <div class="scheduler-block">
-        <div id="scheduler_here" class="dhx_cal_container">
-            <div class="dhx_cal_navline">
-                <div class="dhx_cal_prev_button">&nbsp;</div>
-                <div class="dhx_cal_next_button">&nbsp;</div>
-                <div class="dhx_cal_today_button"></div>
-                <div class="dhx_cal_date"></div>
-                <div class="dhx_cal_tab" name="day_tab"
-                     style="right:204px;"></div>
-                <div class="dhx_cal_tab" name="week_tab"
-                     style="right:140px;"></div>
-                <div class="dhx_cal_tab" name="month_tab"
-                     style="right:76px;"></div>
-            </div>
-            <div class="dhx_cal_header"></div>
-            <div class="dhx_cal_data"></div>
-        </div>
+{% block page_content %}
+    <div class="page-content" ng-controller="CalendarCtrl">
+        <div id="calendar" ui-calendar="uiConfig.calendar" ng-model="eventSources" calendar="calendar" calendar-style></div>
     </div>
 {% endblock %}
 
-{% block extrascripts %}
-    <script src="{% static "orders_manager/js/scheduler/dhtmlxscheduler.js" %}"></script>
-    <script src="{% static "orders_manager/js/scheduler/locale/locale_ru.js" %}" charset="utf-8"></script>
-    <script src="{% static "orders_manager/js/manage_order_scheduler.js" %}"></script>
-    <script type="text/javascript"
-            src="{% static "orders_manager/js/dtpicker/dtpicker.js" %}"></script>
-    <script></script>
-    <script>InitScheduler()</script>
-{% endblock %}
+{% block extrascripts %}{% endblock %}

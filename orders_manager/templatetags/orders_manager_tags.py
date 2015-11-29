@@ -4,6 +4,17 @@ from django import template
 
 register = template.Library()
 
+# check permissions tag
+@register.filter
+def can(user, permission):
+    user = user if not hasattr(user, 'user') else user.user
+    return user.has_perm('orders_manager.%s' % permission)
+
+@register.filter
+def user_is(user, role):
+    user = user if not hasattr(user, 'user') else user.user
+    return user.groups.filter(name=role).exists()
+
 
 @register.inclusion_tag('orders_manager/tags/_user_profile_info_line.html')
 def show_user_info_line(users):

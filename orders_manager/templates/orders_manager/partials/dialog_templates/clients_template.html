@@ -1,0 +1,66 @@
+<div class="clients-content" ng-controller="ClientsCtrl as vm" xmlns="http://www.w3.org/1999/html">
+    <div class="panel panel-default dialog-wrapper">
+        <div class="panel-heading dialog-header">
+            <div class="title">Управление заказчиками</div>
+            <div class="ngdialog-close"></div>
+        </div>
+        <div class="panel-body clients-panel-body">
+            <div class="loading-content" ng-show="vm.loadingEvent">
+                <span>Загрузка...</span>
+                <img class="loading-content__preloader" src="/static/orders_manager/img/preloader.gif">
+            </div>
+            <div class="grid-wrapper hidden" show-dialog-content-loading>
+                <div class="grid-control-panel">
+                    <button class="btn btn-default btn-sm btn-add"
+                            ng-click="vm.client.addNewRow()"><i class="fa fa-plus"></i></button>
+                    <input type="text" class="form-control search-field"
+                           ng-change="vm.filter()" ng-model="vm.filterSearchWord"
+                           placeholder="Поиск по имени или номеру телефона..">
+                </div>
+                <div ui-grid="vm.gridOptions" ui-grid-pagination ui-grid-selection class="grid"></div>
+                <div class="pagination-container">
+                    <button class="btn btn-default btn-sm" ng-click="vm.gridApi.pagination.previousPage()">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                <span>Страница: {{ vm.gridApi.pagination.getPage() }} из
+                    {{ vm.gridApi.pagination.getTotalPages()}}</span>
+                    <button class="btn btn-default btn-sm" ng-click="vm.gridApi.pagination.nextPage()">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                    <!--
+                    <button type="button" class="btn btn-success" ng-click="vm.gridApi.pagination.seek(2)">
+                        go to page 2
+                    </button>
+                    -->
+                </div>
+            </div>
+            <div class="details-wrapper hidden" show-dialog-content-loading>
+                <div class="client-children" ng-if="vm.detailsMode.clientChildren">
+                    <div class="details-header">
+                        <button class="btn btn-default btn-sm btn-add"
+                                ng-click="vm.clientChildrenMode.addChildRow()"><i class="fa fa-plus"></i></button>
+                    </div>
+                    <div class="details-body">
+                        <div ui-grid="vm.childrenGridOptions" ui-grid-edit ui-grid-row-edit class="grid"></div>
+                    </div>
+                </div>
+                <form class="client-form" name="vm.form" novalidate ng-if="vm.detailsMode.clientDetails">
+                    <div class="details-body">
+                        <formly-form model="vm.client.selectedClient" form="vm.form" fields="vm.formFields"
+                                     options="vm.formOptions"></formly-form>
+                        <div class="form-btns-container" ng-if="vm.clientEditMode.isActiveMode">
+                            <button type="button" class="btn btn-primary btn-save"
+                                    ng-disabled="vm.form.$pristine || vm.form.$invalid"
+                                    ng-click="vm.clientEditMode.saveClient()"><i class="fa fa-check"></i></button>
+                            <button type="button" class="btn btn-default btn-cancel" ng-if="!vm.client.isNewClient"
+                                    ng-disabled="vm.form.$pristine"
+                                    ng-click="vm.clientEditMode.cancelEdit()"><i class="fa fa-times"></i></button>
+                            <button type="button" class="btn btn-danger btn-delete" ng-if="vm.client.isNewClient"
+                                    ng-click="vm.clientEditMode.deleteNewClient()"><i class="fa fa-trash-o"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

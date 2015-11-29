@@ -1,0 +1,73 @@
+@import 'settings';
+
+.discounts-content {
+  @include init-flex-position(column);
+  width: 600px;
+
+  .discounts-panel-body {
+    @include init-flex-position(column);
+    @include flex(1 1);
+    height: 320px;
+    padding: 0;
+  }
+
+  .grid-wrapper {
+    @include init-flex-position(column);
+    @include flex(1 1);
+
+    .grid-control-panel {
+      @include init-flex-position(row);
+      @include justify-content(flex-start);
+      background: #fafafa;
+      padding: 2px;
+    }
+
+    .grid-control-panel .btn-add {
+      margin-right: 4px;
+      width: 41px;
+    }
+
+    .grid-control-panel .search-field {
+      width: 412px;
+    }
+
+    .grid {
+      @include flex(1 1);
+      background: #fdfdfd;
+      border-right-width: 0;
+      height: 220px;
+    }
+
+    .ui-grid-cell {
+      cursor: hand;
+      cursor: pointer;
+    }
+
+    .ui-grid-row-selected .ui-grid-cell {
+      border-color: #aaa;
+    }
+
+    .pagination-container {
+      margin: 8px auto;
+      //height: 30px;
+    }
+
+    .ctrl-btns-wrapper {
+      @include init-flex-position(row);
+      @include justify-content(flex-start);
+      width: 29px;
+    }
+
+    .ctrl-btn {
+      @include init-flex-position(column);
+      @include justify-content(center);
+      margin: 1px;
+      padding: 2px;
+      width: 27px;
+    }
+
+    .ctrl-btn:first-child {
+      margin-left: 3px;
+    }
+  }
+}

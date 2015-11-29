@@ -1,0 +1,49 @@
+- script: set_locale.sh
+
+- shell: "echo 'alias python=python3' >> ~/.bashrc"
+
+- name: Install packages
+  sudo: yes
+  apt: pkg={{ item }} state=installed update_cache=yes
+  with_items: "{{ system_packages }}"
+
+- name: Allow password authentication for local socket users
+  sudo: yes
+  copy: src=pg_hba.conf dest=/etc/postgresql/{{ pg_version }}/main/pg_hba.conf force=yes
+  notify:
+      - Restart Postgres
+
+- name: Create Database
+  sudo: yes
+  sudo_user: postgres
+  postgresql_db: name={{ pg_db_name }} 
+
+- name: Create User
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: name={{ pg_db_user }} password={{ pg_db_password }} state=present role_attr_flags=SUPERUSER,CREATEDB
+
+- name: Provide user with DB permissions
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: user={{ pg_db_user }} db={{ pg_db_name }} priv=ALL
+
+- name: Assures {{ app_root_path }} dir exists
+  sudo: yes
+  file: path={{ app_root_path }} state=directory
+
+- name: Copy requirements.txt file
+  sudo: yes
+  copy: src=requirements.txt dest={{ app_root_path }}/requirements.txt force=yes
+
+- name: Create env directory
+  sudo: yes
+  file: path={{ virtualenv_path }} state=directory mode=0755 recurse=true
+
+- name: Setup an environment for the tracker using Python 3.4
+  sudo: yes
+  shell: virtualenv -p python3.4 {{ virtualenv_path }}
+
+- name: Install packages required for the Python 
+  sudo: yes
+  pip: virtualenv={{ virtualenv_path }} requirements={{ app_root_path }}/requirements.txt

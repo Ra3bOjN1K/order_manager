@@ -2,15 +2,18 @@ import copy
 from datetime import date
 
 from django.db.utils import IntegrityError
+from django.db import transaction
 from django.test import TestCase
 
-from rolepermissions.verifications import has_role
+from rest_framework.test import APIClient
 
-from orders_manager.models import UserProfile, Client, ClientChild, \
-    AdditionalService, Order, Program, ProgramPrice, Discount
+from orders_manager.models import (UserProfile, Client, ClientChild,
+    AdditionalService, Order, Program, ProgramPrice, Discount)
+from orders_manager.utils.generate_data_helper import (UserProfileGenerator,
+    ProgramGenerator, AdditionalServicesGenerator)
+from orders_manager.roles import get_user_role, init_roles
 
-from orders_manager.utils.generate_data_helper import UserProfileGenerator, \
-    ProgramGenerator, AdditionalServicesGenerator
+from orders_manager.roles import Animator
 
 
 class UserRolesTestCase(TestCase):
@@ -29,6 +32,7 @@ class UserRolesTestCase(TestCase):
     }
 
     def setUp(self):
+        init_roles()
         us_gen = UserProfileGenerator()
         us_gen.generate(role=UserProfileGenerator.ANIMATOR, num=5)
         us_gen.generate(role=UserProfileGenerator.MANAGER, num=3)
@@ -47,20 +51,26 @@ class UserRolesTestCase(TestCase):
         self.assertEqual(self.user_info.get('email'), animator.get_email())
         self.assertEqual(self.user_info.get('phone'), animator.get_phone())
         self.assertEqual(self.user_info.get('address'), animator.get_address())
-        self.assertTrue(has_role(animator.user, UserProfileGenerator.ANIMATOR))
+        self.assertTrue(
+            get_user_role(animator.user) == UserProfileGenerator.ANIMATOR)
+
+        for perm in Animator.available_permissions:
+            self.assertTrue(animator.user.has_perm('orders_manager.%s' % perm))
+
 
     def test_create_photographer(self):
         UserProfile.objects.create_photographer(**self.user_info)
-        manager = UserProfile.objects.filter(
+        photographer = UserProfile.objects.filter(
             user__username=self.user_info['username']).first()
         self.assertTrue(
-            has_role(manager.user, UserProfileGenerator.PHOTOGRAPHER))
+            get_user_role(photographer.user) == UserProfileGenerator.PHOTOGRAPHER)
 
     def test_create_manager(self):
         UserProfile.objects.create_manager(**self.user_info)
         manager = UserProfile.objects.filter(
             user__username=self.user_info['username']).first()
-        self.assertTrue(has_role(manager.user, UserProfileGenerator.MANAGER))
+        self.assertTrue(
+            get_user_role(manager.user) == UserProfileGenerator.MANAGER)
 
     #####################################
     # Search users by roles
@@ -167,7 +177,7 @@ class ClientTestCase(TestCase):
             'name': 'Васёк',
             'client_id': client.id,
             'age': '4',
-            'celebrate_date': 'Дата: 17.10.2015   Время: 10:20'
+            'celebrate_date': '17.10.2015 10:20'
         })
         client_children = client.children.all()
         self.assertEqual(1, len(client_children))
@@ -182,14 +192,14 @@ class ClientTestCase(TestCase):
             'name': 'Васёк',
             'client_id': client.id,
             'age': '4',
-            'celebrate_date': 'Дата: 17.10.2015   Время: 10:20'
+            'celebrate_date': '2015-10-17.'
         })
         with self.assertRaises(IntegrityError):
             ClientChild.objects.create(**{
                 'name': 'Васёк',
                 'client_id': client.id,
                 'age': '5',
-                'celebrate_date': 'Дата: 02.02.2016   Время: 10:28'
+                'celebrate_date': '02.02.2016'
             })
 
     def test_create_children_has_same_names_for_different_parents(self):
@@ -201,7 +211,7 @@ class ClientTestCase(TestCase):
             'name': 'Васёк',
             'client_id': client_1.id,
             'age': '4',
-            'celebrate_date': 'Дата: 17.10.2015   Время: 10:20'
+            'celebrate_date': '17.10.2015 10:20'
         })
         client_2 = Client.objects.create(**{
             'name': 'John Doe',
@@ -211,7 +221,7 @@ class ClientTestCase(TestCase):
             'name': 'Васёк',
             'client_id': client_2.id,
             'age': '8',
-            'celebrate_date': 'Дата: 17.10.2015   Время: 10:20'
+            'celebrate_date': '17.10.2015 10:20'
         })
         self.assertEqual(1, len(client_1.children.all()))
         self.assertEqual(1, len(client_2.children.all()))
@@ -225,7 +235,7 @@ class ClientTestCase(TestCase):
             'name': 'Васёк',
             'client_id': client.id,
             'age': '4',
-            'celebrate_date': 'Дата: 17.10.2015   Время: 10:20'
+            'celebrate_date': '2015-10-17.'
         })
         self.assertEqual(date(2010, 10, 17), client.children.get(
             name='Васёк').birthday)
@@ -414,7 +424,7 @@ class AdditionalServicesTestCase(TestCase):
         data = copy.deepcopy(self.data)
         AdditionalService.objects.update_or_create(**data)
         data['num_executors'] = 3
-        data['possible_executors'] =\
+        data['possible_executors'] = \
             UserProfile.objects.all_executors()[:3:-1]
         data['price'] = 666000
         service = AdditionalService.objects.update_or_create(**data)
@@ -437,57 +447,71 @@ class DiscountsTestCase(TestCase):
         self.assertEqual('Скидка №666', discount.name)
         self.assertEqual(66, discount.value)
 
+
 # ==============================================================================
 
-# class OrdersTestCase(TestCase):
-#     order_info = {
-#         'code': '',
-#         'author_id': 2,
-#         'client_id': 1,
-#         'client_children_id': [1, 2],
-#         'celebrate_date': '2015-09-18',
-#         'celebrate_time': '15:00:00',
-#         'celebrate_place': 'home',
-#         'address': 'Minsk, ul.Kalinovskogo',
-#         'program_id': 1,
-#         'duration': 1,
-#         'price': 0,
-#         'additional_services_id': [1, 2],
-#         'details': 'some details',
-#         'executor_comment': 'some comment',
-#         'discounts_id': [1, 2],
-#         'total_price': 0,
-#         'total_price_with_discounts': 0,
-#         'status': 'soon'
-#     }
-#
-#     def test_create_order(self):
-#         order = Order.objects.create(**self.order_info)
-#         self.assertEqual(12, len(order.code))
-#         self.assertEqual(self.order_info.get('author_id'), order.author.id)
-#         self.assertEqual(self.order_info.get('client_id'), order.client.id)
-#         self.assertEqual(len(self.order_info.get('client_children_id')),
-#                          len(order.client_children.all()))
-#         self.assertEqual(self.order_info.get('celebrate_date'),
-#                          order.celebrate_date)
-#         self.assertEqual(self.order_info.get('celebrate_time'),
-#                          order.celebrate_time)
-#         self.assertEqual(self.order_info.get('celebrate_place'),
-#                          order.celebrate_place)
-#         self.assertEqual(self.order_info.get('address'), order.address)
-#         self.assertEqual(self.order_info.get('program_id'), order.program.id)
-#         self.assertEqual(self.order_info.get('duration'), order.duration)
-#         self.assertEqual(self.order_info.get('price'), order.price)
-#         self.assertEqual(len(self.order_info.get('additional_services_id')),
-#                          len(order.additional_services.all()))
-#         self.assertEqual(self.order_info.get('details'), order.details)
-#         self.assertEqual(self.order_info.get('executor_comment'),
-#                          order.executor_comment)
-#         self.assertEqual(len(self.order_info.get('discounts_id')),
-#                          len(order.discounts.all()))
-#         self.assertEqual(self.order_info.get('total_price'), order.total_price)
-#         self.assertEqual(self.order_info.get('total_price_with_discounts'),
-#                          order.total_price_with_discounts)
-#         self.assertEqual(self.order_info.get('status'), order.status)
+class OrdersTestCase(TestCase):
+    order_info = {
+        'author_id': 1,
+        'client_id': 1,
+        'client_children_id': [1],
+        'celebrate_date': '2015-11-29',
+        'celebrate_time': '15:00',
+        'celebrate_place': 'Дом',
+        'address': 'some address',
+        'program_id': 1,
+        'program_executors_id': [1],
+        'duration': 30,
+        'additional_services_id': [1],
+        'services_executors_id': [1],
+        'discount_id': 1,
+        'details': 'some details',
+        'executor_comment': 'some comment',
+        'price': 500000,
+        'total_price': 500000,
+        'total_price_with_discounts': 500000
+    }
+
+    def setUp(self):
+        from orders_manager.utils.generate_data_helper import populate_database
+        populate_database()
+
+    def test_create_order(self):
+        order = Order.objects.create(**self.order_info)
+        self.assertEqual(12, len(order.code))
+        self.assertEqual(self.order_info.get('author_id'), order.author.user.id)
+        self.assertEqual(self.order_info.get('client_id'), order.client.id)
+        self.assertEqual(len(self.order_info.get('client_children_id')),
+                         len(order.client_children.all()))
+        self.assertEqual(self.order_info.get('celebrate_date'),
+                         order.celebrate_date)
+        self.assertEqual(self.order_info.get('celebrate_time'),
+                         order.celebrate_time)
+        self.assertEqual(self.order_info.get('celebrate_place'),
+                         order.celebrate_place)
+        self.assertEqual(self.order_info.get('address'), order.address)
+        self.assertEqual(self.order_info.get('program_id'), order.program.id)
+        self.assertEqual(self.order_info.get('duration'), order.duration)
+        self.assertEqual(self.order_info.get('price'), order.price)
+        self.assertEqual(len(self.order_info.get('additional_services_id')),
+                         len(order.additional_services.all()))
+        self.assertEqual(self.order_info.get('details'), order.details)
+        self.assertEqual(self.order_info.get('executor_comment'),
+                         order.executor_comment)
+        self.assertEqual(self.order_info.get('discount_id'), order.discount.id)
+        self.assertEqual(self.order_info.get('total_price'), order.total_price)
+        self.assertEqual(self.order_info.get('total_price_with_discounts'),
+                         order.total_price_with_discounts)
+
+    def test_rest_api_create_order_common(self):
+        request_data = {"client":{"id":"12"},"client_children":[{"id":"12"}],
+                        "celebrate_date":"2015-11-08","celebrate_time":"09:40","celebrate_place":"Школа","address":"7280 Alfonso Forest","program":{"id":"2"},"program_executors":[{"id":"7"},{"id":"4"}],"duration":"60","price":850,"additional_services":[{"id":"3"},{"id":"1"}],"services_executors":[{"id":"9"},{"id":"10"},{"id":"12"}],"details":"Omnis voluptates.","executor_comment":"Ut unde ex ad eum.","discount":{"id":"2"},"total_price":904300,"total_price_with_discounts":904200}
+
+        with transaction.atomic():
+            client = APIClient()
+            client.force_authenticate(UserProfile.objects.get(user__id=3))
+            response = client.post('/api/v1/orders/', request_data,
+                                   format='json')
+        print(response)
 
 # ==============================================================================

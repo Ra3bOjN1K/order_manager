@@ -1,0 +1,35 @@
+<div class="discounts-content" ng-controller="DiscountsHandbookCtrl as vm">
+    <div class="panel panel-default dialog-wrapper">
+        <div class="panel-heading dialog-header">
+            <div class="title">Управление скидками</div>
+            <div class="ngdialog-close"></div>
+        </div>
+        <div class="panel-body discounts-panel-body">
+            <div class="loading-content" ng-show="vm.loadingEvent">
+                <span>Загрузка...</span>
+                <img class="loading-content__preloader" src="/static/orders_manager/img/preloader.gif">
+            </div>
+            <div class="grid-wrapper hidden" show-dialog-content-loading>
+                <div class="grid-control-panel">
+                    <button class="btn btn-default btn-sm btn-add"
+                            ng-click="vm.discount.addNewRow()"><i class="fa fa-plus"></i></button>
+                    <input type="text" class="form-control search-field"
+                           ng-change="vm.filter()" ng-model="vm.filterSearchWord"
+                           placeholder="Поиск по названию..">
+                </div>
+                <div ui-grid="vm.gridOptions" ui-grid-pagination ui-grid-edit ui-grid-row-edit ui-grid-selection
+                     class="grid"></div>
+                <div class="pagination-container">
+                    <button class="btn btn-default btn-sm" ng-click="vm.gridApi.pagination.previousPage()">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <span>Страница: {{ vm.gridApi.pagination.getPage() }} из
+                        {{ vm.gridApi.pagination.getTotalPages()}}</span>
+                    <button class="btn btn-default btn-sm" ng-click="vm.gridApi.pagination.nextPage()">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

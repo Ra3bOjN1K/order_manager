@@ -1,0 +1,259 @@
+.user-profiles-content {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  width: 1000px;
+}
+.user-profiles-content .user-profiles-panel-body {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  height: 500px;
+  padding: 0;
+}
+.user-profiles-content .grid-wrapper {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #ccc;
+  width: 580px;
+}
+.user-profiles-content .grid-wrapper .grid-control-panel {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+  background: #fafafa;
+  padding: 2px;
+}
+.user-profiles-content .grid-wrapper .grid-control-panel .btn-add {
+  margin-right: 4px;
+  width: 41px;
+}
+.user-profiles-content .grid-wrapper .grid-control-panel .search-field {
+  width: 310px;
+}
+.user-profiles-content .grid-wrapper .grid {
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  background: #fdfdfd;
+  border-right-width: 0;
+}
+.user-profiles-content .grid-wrapper .ui-grid-cell {
+  cursor: hand;
+  cursor: pointer;
+}
+.user-profiles-content .grid-wrapper .ui-grid-row-selected .ui-grid-cell {
+  border-color: #aaa;
+}
+.user-profiles-content .grid-wrapper .pagination-container {
+  margin: 8px auto;
+}
+.user-profiles-content .grid-wrapper .ctrl-btns-wrapper {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+}
+.user-profiles-content .grid-wrapper .ctrl-btn {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-justify-content: center;
+  justify-content: center;
+  margin: 1px;
+  padding: 2px;
+  width: 27px;
+}
+.user-profiles-content .grid-wrapper .ctrl-btn:first-child {
+  margin-left: 3px;
+}
+.user-profiles-content .grid-wrapper .ctrl-btn:last-child {
+  margin-left: 8px;
+}
+.user-profiles-content .details-wrapper {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  margin: 4px;
+}
+.user-profiles-content .user-profile-form {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+}
+.user-profiles-content .user-profile-form .details-body {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  background: #fafafa;
+  border: 1px solid #ccc;
+}
+.user-profiles-content .user-profile-form .details-body .formly {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  margin: 46px 14px;
+}
+.user-profiles-content .user-profile-form .details-body .form-btns-container {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
+  border-top: 1px solid #ccc;
+  height: 46px;
+  padding-right: 6px;
+}
+.user-profiles-content .user-profile-form .details-body .form-btns-container .btn-save {
+  margin-right: 4px;
+}
+.user-profiles-content .user-profile-form .form-group {
+  margin: 0;
+}
+.user-profiles-content .user-profile-form .form-group > div {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-align-items: center;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.user-profiles-content .user-profile-form .form-group > div .control-label {
+  font-size: 10pt;
+  font-weight: normal;
+  line-height: 1;
+  width: 110px;
+}
+.user-profiles-content .user-profile-form .form-group > div .form-control {
+  height: 34px;
+  width: 270px;
+}
+.user-profiles-content .user-profile-form .form-group > div .error-messages {
+  display: none;
+}
+.user-profiles-content .user-profile-form .formly-field-textarea .form-group > div {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-align-items: stretch;
+  align-items: stretch;
+  padding-top: 8px;
+}
+.user-profiles-content .user-profile-form .formly-field-textarea .form-group > div .control-label {
+  width: auto;
+}
+.user-profiles-content .user-profile-form .formly-field-textarea .form-group > div .form-control {
+  font-size: 9pt;
+  height: 70px;
+  padding: 4px;
+  resize: none;
+  width: auto;
+}

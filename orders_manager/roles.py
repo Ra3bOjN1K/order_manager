@@ -1,66 +1,176 @@
 # -*- coding: utf-8 -*-
 
-from rolepermissions.roles import AbstractUserRole
-from rolepermissions.shortcuts import retrieve_role
+from django.contrib.auth.models import Group
+
+from guardian.shortcuts import assign_perm
+
 
 ROLES = [
+    ('superuser', 'Администратор'),
     ('manager', 'Менеджер'),
     ('animator', 'Аниматор'),
     ('photographer', 'Фотограф'),
 ]
 
+class AbstractUserRole:
+    group_name = ''
+    available_permissions = ()
+
+    def init_role(self):
+        try:
+            group = Group.objects.get(name=self.group_name)
+        except Group.DoesNotExist:
+            group = Group.objects.create(name=self.group_name)
+
+        group_perms = [x.name for x in group.permissions.all()]
+
+        for perm in self.available_permissions:
+            if perm not in group_perms:
+                assign_perm('orders_manager.%s' % perm, group)
+
+    @classmethod
+    def assign_role_to_user(cls, user):
+        group = Group.objects.get(name=cls.group_name)
+        user = user if not hasattr(user, 'user') else user.user
+        group.user_set.add(user)
+        group.save()
+
+    @classmethod
+    def change_user_role(cls, user, new_role):
+        user = user if not hasattr(user, 'user') else user.user
+        user.groups.clear()
+        group = Group.objects.get(name=new_role)
+        group.user_set.add(user)
+        group.save()
+
+
+class Superuser(AbstractUserRole):
+    group_name = 'superuser'
+
+    available_permissions = (
+        'see_all_profiles',
+        'see_executors',
+        'see_profile_details',
+        'add_userprofile',
+        'change_userprofile',
+        'delete_userprofile',
+        'add_weekends',
+        'change_weekends',
+        'delete_weekends',
+        'see_client',
+        'see_client_details',
+        'add_client',
+        'change_client',
+        'delete_client',
+        'see_client_children',
+        'add_clientchild',
+        'change_clientchild',
+        'delete_clientchild',
+        'see_additionalservices',
+        'add_additionalservice',
+        'change_additionalservice',
+        'assign_additionalservice',
+        'delete_additionalservice',
+        'see_programs',
+        'see_program_details',
+        'add_program',
+        'change_program',
+        'delete_program',
+        'see_program_prices',
+        'add_programprice',
+        'change_programprice',
+        'delete_programprice',
+        'see_discounts',
+        'add_discount',
+        'change_discount',
+        'delete_discount',
+        'see_orders',
+        'add_order',
+        'change_order',
+        'assign_order',
+        'delete_order',
+        'see_handbooks',
+    )
+
 
 class Manager(AbstractUserRole):
-    available_permissions = {
-        'see_all_profiles': True,
-        'see_profile_details': True,
-        'delete_user': False,
-        'see_customers': True,
-        'add_customers': True,
-        'see_customers_children': True,
-        'see_all_orders': True,
-        'see_all_debt_orders': True,
-        'see_handbooks': True,
-        'see_program_info': True,
-        'add_program': True,
-        'edit_program': True,
-        'delete_program': True,
-        'see_program_prices': True,
-        'create_program_price': True,
-        'delete_program_price': True,
-        'see_additional_services': True,
-        'see_executors': True,
-        'see_executor_details': True,
-        'see_discounts': True,
-        'add_order': True,
-        'change_order': True,
-        'delete_order': True,
-        'delete_all_orders_until_today': True,
-        'assign_order': True,
-        'assign_service': True,
-    }
+    group_name = 'manager'
+
+    available_permissions = (
+        'see_all_profiles',
+        'see_executors',
+        'see_profile_details',
+        'add_userprofile',
+        'change_userprofile',
+        'add_weekends',
+        'change_weekends',
+        'delete_weekends',
+        'see_client',
+        'see_client_details',
+        'add_client',
+        'change_client',
+        'delete_client',
+        'see_client_children',
+        'add_clientchild',
+        'change_clientchild',
+        'delete_clientchild',
+        'see_additionalservices',
+        'add_additionalservice',
+        'change_additionalservice',
+        'assign_additionalservice',
+        'delete_additionalservice',
+        'see_programs',
+        'see_program_details',
+        'add_program',
+        'change_program',
+        'delete_program',
+        'see_program_prices',
+        'add_programprice',
+        'change_programprice',
+        'delete_programprice',
+        'see_discounts',
+        'add_discount',
+        'change_discount',
+        'delete_discount',
+        'see_orders',
+        'add_order',
+        'change_order',
+        'assign_order',
+        'delete_order',
+        'see_handbooks',
+    )
 
 
 class Animator(AbstractUserRole):
-    available_permission = {
-        'see_my_orders': True,
-        'see_my_debt_orders': True,
-    }
+    group_name = 'animator'
+
+    available_permissions = (
+        'see_orders',
+    )
 
 
 class Photographer(AbstractUserRole):
-    available_permission = {
-        'see_my_orders': True,
-        'see_my_debt_orders': True,
-    }
+    group_name = 'photographer'
+
+    available_permissions = (
+        'see_orders',
+    )
 
 
-def set_user_role(user, role_name):
-    from orders_manager.models import UserProfile
+def init_roles():
+    roles = (
+        Superuser(),
+        Manager(),
+        Animator(),
+        Photographer()
+    )
 
-    role = retrieve_role(role_name)
-    m_user = user
-    if user and isinstance(user, UserProfile):
-        m_user = user.user
-    if role and m_user:
-        role.assign_role_to_user(m_user)
+    for role in roles:
+        role.init_role()
+
+def get_user_role(user):
+    user = user if not hasattr(user, 'user') else user.user
+    user_groups = user.groups.values_list('name',flat=True)
+    if user_groups:
+        return user_groups[0]
+    raise AttributeError('User has no role!')

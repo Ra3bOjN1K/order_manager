@@ -1,0 +1,12 @@
+<div class="form-group">
+    <div>
+        <label for="model[options.id || index]" class="control-label"
+               ng-if="options.templateOptions.label">{{ options.templateOptions.label }}</label>
+        <div class="field-column-container">
+            <textarea class="form-control" ng-model="model[options.key]"></textarea>
+            <button type="button" class="btn btn-default btn-custom"
+                    ng-click="onButtonClick()">{{ options.templateOptions.btnName }}</button>
+        </div>
+    </div>
+</div>
+

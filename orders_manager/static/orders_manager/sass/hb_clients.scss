@@ -1,0 +1,214 @@
+@import 'settings';
+
+.clients-content {
+  @include init-flex-position(column);
+  min-width: 1000px;
+
+  .clients-panel-body {
+    @include init-flex-position(row);
+    @include flex(1 1);
+    height: 500px;
+    padding: 0;
+    position: relative;
+  }
+
+  .grid-wrapper {
+    @include init-flex-position(column);
+    border-right: 1px solid #ccc;
+    width: 580px;
+
+    .grid-control-panel {
+      @include init-flex-position(row);
+      @include justify-content(flex-start);
+      background: #fafafa;
+      padding: 2px;
+    }
+
+    .grid-control-panel .btn-add {
+      margin-right: 4px;
+      width: 41px;
+    }
+
+    .grid-control-panel .search-field {
+      width: 432px;
+    }
+
+    .grid {
+      @include flex(1 1);
+      background: #fdfdfd;
+      border-right-width: 0;
+      //height: 360px;
+    }
+
+    .ui-grid-cell {
+      cursor: hand;
+      cursor: pointer;
+    }
+
+    .ui-grid-row-selected .ui-grid-cell {
+      border-color: #aaa;
+    }
+
+    .pagination-container {
+      margin: 8px auto;
+      //height: 30px;
+    }
+
+    .ctrl-btns-wrapper {
+      @include init-flex-position(row);
+      @include justify-content(flex-start);
+    }
+
+    .ctrl-btn {
+      @include init-flex-position(column);
+      @include justify-content(center);
+      margin: 1px;
+      padding: 2px;
+      width: 27px;
+    }
+
+    .ctrl-btn:first-child {
+      margin-left: 3px;
+    }
+
+    .ctrl-btn:last-child {
+      margin-left: 8px;
+    }
+  }
+
+  .details-wrapper {
+    @include init-flex-position(column);
+    @include flex(1 1);
+    margin: 4px;
+  }
+
+  .client-form {
+    @include init-flex-position(column);
+    @include flex(1 1);
+  }
+
+  .client-form .details-body {
+    @include init-flex-position(column);
+    //@include justify-content(space-between);
+    @include justify-content(center);
+    @include flex(1 1);
+    background: #fafafa;
+    border: 1px solid #ccc;
+
+    .formly {
+      margin: 18px 14px;
+    }
+
+    .form-btns-container {
+      @include init-flex-position(row);
+      @include align-items(center);
+      @include justify-content(flex-end);
+      border-top: 1px solid #ccc;
+      height: 46px;
+      padding-right: 6px;
+    }
+
+    .form-btns-container .btn-save {
+      margin-right: 4px;
+    }
+  }
+
+  .client-form .form-group {
+    margin: 0;
+  }
+
+  .client-form .form-group > div {
+    @include init-flex-position(row);
+    @include align-items(center);
+    margin-bottom: 4px;
+
+    .control-label {
+      font-size: 10pt;
+      font-weight: normal;
+      line-height: 1;
+      width: 110px;
+    }
+
+    .form-control {
+      height: 30px;
+      width: 270px;
+    }
+
+    .error-messages {
+      display: none;
+    }
+  }
+
+  .client-form .formly-field-textarea .form-group > div {
+    @include init-flex-position(column);
+    @include align-items(stretch);
+    padding-top: 8px;
+
+    .control-label {
+      width: auto;
+    }
+
+    .form-control {
+      font-size: 9pt;
+      height: 70px;
+      padding: 4px;
+      resize: none;
+      width: auto;
+    }
+  }
+
+  .client-children {
+    @include init-flex-position(column);
+    @include flex(1 1);
+
+    .details-header {
+      @include init-flex-position(row);
+      @include justify-content(flex-end);
+      background: #fafafa;
+      border: 1px solid #ccc;
+      border-bottom-width: 0;
+      height: 34px;
+      margin: 0 8px;
+      padding: 2px;
+    }
+
+    .details-body {
+      @include init-flex-position(column);
+      @include flex(1 1);
+      padding: 0 8px;
+    }
+
+    .grid {
+      @include flex(1 1);
+      background: #fdfdfd;
+    }
+
+    .birthday-cell > div {
+      @include init-flex-position(column);
+      @include align-items(center);
+    }
+
+    .ctrl-btns-wrapper {
+      @include init-flex-position(row);
+      @include justify-content(flex-start);
+    }
+
+    .ctrl-btn {
+      @include init-flex-position(column);
+      @include justify-content(center);
+      margin: 1px;
+      padding: 2px;
+      width: 27px;
+    }
+
+    .ctrl-btn:first-child {
+      margin-left: 4px;
+    }
+
+    .btn-add {
+      margin: 0 1px;
+      padding: 0;
+      width: 28px;
+    }
+  }
+}

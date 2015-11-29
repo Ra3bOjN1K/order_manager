@@ -1,16 +1,12 @@
-import json
-
 from django.db import models
 from django.db.models import Q
+from django.db.models.signals import post_save
 from django.contrib.auth.models import User
-
-from rolepermissions.shortcuts import get_user_role
-
-from orders_manager.managers import UserProfileManager, ClientManager, \
-    ProgramManager, AdditionalServiceManager, OrdersManager, \
-    ClientChildrenManager, ProgramPriceManager
+from orders_manager.managers import (UserProfileManager, ClientManager,
+    ProgramManager, AdditionalServiceManager, OrdersManager,
+    ClientChildrenManager, ProgramPriceManager)
 from orders_manager.utils.data_utils import calculate_age
-from orders_manager.roles import ROLES
+from orders_manager.roles import ROLES, get_user_role
 
 
 class Weekends(models.Model):
@@ -25,6 +21,13 @@ class UserProfile(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     objects = UserProfileManager()
+
+    class Meta:
+        permissions = (
+            ('see_all_profiles', 'Can see all profiles'),
+            ('see_executors', 'Can see executors'),
+            ('see_profile_details', 'Can see profile details'),
+        )
 
     def __str__(self):
         return self.get_username()
@@ -55,25 +58,18 @@ class UserProfile(models.Model):
     def get_phone(self):
         return self.phone
 
-    def get_bonus_for_program(self, program_id):
-        bonus = AnimatorBonuses.objects.filter(
-            Q(program__id=program_id) & Q(executor__id=self.user.id)
-        ).first()
-        return bonus.bonus if bonus else 0
-
     def get_role_name(self):
-        role_code = get_user_role(self.user).get_name()
+        role_code = get_user_role(self.user)
         return {key: val for key, val in ROLES}[role_code]
 
-    def make_inactive(self):
+    def deactivate(self):
         self.user.is_active = False
         self.user.save()
 
 
 class Client(models.Model):
     name = models.CharField(max_length=64, verbose_name='Имя заказчика')
-    phone = models.CharField(max_length=20, verbose_name='Телефон заказчика',
-                             unique=True)
+    phone = models.CharField(max_length=20, verbose_name='Телефон заказчика')
     phone_2 = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     vk_link = models.CharField(max_length=64, null=True, blank=True)
@@ -82,21 +78,40 @@ class Client(models.Model):
     facebook_link = models.CharField(max_length=64, null=True, blank=True)
     secondby_link = models.CharField(max_length=64, null=True, blank=True)
     comments = models.TextField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
 
     objects = ClientManager()
 
+    class Meta:
+        permissions = (
+            ('see_client', 'Can see client'),
+            ('see_client_details', 'Can see client details'),
+        )
+
     def __str__(self):
         return self.name
+
+    def activate(self):
+        self.is_active = True
+        self.save()
+
+    def deactivate(self):
+        self.is_active = False
+        self.save()
 
 
 class ClientChild(models.Model):
     name = models.CharField(max_length=64)
     birthday = models.DateField(null=False, blank=False)
     client = models.ForeignKey(Client, related_name='children')
+    is_active = models.BooleanField(default=True)
 
     objects = ClientChildrenManager()
 
     class Meta:
+        permissions = (
+            ('see_client_children', 'Can see client children'),
+        )
         unique_together = ('client', 'name')
 
     def __str__(self):
@@ -105,30 +120,58 @@ class ClientChild(models.Model):
     def age(self):
         return calculate_age(self.birthday)
 
+    def activate(self):
+        self.is_active = True
+        self.save()
+
+    def deactivate(self):
+        self.is_active = False
+        self.save()
+
 
 class AdditionalService(models.Model):
     title = models.CharField(max_length=200, null=False, blank=False)
-    price = models.FloatField(null=False, blank=False)
+    price = models.IntegerField(null=False, blank=False)
     num_executors = models.PositiveSmallIntegerField(default=1)
     possible_executors = models.ManyToManyField(UserProfile,
                                                 related_name='services')
+    is_active = models.BooleanField(default=True)
 
     objects = AdditionalServiceManager()
+
+    class Meta:
+        permissions = (
+            ('see_additionalservices', 'Can see additional services'),
+            ('assign_additionalservice', 'Can assign service'),
+        )
 
     def __str__(self):
         return self.title
 
+    def activate(self):
+        self.is_active = True
+        self.save()
+
+    def deactivate(self):
+        self.is_active = False
+        self.save()
+
 
 class Program(models.Model):
-    title = models.CharField(max_length=200, unique=True)
+    title = models.CharField(max_length=200)
     characters = models.CharField(max_length=250)
     num_executors = models.PositiveSmallIntegerField(default=1)
     possible_executors = models.ManyToManyField(UserProfile,
                                                 related_name='programs')
+    is_active = models.BooleanField(default=True)
 
     objects = ProgramManager()
 
     class Meta:
+        permissions = (
+            ('see_programs', 'Can see programs'),
+            ('see_program_details', 'Can see program details'),
+        )
         verbose_name = "Программа"
 
     def __str__(self):
@@ -146,6 +189,14 @@ class Program(models.Model):
             raise AttributeError('Duration for this program has not been set..')
         return price.price
 
+    def activate(self):
+        self.is_active = True
+        self.save()
+
+    def deactivate(self):
+        self.is_active = False
+        self.save()
+
 
 class ProgramPrice(models.Model):
     program = models.ForeignKey(Program, related_name='prices')
@@ -155,45 +206,52 @@ class ProgramPrice(models.Model):
     objects = ProgramPriceManager()
 
     class Meta:
+        permissions = (
+            ('see_program_prices', 'Can see program prices'),
+        )
         unique_together = ('program', 'duration')
-
-
-class AnimatorBonuses(models.Model):
-    program = models.ForeignKey(Program)
-    executor = models.ForeignKey(UserProfile)
-    bonus = models.FloatField(null=False, blank=False)
-
-    class Meta:
-        unique_together = ('program', 'executor')
 
 
 class Discount(models.Model):
     name = models.CharField(max_length=64, null=False, blank=False)
     value = models.SmallIntegerField(null=False, blank=False)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        permissions = (
+            ('see_discounts', 'Can see discounts'),
+        )
 
     def __str__(self):
         return self.name
 
+    def activate(self):
+        self.is_active = True
+        self.save()
+
+    def deactivate(self):
+        self.is_active = False
+        self.save()
+
 
 class Order(models.Model):
     code = models.CharField(max_length=12, unique=True)
-    author = models.ForeignKey(User, null=False, blank=False)
+    author = models.ForeignKey(UserProfile, related_name='created_orders')
     client = models.ForeignKey(Client, verbose_name='Заказчик')
     client_children = models.ManyToManyField(
         ClientChild,
         verbose_name='Виновник(-и) торжества'
     )
-    celebrate_date = models.DateTimeField(verbose_name='Дата торжества')
+    children_num = models.SmallIntegerField(verbose_name='Количество детей')
+    celebrate_date = models.DateField(verbose_name='Дата торжества')
+    celebrate_time = models.TimeField(verbose_name='Время торжества')
     celebrate_place = models.CharField(
         max_length=64,
         null=True,
         blank=True,
         verbose_name='Место проведения'
     )
-    _address = models.TextField(
-        name='address',
-        verbose_name='Адрес проведения',
-        default='{"address": {"city": "г.Минск", "street": "ул. Маяковского", "house": "16б", "housing": "2", "apartment": "46", "description": "Как проехать?"}}')
+    address = models.TextField(name='address', verbose_name='Адрес проведения')
     program = models.ForeignKey(Program, verbose_name='Программа')
     program_executors = models.ManyToManyField(UserProfile,
                                                related_name='orders')
@@ -205,27 +263,38 @@ class Order(models.Model):
         verbose_name='Дополнительные услуги'
     )
     services_executors = models.ManyToManyField(UserProfile)
-    details = models.TextField(verbose_name='Подробности')
-    executor_comment = models.TextField(verbose_name='Комментарии исполнителя')
-    discount = models.ForeignKey(Discount, related_name='orders',
-                                 verbose_name='Скидка')
-    total_price = models.FloatField(verbose_name='Цена')
-    total_price_with_discounts = models.FloatField(
+    details = models.TextField(verbose_name='Подробности', blank=True,
+                               null=True)
+    executor_comment = models.TextField(
+        verbose_name='Комментарии исполнителя', blank=True, null=True)
+    discount = models.ForeignKey(
+        Discount, related_name='orders', verbose_name='Скидка')
+    total_price = models.IntegerField(verbose_name='Цена')
+    total_price_with_discounts = models.IntegerField(
         verbose_name='Цена с учетом скидки'
     )
     created = models.DateTimeField(auto_now_add=True)
 
     objects = OrdersManager()
 
+    class Meta:
+        permissions = (
+            ('see_handbooks', 'Can see handbooks'),
+            ('see_orders', 'Can see orders'),
+            ('assign_order', 'Can assign order'),
+        )
 
-class AddressParser:
-    class Address:
-        def __init__(self, data):
-            self.__dict__.update(data)
 
-    def parse_string(self, address_str):
-        address_dict = json.loads(address_str)
-        return self.Address(address_dict.get('address'))
+def set_superuser_permissions(sender, instance, created, **kwargs):
+    from orders_manager.roles import Superuser
 
-    def to_string(self, address):
-        pass
+    if created and instance.username == 'admin':
+        Superuser.assign_role_to_user(instance)
+        profile = UserProfile()
+        profile.user = instance
+        profile.address = ''
+        profile.phone = ''
+        profile.save()
+
+
+post_save.connect(set_superuser_permissions, sender=User)

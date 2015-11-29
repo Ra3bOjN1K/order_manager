@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from django.db.utils import IntegrityError
+
 
 class CommonDataGenerator:
     first_names = (
@@ -15,6 +17,12 @@ class CommonDataGenerator:
         'Лысковец', 'Барташевич', 'Врублевский', 'Жулев', 'Карнацевич',
         'Мармеладов', 'Торопунько'
     )
+
+    city = ('Минск', 'Витебск', 'Гомель', 'Гродно', 'Могилев', 'Брест',
+            'Орша', 'Полоцк', 'Поставы', 'Глубокое', 'Браслав', 'Пинск')
+
+    street = ('Молодежная', 'Пушкина', 'Московская', 'Богдановича',
+              'Некрасова', 'К.Цеткин', 'Р.Люксембург')
 
     def generate_first_name(self):
         from random import choice
@@ -40,6 +48,15 @@ class CommonDataGenerator:
             country_code, choice(provider_code), randint(100, 999),
             gen_str_with_num(), gen_str_with_num())
 
+    def generate_address(self):
+        from random import randint, choice
+        return {
+            'city': choice(self.city),
+            'street': choice(self.street),
+            'house': randint(1, 130),
+            'apartment': randint(1, 130)
+        }
+
     def generate_birthday(self, min_age, max_age):
         from datetime import date
         from random import randint
@@ -61,6 +78,14 @@ class CommonDataGenerator:
             days=randint(num_days_for_start, num_days_for_end))
 
         return future_date.strftime('%Y-%m-%d')
+
+    def generate_time(self, time_from=8, time_to=15):
+        from random import randint
+
+        hours = randint(time_from, time_to)
+        mins = (randint(0, 59) // 10) * 10
+
+        return '{0}:{1}'.format(hours, mins)
 
 
 class UserProfileGenerator:
@@ -92,7 +117,7 @@ class UserProfileGenerator:
 
         profiles = []
 
-        for _ in range(num):
+        while len(profiles) < num:
             data = mixer.blend(Scheme)
 
             user_info = {
@@ -106,15 +131,18 @@ class UserProfileGenerator:
                 'address': data.address,
             }
 
-            if role == self.MANAGER:
-                profiles.append(
-                    UserProfile.objects.create_manager(**user_info))
-            elif role == self.ANIMATOR:
-                profiles.append(
-                    UserProfile.objects.create_animator(**user_info))
-            elif role == self.PHOTOGRAPHER:
-                profiles.append(
-                    UserProfile.objects.create_photographer(**user_info))
+            try:
+                if role == self.MANAGER:
+                    profiles.append(
+                        UserProfile.objects.create_manager(**user_info))
+                elif role == self.ANIMATOR:
+                    profiles.append(
+                        UserProfile.objects.create_animator(**user_info))
+                elif role == self.PHOTOGRAPHER:
+                    profiles.append(
+                        UserProfile.objects.create_photographer(**user_info))
+            except IntegrityError:
+                pass
 
         return profiles
 
@@ -197,11 +225,11 @@ class ProgramPriceGenerator:
         from random import randint
         from orders_manager.models import ProgramPrice
 
-        k = randint(1000, 1700) / 1000.0
+        k = randint(1000, 1700) / 1.0
 
         for i in range(randint(3, 6), randint(7, 20), 3):
             duration = i * 10
-            price = int(duration * 12.5 * k / 10) * 10
+            price = int(duration * 12.5 * k / 100) * 100
             ProgramPrice.objects.create(**{
                 'program_id': program.id,
                 'duration': duration,
@@ -242,7 +270,8 @@ class DiscountsGenerator:
     def generate(self):
         from orders_manager.models import Discount
         discounts = []
-        for name, val in (('Скидка №1', 5),
+        for name, val in (('Нет скидки', 0),
+                          ('Скидка №1', 5),
                           ('Скидка №2', 10),
                           ('Скидка №3', 50)):
             discounts.append(Discount.objects.create(name=name, value=val))
@@ -279,7 +308,7 @@ class ClientChildGenerator:
                 'client_id': client.id
                 # 'birthday': common_gen.generate_birthday(3, 9)
             }
-            ClientChild.objects.update_or_create(**data)
+            children.append(ClientChild.objects.update_or_create(**data))
 
         return children
 
@@ -322,11 +351,219 @@ class ClientGenerator:
             }
 
             client = Client.objects.update_or_create(**info)
-            client.children = [x.id for x in ClientChildGenerator().generate(
-                client, randint(1, 4))]
+            ClientChildGenerator().generate(client, randint(1, 4))
+            # client.children = [x.id for x in children]
             clients.append(client)
 
         return clients
+
+
+class OrderGenerator:
+    def _get_author_id(self):
+        from orders_manager.models import UserProfile
+        from random import choice
+
+        managers = UserProfile.objects.all_managers()
+        if managers:
+            return choice(managers).user.id
+        else:
+            raise IndexError('Managers was not created!')
+
+    def _get_client_id(self):
+        from orders_manager.models import Client
+        from random import choice
+
+        client = Client.objects.all()
+        if client:
+            return choice(client).id
+        else:
+            raise IndexError('Clients was not created!')
+
+    def _get_client_children_ids(self, client_id):
+        from orders_manager.models import ClientChild
+        from random import choice, randint
+
+        ch_list = set()
+        children = ClientChild.objects.filter(client_id=client_id).all()
+
+        if children:
+            rand_lim = randint(1, 2)
+            ch_limit = rand_lim if rand_lim < len(children) else len(children)
+
+            while len(ch_list) < ch_limit:
+                ch_list.add(choice(children).id)
+        else:
+            raise IndexError('ClientChildren was not created!')
+
+        return list(ch_list)
+
+    def _get_celebrate_place(self):
+        from random import choice
+
+        places = ('Квартира', 'Кафе', 'Детский сад', 'Детский центр', 'Другое')
+        return choice(places)
+
+    def _get_program_id(self):
+        from orders_manager.models import Program
+        from random import choice
+
+        program = Program.objects.all()
+        if program:
+            return choice(program).id
+        else:
+            raise IndexError('Program was not created!')
+
+    def _get_program_executors_ids(self, program_id):
+        from orders_manager.models import Program
+        from random import choice
+
+        executors_list = set()
+        program = Program.objects.get(id=program_id)
+
+        if program.possible_executors:
+
+            while len(executors_list) < program.num_executors:
+                executors_list.add(
+                    choice(program.possible_executors.all()).user.id
+                )
+        else:
+            raise IndexError('Program has not possible executors!')
+
+        return list(executors_list)
+
+    def _get_services_executors_ids(self, services_ids):
+        from orders_manager.models import AdditionalService
+        from random import choice
+
+        executors_ids_list = set()
+
+        num_exec_required = 0
+
+        for serv_id in services_ids:
+            num_exec_required += AdditionalService.objects.get(
+                id=serv_id).num_executors
+
+        possible_executors = AdditionalService.objects.all_possible_executors(
+            services_ids)
+
+        if possible_executors:
+            while len(executors_ids_list) < num_exec_required:
+                executors_ids_list.add(choice(possible_executors).user.id)
+        else:
+            raise IndexError('Additional services has not possible executors!')
+
+        return list(executors_ids_list)
+
+    def _get_program_duration(self, program_id):
+        from orders_manager.models import ProgramPrice
+        from random import choice
+
+        program_prices = ProgramPrice.objects.filter(program_id=program_id)
+        if program_prices:
+            return choice(program_prices).duration
+        else:
+            raise IndexError('ProgramPrices was not created!')
+
+    def _get_program_price(self, program_id, duration):
+        from orders_manager.models import ProgramPrice
+
+        program_price = ProgramPrice.objects.filter(program_id=program_id,
+                                                    duration=duration)
+        if program_price:
+            return program_price.first().price
+        else:
+            raise IndexError('ProgramPrices was not created!')
+
+    def _get_additional_serveces_ids(self):
+        from orders_manager.models import AdditionalService
+        from random import choice, randint
+
+        serv_list = set()
+        services = AdditionalService.objects.all()
+
+        if services:
+            rand_lim = randint(1, 2)
+            serv_limit = rand_lim if rand_lim < len(services) else len(services)
+
+            while len(serv_list) < serv_limit:
+                serv_list.add(choice(services).id)
+        else:
+            raise IndexError('AdditionalServices was not created!')
+
+        return list(serv_list)
+
+    def _get_discount(self):
+        from orders_manager.models import Discount
+        from random import choice
+
+        discounts = Discount.objects.all()
+        if discounts:
+            return choice(discounts).id
+        else:
+            raise IndexError('Discounts was not created!')
+
+    def _get_children_num(self):
+        from random import randint
+        rand_num = randint(3, 20)
+        return rand_num
+
+    def generate(self, num_events=60, num_days=45):
+        from orders_manager.models import Order
+        from mixer.main import mixer
+        import json
+
+        class Scheme:
+            address_details = str
+            details = str
+            executor_comment = str
+
+        orders_list = []
+
+        while len(orders_list) < num_events:
+
+            data = mixer.blend(Scheme)
+
+            common_gen = CommonDataGenerator()
+
+            client_id = self._get_client_id()
+            program_id = self._get_program_id()
+            program_duration = self._get_program_duration(program_id)
+            program_price = self._get_program_price(program_id,
+                                                    program_duration)
+            additional_services_ids = self._get_additional_serveces_ids()
+
+            address = common_gen.generate_address()
+            address.update({
+                'details': data.address_details
+            })
+
+            order_info = {
+                'author_id': self._get_author_id(),
+                'client_id': client_id,
+                'client_children_id': self._get_client_children_ids(client_id),
+                'children_num': self._get_children_num(),
+                'celebrate_date': common_gen.generate_date_in_future(
+                    num_days_for_start=-7, num_days_for_end=num_days),
+                'celebrate_time': common_gen.generate_time(),
+                'celebrate_place': self._get_celebrate_place(),
+                'address': json.dumps(address),
+                'program_id': program_id,
+                'program_executors_id': self._get_program_executors_ids(
+                    program_id),
+                'duration': program_duration,
+                'additional_services_id': additional_services_ids,
+                'services_executors_id': self._get_services_executors_ids(
+                    additional_services_ids),
+                'discount_id': self._get_discount(),
+                'details': data.details,
+                'executor_comment': data.executor_comment,
+                'price': program_price,
+                'total_price': program_price,
+                'total_price_with_discounts': program_price
+            }
+            orders_list.append(Order.objects.create(**order_info))
+
+        return orders_list
 
 
 def populate_database():
@@ -337,3 +574,4 @@ def populate_database():
     AdditionalServicesGenerator().generate()
     DiscountsGenerator().generate()
     ClientGenerator().generate(16)
+    OrderGenerator().generate(num_events=60, num_days=45)

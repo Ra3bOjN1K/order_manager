@@ -1,0 +1,25 @@
+<div class="address-block">
+    <div ng-model="model[options.key]">
+        <div class="address-field">
+            <label class="control-label">Город</label>
+            <input class="form-control city-field" ng-model="model[options.key].city">
+        </div>
+        <div class="address-field">
+            <label class="control-label">Улица</label>
+            <input class="form-control street-field" ng-model="model[options.key].street">
+        </div>
+        <div class="address-field">
+            <label class="control-label">Дом</label>
+            <input class="form-control house-field" ng-model="model[options.key].house">
+        </div>
+        <div class="address-field">
+            <label class="control-label">Квартира</label>
+            <input class="form-control apartment-field" ng-model="model[options.key].apartment">
+        </div>
+        <div class="address-field">
+            <label class="control-label">Дополнительная информация</label>
+            <textarea class="form-control address-details-field"
+                      ng-model="model[options.key].details"></textarea>
+        </div>
+    </div>
+</div>

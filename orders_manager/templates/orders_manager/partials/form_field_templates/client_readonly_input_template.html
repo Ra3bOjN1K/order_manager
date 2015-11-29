@@ -1,0 +1,12 @@
+<div class="form-group">
+    <div>
+        <label for="model[options.id || index]" class="control-label"
+               ng-if="options.templateOptions.label">{{ options.templateOptions.label }}</label>
+        <div class="form-control">
+            <div class="readonly-field" disabled="true">
+                <span class="name">{{ model.client.name }}</span>
+                <span class="phone">тел. {{ model.client.phone }}</span>
+            </div>
+        </div>
+    </div>
+</div>

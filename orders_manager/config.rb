@@ -19,6 +19,7 @@ output_style = :expanded
 # To disable debugging comments that display the original location of your selectors. Uncomment:
 line_comments = false
 
+cache_path = "c:/temp/sass/"
 
 # If you prefer the indented syntax, you might want to regenerate this
 # project again passing --syntax sass, or you can uncomment this:

@@ -1,0 +1,6 @@
+---
+- name: Start provisioning
+  hosts: all
+  roles:
+    - common
+

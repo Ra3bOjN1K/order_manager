@@ -1,61 +1,235 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html ng-app="OrderManagerApp">
 <head lang="en">
     <meta charset="UTF-8">
     <title>{% block title %}Менеджер заказов{% endblock %}</title>
-    <link rel="stylesheet" type="text/css"
-          href="{% static "orders_manager/css/base.css" %}"/>
-    <link rel="shortcut icon"
-          href="{% static 'orders_manager/img/favicon.png' %}"
-          type="image/png" />
+    <link rel="stylesheet" href="{% static "vendors/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "vendors/css/font-awesome.min.css" %}">
+    <link rel="stylesheet" href="{% static "vendors/css/nya-bs-select.min.css" %}">
+    <link rel="stylesheet" href="{% static "vendors/css/ngDialog.min.css" %}">
+    <link rel="stylesheet" href="{% static "vendors/css/ui-grid-stable.min.css" %}">
+    <link rel="stylesheet" href="{% static "vendors/css/xeditable.css" %}">
+    <link rel="stylesheet" href="{% static "orders_manager/css/ngDialog-theme.css" %}">
+    <link rel="stylesheet" href="{% static "orders_manager/css/base.css" %}"/>
+    <link rel="stylesheet" href="{% static "orders_manager/css/profile.css" %}"/>
+    <link rel="stylesheet" href="{% static "orders_manager/css/hb_clients.css" %}"/>
+    <link rel="stylesheet" href="{% static "orders_manager/css/hb_programs.css" %}"/>
+    <link rel="stylesheet" href="{% static "orders_manager/css/hb_additional_services.css" %}"/>
+    <link rel="stylesheet" href="{% static "orders_manager/css/hb_discounts.css" %}"/>
+    <link rel="stylesheet" href="{% static "orders_manager/css/users_manager.css" %}"/>
+    <link rel="shortcut icon" href="{% static 'orders_manager/img/favicon.png' %}" type="image/png"/>
+
     {% block extrastyle %}{% endblock %}
-    {% load permission_tags %}
     {% load orders_manager_tags %}
 </head>
-<body>
-<div class="page-container">
-    {% block page-header %}
-        <div class="nav_menu">
-            <a class="menu-btn{% menu_btn_active "orders_list" %}"
-               href="{% url "orders_manager:orders_list" %}">Главная</a>
-            {% if request.user|can:"see_customers_list" %}
-                <a class="menu-btn{% menu_btn_active "customers_list" %}"
-                   href="{% url "orders_manager:customers_list" %}">Заказчики</a>
-            {% endif %}
-            {% if request.user|can:"see_handbooks_list" %}
-                <a class="menu-btn{% menu_btn_active "handbooks_list" %}"
-                   href="{% url "orders_manager:handbooks_list" %}">Справочники</a>
-            {% endif %}
-            {% if request.user|can:"see_profiles_list" %}
-                <a class="menu-btn{% menu_btn_active "profiles_list" %}"
-                   href="{% url "orders_manager:profiles_list" %}">Пользователи</a>
+<body ng-controller="ApplicationCtrl">
+
+<div class="loading-blinds">
+    <h2 class="loading-blinds__message">Загрузка контента..</h2>
+    <img class="loading-blinds__preloader" src="{% static "orders_manager/img/preloader.gif" %}">
+</div>
+
+<div class="page-container hidden" content-loader>
+    <div class="top-panel">
+        <div class="logo"></div>
+        {% if user.is_authenticated %}
+            {% if request.user|user_is:"superuser" or request.user|user_is:"manager" %}
+                <div class="top-nav-menu" ng-cloak>
+                    {% if request.user|can:"see_client" %}
+                        <a class="menu-item" ng-click="dlgManager.clients.showDlg()"><b class="fa
+                            fa-money"></b><span>Заказчики</span></a>
+                    {% endif %}
+                    {% if request.user|can:"see_handbooks" %}
+                        <div class="collapsed-menu-item">
+                            <a class="menu-item" collapsed-item="handbooks">
+                                <b class="fa fa-book"></b> <span>Справочники</span><i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <div uib-collapse='handbooks.isCollapsed'>
+                                <div>
+                                    <a class="menu-item" ng-click="dlgManager.programsHandbook.showDlg()">
+                                        <span>Программы</span></a>
+                                    <a class="menu-item" ng-click="dlgManager.additionalServicesHandbook.showDlg()">
+                                        <span>Доп. услуги</span></a>
+                                    <a class="menu-item" ng-click="dlgManager.discountsHandbook.showDlg()">
+                                        <span>Скидки</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if request.user|can:"see_all_profiles" %}
+                        <a class="menu-item" ng-click="dlgManager.usersManager.showDlg()"><b class="fa fa-users"></b>
+                            <span>Пользователи</span></a>
+                    {% endif %}
+                </div>
             {% endif %}
 
-            <div class="user-control-panel">
-                {% if user.is_authenticated %}
-                    {% if user.is_superuser %}
-                        <span class="profile-link">{{ user.username }}</span>
-                    {% else %}
-                        <a class="profile-link"
-                           href="{% url "orders_manager:my_profile" %}">
-                            {{ user.profile.get_full_name }}
+            <div class="user-profile-panel">
+                <div class="dropdown">
+                    <div class="btn-group" uib-dropdown>
+                        <a id="single-button" uib-dropdown-toggle>
+                            {% if user.is_superuser %}
+                                <b class="fa fa-user"></b> {{ user.username }}<span class="caret"></span>
+                            {% else %}
+                                <b class="fa fa-user"></b> {{ user.profile.get_full_name }}<span class="caret"></span>
+                            {% endif %}
                         </a>
-                    {% endif %}
-                    <a class="logout-btn"
-                       href="{% url "orders_manager:logout" %}">Выйти</a>
-                {% endif %}
+                        <ul class="uib-dropdown-menu" role="menu" aria-labelledby="single-button">
+                            {% if not user.is_superuser %}
+                                {% verbatim %}
+                                <li role="menuitem">
+                                    <a ng-click="dlgManager.userProfile.showDlg()"><b class="fa fa-user"></b>
+                                        Профиль</a>
+                                </li>
+                                {% endverbatim %}
+                            {% endif %}
+                            {% verbatim %}
+                            <li role="menuitem">
+                                <a ng-click="dlgManager.changePwd.showDlg()">
+                                    <b class="fa fa-unlock-alt"></b> Сменить пароль
+                                </a>
+                            </li>
+                            {% endverbatim %}
+                            <li class="divider"></li>
+                            <li role="menuitem">
+                                <a href="{% url "orders_manager:logout" %}"><b class="fa fa-sign-out"></b> Выйти</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </div>
-    {% endblock %}
-    <div class="content">
-        {% block page-content %}{% endblock %}
+        {% endif %}
+    </div>
+    <div class="content-wrapper">
+
+        {% block page_content %}{% endblock %}
+
     </div>
 </div>
-</body>
-<script type="text/javascript"
-        src="{% static "orders_manager/js/jquery.js" %}"></script>
-<script type="text/javascript"
-        src="{% static "orders_manager/js/order_manager.js" %}"></script>
+
+{% verbatim %}
+<script type="text/ng-template" id="loading.html">
+    <div class="loading-field-wrapper" ng-if="to.loading.$$state.status === 0" style="line-height:34px">
+        Loading...
+    </div>
+    <div ng-if="to.loading.$$state.status !== 0">
+        <formly-transclude></formly-transclude>
+    </div>
+</script>
+<script type="text/ng-template" id="error-messages.html">
+    <formly-transclude></formly-transclude>
+    <div ng-messages="fc.$error" ng-if="form.$submitted || options.formControl.$touched" class="error-messages">
+        <div ng-message="{{ ::name }}" ng-repeat="(name, message) in ::options.validation.messages"
+             class="message">{{ message(fc.$viewValue, fc.$modelValue, this) }}
+        </div>
+    </div>
+</script>
+<script type="text/ng-template" id="client-row-ctrl-btns-template.html">
+    <a class="btn btn-default ctrl-btn edit-client-btn"
+       ng-click="grid.appScope.vm.clientEditMode.toggleActivate()"><i class="fa fa-lg fa-pencil-square-o"></i></a>
+    <a class="btn btn-default ctrl-btn children-client-btn"
+       ng-click="grid.appScope.vm.detailsMode.setClientChildrenMode(row)"><i class="fa fa-lg fa-child"></i></a>
+    <a class="btn btn-default ctrl-btn children-client-btn"
+       ng-click="grid.appScope.vm.client.deleteClient(row)"><i class="fa fa-lg fa-trash-o"></i></a>
+</script>
+<script type="text/ng-template" id="children-row-ctrl-btns-template.html" ng-if="grid.appScope.vm.clientChildrenMode.isEditChildren">
+    <a class="btn btn-default ctrl-btn"
+       ng-click="grid.appScope.vm.clientChildrenMode.deleteClientChild(row)"><i class="fa fa-lg fa-trash-o"></i></a>
+</script>
+<script type="text/ng-template" id="program-row-ctrl-btns-template.html">
+    <a class="btn btn-default ctrl-btn edit-program-btn"
+       ng-click="grid.appScope.vm.programEditMode.toggleActivate()"><i class="fa fa-lg fa-pencil-square-o"></i></a>
+    <a class="btn btn-default ctrl-btn price-btn"
+       ng-click="grid.appScope.vm.detailsMode.setProgramPricesMode(row)"><i class="fa fa-lg fa-usd"></i></a>
+    <a class="btn btn-default ctrl-btn delete-btn"
+       ng-click="grid.appScope.vm.program.deleteProgram(row)"><i class="fa fa-lg fa-trash-o"></i></a>
+</script>
+<script type="text/ng-template" id="price-row-ctrl-btns-template.html"
+        ng-if="grid.appScope.vm.programPricesMode.isEditPrice">
+    <a class="btn btn-default ctrl-btn"
+       ng-click="grid.appScope.vm.programPricesMode.deleteProgramPrice(row)"><i class="fa fa-lg fa-trash-o"></i></a>
+</script>
+<script type="text/ng-template" id="additional-services-row-ctrl-btns-template.html">
+    <a class="btn btn-default ctrl-btn"
+       ng-click="grid.appScope.vm.additServEditMode.toggleActivate()"><i class="fa fa-lg fa-pencil-square-o"></i></a>
+    <a class="btn btn-default ctrl-btn"
+       ng-click="grid.appScope.vm.additServ.deleteAdditServ(row)"><i class="fa fa-lg fa-trash-o"></i></a>
+</script>
+<script type="text/ng-template" id="user-profile-row-ctrl-btns-template.html">
+    <a class="btn btn-default ctrl-btn"
+       ng-click="grid.appScope.vm.userProfileEditMode.toggleActivate()"><i class="fa fa-lg fa-pencil-square-o"></i></a>
+    <a class="btn btn-default ctrl-btn"
+       ng-click="grid.appScope.vm.userProfile.deleteUserProfile(row)"><i class="fa fa-lg fa-trash-o"></i></a>
+</script>
+<script type="text/ng-template" id="discount-row-ctrl-btns-template.html">
+    <a class="btn btn-default ctrl-btn"
+       ng-click="grid.appScope.vm.discount.deleteDiscount(row)"><i class="fa fa-lg fa-trash-o"></i></a>
+</script>
+
+<script type="text/ng-template" id="order_template.html">
+    <div ng-include="'/static/dialog_templates/order_template.html'"></div>
+</script>
+<script type="text/ng-template" id="change_password_template.html">
+    <div ng-include="'/static/dialog_templates/change_password_template.html'"></div>
+</script>
+<script type="text/ng-template" id="userprofile_template.html">
+    <div ng-include="'/static/dialog_templates/userprofile_template.html'"></div>
+</script>
+<script type="text/ng-template" id="clients_template.html">
+    <div ng-include="'/static/dialog_templates/clients_template.html'"></div>
+</script>
+<script type="text/ng-template" id="programs_handbook_template.html">
+    <div ng-include="'/static/dialog_templates/programs_handbook_template.html'"></div>
+</script>
+<script type="text/ng-template" id="additional_services_handbook_template.html">
+    <div ng-include="'/static/dialog_templates/additional_services_handbook_template.html'"></div>
+</script>
+<script type="text/ng-template" id="discounts_handbook_template.html">
+    <div ng-include="'/static/dialog_templates/discounts_handbook_template.html'"></div>
+</script>
+<script type="text/ng-template" id="users_manager_template.html">
+    <div ng-include="'/static/dialog_templates/users_manager_template.html'"></div>
+</script>
+<script type="text/ng-template" id="confirmation_template.html">
+    <div ng-include="'/static/dialog_templates/confirmation_template.html'"></div>
+</script>
+
+{% endverbatim %}
+
+<script type="text/javascript" src="{% static "vendors/js/jquery.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/api-check.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/angular.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/formly.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/ngDialog.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/ui-grid-stable.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/xeditable.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/angular-messages.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/jquery.price_format.2.0.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/nya-bs-select.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/angular-formly-templates-bootstrap.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/angular-animate.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/ui-bootstrap-tpls-0.14.2.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/angular-locale_ru-ru.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/ngStorage.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/moment-with-locales.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/calendar.js" %}" charset="utf-8"></script>
+<script type="text/javascript" src="{% static "vendors/js/fullcalendar.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/fullcalendar-lang-ru.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/lodash.compat.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/restangular.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/ng-slide-down.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/datetime-picker.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/datetime-picker.tpls.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/mask.min.js" %}"></script>
+<script type="text/javascript" src="{% static "orders_manager/js/calendar/calendar.js" %}"></script>
+<script type="text/javascript" src="{% static "orders_manager/js/calendar/calendar.event_window.js" %}"></script>
+<script type="text/javascript" src="{% static "orders_manager/js/app.js" %}"></script>
+<script type="text/javascript" src="{% static "orders_manager/js/app.auth.js" %}"></script>
+<script type="text/javascript" src="{% static "orders_manager/js/app.models.js" %}"></script>
+<script type="text/javascript" src="{% static "orders_manager/js/app.forms.js" %}"></script>
+
 {% block extrascripts %}{% endblock %}
+
+</body>
 </html>

@@ -1,0 +1,53 @@
+<div class="additional-services-content" ng-controller="AdditionalServicesHandbookCtrl as vm">
+    <div class="panel panel-default dialog-wrapper">
+        <div class="panel-heading dialog-header">
+            <div class="title">Управление дополнительными услугами</div>
+            <div class="ngdialog-close"></div>
+        </div>
+        <div class="panel-body additional-services-panel-body">
+            <div class="loading-content" ng-show="vm.loadingEvent">
+                <span>Загрузка...</span>
+                <img class="loading-content__preloader" src="/static/orders_manager/img/preloader.gif">
+            </div>
+            <div class="grid-wrapper hidden" show-dialog-content-loading="">
+                <div class="grid-control-panel">
+                    <button class="btn btn-default btn-sm btn-add"
+                            ng-click="vm.additServ.addNewRow()"><i class="fa fa-plus"></i></button>
+                    <input type="text" class="form-control search-field"
+                           ng-change="vm.filter()" ng-model="vm.filterSearchWord"
+                           placeholder="Поиск по названию..">
+                </div>
+                <div ui-grid="vm.gridOptions" ui-grid-pagination ui-grid-selection class="grid"></div>
+                <div class="pagination-container">
+                    <button class="btn btn-default btn-sm" ng-click="vm.gridApi.pagination.previousPage()">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <span>Страница: {{ vm.gridApi.pagination.getPage() }} из
+                        {{ vm.gridApi.pagination.getTotalPages()}}</span>
+                    <button class="btn btn-default btn-sm" ng-click="vm.gridApi.pagination.nextPage()">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="details-wrapper hidden" show-dialog-content-loading>
+                <form class="additional-service-form" name="vm.form" novalidate>
+                    <div class="details-body">
+                        <formly-form model="vm.additServ.selectedAdditServ" form="vm.form" fields="vm.formFields"
+                                     options="vm.formOptions"></formly-form>
+                        <div class="form-btns-container" ng-if="vm.additServEditMode.isActiveMode">
+                            <button type="button" class="btn btn-primary btn-save"
+                                    ng-disabled="vm.form.$pristine || vm.form.$invalid"
+                                    ng-click="vm.additServEditMode.saveAdditServ()"><i class="fa fa-check"></i></button>
+                            <button type="button" class="btn btn-default btn-cancel" ng-if="!vm.additServ.isNewAdditServ"
+                                    ng-disabled="vm.form.$pristine"
+                                    ng-click="vm.additServEditMode.cancelEdit()"><i class="fa fa-times"></i></button>
+                            <button type="button" class="btn btn-danger btn-delete" ng-if="vm.additServ.isNewAdditServ"
+                                    ng-click="vm.additServEditMode.deleteNewAdditServ()"><i class="fa fa-trash-o"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

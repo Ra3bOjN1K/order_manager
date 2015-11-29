@@ -1,0 +1,29 @@
+project_name: tilibom_orders_manager
+virtualenv_path: /var/www/envs/{{ project_name }}_app
+app_root_path: /var/www/{{ project_name }}_app
+
+
+system_packages:
+  - vim
+  - sshpass
+
+  # Database
+  - postgresql-9.3
+  - libpq-dev
+  - python-psycopg2
+
+  # Python Dev
+  - python-dev
+  - python3-dev
+  - python-setuptools
+  - python3-setuptools
+  - python-pip
+  - python3-pip
+  - python-virtualenv
+  - python3-pycurl
+
+
+pg_version: 9.3
+pg_db_name: tilibom_db
+pg_db_user: tilibom_admin
+pg_db_password: 796ab0f12c5c784e

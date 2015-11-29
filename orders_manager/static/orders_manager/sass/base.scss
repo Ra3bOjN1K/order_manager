@@ -1,90 +1,294 @@
 @import 'settings';
-@import 'compass/utilities/general/clearfix';
 @import '../fonts/arnamuserif/arnamuserif.css';
 
-::selection {
-  background: #90C3D4; /* Safari */
-}
-::-moz-selection {
-  background: #90C3D4; /* Firefox */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
   @include legacy-pie-clearfix();
   @include init-flex-position(column);
   @include align-items(center);
-  background: #fafafa;
+  //background-image: url('../img/fon_px.gif');
+  background: #18BD9B;
   color: #666;
   font-family: arian_amu_serifregular, serif;
   font-size: 11pt;
-  margin: 0;
-  padding: 0;
+}
+
+::selection {
+  background: #90C3D4; /* Safari */
+}
+
+::-moz-selection {
+  background: #90C3D4; /* Firefox */
+}
+
+.loading-blinds {
+  @include init-flex-position(column);
+  @include justify-content(center);
+  @include align-items(center);
+  background: #ffffff;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+
+  .loading-blinds__preloader {
+    height: auto;
+    width: 96px;
+  }
+}
+
+.loading-content {
+  @include init-flex-position(column);
+  @include justify-content(center);
+  @include align-items(center);
+  background: white;
+  font-family: arian_amu_serifregular, serif;
+  font-size: 12pt;
+  position: absolute;
+  z-index: 9999;
+
+  .loading-content__preloader {
+    height: 32px;
+    width: 32px;
+  }
 }
 
 .page-container {
   @include init-flex-position(column);
-  background: #efefef;
-  border: 1px solid #ccc;
-  margin-top: .5em;
-  max-width: $page-container-min-width;
-  min-height: $page-container-min-height;
-  min-width: $page-container-min-width;
-  padding: .5em;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }
 
-@mixin menu-btn-default {
-  @include noselect();
-  @include align-self(center);
-  @include single-box-shadow(.6px, .6px, 4px, .4px, #888);
-  background: #eee;
-  //border: 1px solid #ccc;
-  border: 1px solid darken(#72899C, 3%);
-  border-radius: 2px;
-  color: #777;
-  line-height: 1;
-  margin: 0 .2em;
-  padding: .4em;
-  text-decoration: none;
+.top-panel {
+  @include init-flex-position(row);
+  @include justify-content(flex-end);
+  @include single-box-shadow(.6px, .6px, 4px, .4px, #444);
+  background: #303946;
+  border-bottom: 1px solid darken(#303946, 14%);
+  height: 3.3em;
+  z-index: 1;
 }
 
-.nav_menu {
+.logo {
+  width: 50px;
+}
+
+.top-nav-menu {
+  @include init-flex-position(row);
+  @include align-items(center);
+  @include flex(10 10);
+
+  a,
+  a:focus,
+  a:hover {
+    text-decoration: none;
+  }
+
+  .collapsing {
+    transition-duration: .2s;
+  }
+
+  .collapsed-menu-item, .menu-item {
+    @include single-box-shadow(.6px, .6px, 4px, .8px, #333);
+    @include init-flex-position(row);
+    @include align-items(center);
+    @include justify-content(center);
+    background: #455264;
+    border: 0 solid #444;
+    color: #ccc;
+    cursor: hand;
+    cursor: pointer;
+    height: 34px;
+    margin: 0 1px;
+    width: 160px;
+    z-index: 1;
+  }
+
+  .menu-item {
+    @include noselect();
+
+    b {
+      color: lighten(#ccc, 14%);
+      font-size: 12pt;
+      margin-right: .8em;
+    }
+
+    span:hover,
+    span:focus {
+      text-decoration: underline;
+    }
+  }
+
+  .collapsed-menu-item {
+    @include init-flex-position(column);
+    position: relative;
+    width: 200px;
+
+    .menu-item {
+      @include single-box-shadow(.6px, .6px, 0, 0, rgba(0, 0, 0, 0));
+      border-top-width: 0;
+      margin: 0;
+      width: 200px;
+    }
+
+    .menu-item:last-child {
+      border-bottom: 4px solid #303946;
+    }
+
+    i {
+      @include init-flex-position(row);
+      @include justify-content(flex-end);
+      width: 26px;
+    }
+  }
+
+  .collapsed-menu-item > div {
+    @include single-box-shadow(.6px, .6px, 8px, .1px, #222);
+    left: 0;
+    margin-top: 1px;
+    position: absolute;
+  }
+}
+
+.user-profile-panel {
+  @include init-flex-position(row);
+  @include justify-content(flex-end);
+  @include flex(1 1 300px);
+
+  div {
+    @include init-flex-position(row);
+    @include align-items(center);
+    text-align: center;
+  }
+
+  #single-button {
+    @include noselect();
+    color: #ccc;
+    cursor: hand;
+    cursor: pointer;
+    display: block;
+    padding: .9em 3.2em;
+    text-align: center;
+
+    b {
+      margin-right: .2em;
+    }
+
+    &:hover,
+    &:focus {
+      background: darken(#455264, 5%);
+    }
+
+    &:active {
+      background: darken(#455264, 12%);
+    }
+
+    .caret {
+      margin-left: 8px;
+    }
+
+    li > a {
+      color: #eee;
+      cursor: hand;
+      cursor: pointer;
+    }
+  }
+
+  .btn-group.open {
+    background: darken(#455264, 5%);
+  }
+}
+
+
+.content-wrapper {
+  @include flex(30 30);
+  @include init-flex-position(row);
+
+  > div {
+    @include init-flex-position(column);
+  }
+}
+
+
+.page-content {
+  @include flex(20 20);
+}
+
+.loading-field-wrapper {
+  margin-bottom: 16px;
+  z-index: 100;
+}
+
+//////////////////////////////
+// ngDialog styles
+//////////////////////////////
+.ngdialog-overlay {
+  @include init-flex-position(column);
+  @include justify-content(center);
+}
+
+.dialog-header {
   @include init-flex-position(row);
   @include justify-content(space-between);
-  @include single-box-shadow(.6px, .6px, 4px, .4px, #666);
-  background: #72899C;
-  border: 1px solid darken(#72899C, 4%);
-  margin: .5em 0;
-  padding-left: .2em;
+}
 
-  .menu-btn {
-    @include menu-btn-default();
+.formly-field .error-messages {
+  margin-top: 2px;
+
+  .message {
+    color: #761c19;
+    font-size: 9pt;
   }
+}
 
-  .user-control-panel {
+.confirm-dialog {
+  @include init-flex-position(column);
+  @include justify-content(center);
+  @include align-items(center);
+  background: #fafafa;
+  border: 2px solid #72899C;
+  border-radius: 2px;
+  height: 8em;
+  width: 26em;
+
+  .dialog-message {
+    @include init-flex-position(column);
+    @include justify-content(center);
+    @include align-items(center);
     @include flex(1 1);
-    @include init-flex-position(row);
-    @include justify-content(flex-end);
-    height: 2em;
-    margin-right: .2em;
-    padding: .5em 0;
-
-    .profile-link {
-      color: #eee;
-      margin: auto .4em;
-    }
-
-    .logout-btn {
-      @include menu-btn-default();
-    }
   }
 
-  .active {
-    //@include single-box-shadow(.6px, .6px, 4px, .4px, darken(#72899C, 2%));
-    @include single-box-shadow(.6px, .6px, 4px, .4px, transparent);
-    background: lighten(#72899C, 16%);
-    border: 1px solid darken(#72899C, 10%);
-    color: #f2f2f2;
-    cursor: default;
-    pointer-events: none;
+  .btns-container {
+    @include init-flex-position(row);
+    padding: 8px;
+
+    .ctrl-btn {
+      @include single-box-shadow(.6px, .6px, 2px, .6px, #ccc);
+      @include noselect();
+      border: 1px solid #72899C;
+      border-radius: 2px;
+      color: #6C7F94;
+      margin: 2px;
+      width: 100px;
+    }
+
+    .cancel-btn {
+      background: lighten(#72899C, 16%);
+      color: #f2f2f2;
+    }
+
+    .accept-btn {
+      background: #f7f7f7;
+      color: lighten(#72899C, 2%);
+    }
   }
 }

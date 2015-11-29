@@ -1,0 +1,118 @@
+.discounts-content {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+}
+.discounts-content .discounts-panel-body {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  height: 320px;
+  padding: 0;
+}
+.discounts-content .grid-wrapper {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+}
+.discounts-content .grid-wrapper .grid-control-panel {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+  background: #fafafa;
+  padding: 2px;
+}
+.discounts-content .grid-wrapper .grid-control-panel .btn-add {
+  margin-right: 4px;
+  width: 41px;
+}
+.discounts-content .grid-wrapper .grid-control-panel .search-field {
+  width: 412px;
+}
+.discounts-content .grid-wrapper .grid {
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  background: #fdfdfd;
+  border-right-width: 0;
+  height: 220px;
+}
+.discounts-content .grid-wrapper .ui-grid-cell {
+  cursor: hand;
+  cursor: pointer;
+}
+.discounts-content .grid-wrapper .ui-grid-row-selected .ui-grid-cell {
+  border-color: #aaa;
+}
+.discounts-content .grid-wrapper .pagination-container {
+  margin: 8px auto;
+}
+.discounts-content .grid-wrapper .ctrl-btns-wrapper {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+  width: 29px;
+}
+.discounts-content .grid-wrapper .ctrl-btn {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-justify-content: center;
+  justify-content: center;
+  margin: 1px;
+  padding: 2px;
+  width: 27px;
+}
+.discounts-content .grid-wrapper .ctrl-btn:first-child {
+  margin-left: 3px;
+}

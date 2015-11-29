@@ -2,61 +2,12 @@
 
 from django import forms
 
-from rolepermissions.shortcuts import get_user_role
-
 from orders_manager.models import UserProfile, ROLES, Program, ProgramPrice, \
     Order, ClientChild, Client, AdditionalService
 from orders_manager.form_fields import RadioButtonToButtonSelect, \
     ExecutorsMultipleChoiceField, ClientChildrenMultipleChoiceField, \
     AddressMultiTextInput, ServicesMultipleChoiceField
-from orders_manager.roles import set_user_role
-
-
-class UserPasswordChangeForm(forms.Form):
-    _password = forms.CharField(
-        widget=forms.PasswordInput(
-            attrs={'style': 'display:none'},
-        ),
-        required=False,
-        label='',
-    )
-    old_password = forms.CharField(widget=forms.PasswordInput(),
-                                   label='Старый пароль:')
-    new_password = forms.CharField(widget=forms.PasswordInput(),
-                                   label='Новый пароль:')
-    confirm_password = forms.CharField(widget=forms.PasswordInput(),
-                                       label='Подтверждение пароля:')
-
-    def __init__(self, **kwargs):
-        self.user = kwargs.pop('user')
-        super(UserPasswordChangeForm, self).__init__(**kwargs)
-
-    def clean_old_password(self):
-        password = self.cleaned_data.get('old_password')
-        if password:
-            password = password.strip()
-        if not password or not self.user.check_password(password):
-            raise forms.ValidationError('Введен неправильный пароль!')
-        return password
-
-    def clean_new_password(self):
-        return self.cleaned_data.get('new_password')
-
-    def clean_confirm_password(self):
-        confirm_pass = self.cleaned_data.get('confirm_password')
-        if confirm_pass != self.cleaned_data['new_password']:
-            raise forms.ValidationError('Пароли не совпадают!')
-        return confirm_pass
-
-    def is_valid(self):
-        self.full_clean()
-        if self.user and not self.errors:
-            return True
-        return False
-
-    def save(self):
-        self.user.set_password(self.cleaned_data['new_password'])
-        self.user.save()
+from orders_manager.roles import get_user_role
 
 
 class UserProfileForm(forms.Form):
@@ -232,7 +183,8 @@ class UpdateUserProfileForm(UserProfileForm):
             self.user.user.last_name = self.cleaned_data.get('last_name')
             self.user.phone = self.cleaned_data.get('phone')
             self.user.address = self.cleaned_data.get('address')
-            set_user_role(self.user, self.cleaned_data.get('role'))
+            raise AssertionError('ser_user_role not implemented!')
+            # set_user_role(self.user, self.cleaned_data.get('role'))
             self.user.user.save()
             self.user.save()
 

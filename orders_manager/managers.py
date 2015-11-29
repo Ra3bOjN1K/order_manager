@@ -3,11 +3,10 @@
 from django.db import models, transaction
 from django.db.models import Q
 from django.contrib.auth.models import User
-
-from orders_manager.roles import Manager as ProjectManager, Animator, \
-    Photographer
-from orders_manager.utils.data_utils import generate_str, format_date, \
-    trim_phone_number
+from orders_manager.roles import (Manager as ProjectManager, Animator,
+    Photographer, AbstractUserRole, Superuser)
+from orders_manager.utils.data_utils import (generate_str, format_date,
+    trim_phone_number)
 
 
 class UserProfileManager(models.Manager):
@@ -43,23 +42,41 @@ class UserProfileManager(models.Manager):
         ProjectManager.assign_role_to_user(user)
         return user.profile
 
-    def _all_active(self):
+    def update(self, defaults=None, **kwargs):
+        user_profile = self.get(user_id=kwargs.pop('user_id'))
+        new_user_role = kwargs.pop('role')
+
+        for attr, val in kwargs.items():
+            if hasattr(user_profile, attr):
+                setattr(user_profile, attr, val)
+            else:
+                setattr(user_profile.user, attr, val)
+
+        if not user_profile.user.groups.filter(name=new_user_role).count():
+            AbstractUserRole.change_user_role(user_profile, new_user_role)
+
+        user_profile.user.save()
+        user_profile.save()
+
+        return user_profile
+
+    def all_active(self):
         return super(UserProfileManager, self).filter(user__is_active=True)
 
     def all_animators(self):
-        return self._all_active().filter(
+        return self.all_active().filter(
             user__groups__name='animator').order_by('user__last_name').all()
 
     def all_managers(self):
-        return self._all_active().filter(
+        return self.all_active().filter(
             user__groups__name='manager').order_by('user__last_name').all()
 
     def all_photographers(self):
-        return self._all_active().filter(
+        return self.all_active().filter(
             user__groups__name='photographer').order_by('user__last_name').all()
 
     def all_executors(self):
-        return self._all_active().filter(
+        return self.all_active().filter(
             Q(user__groups__name='animator') |
             Q(user__groups__name='photographer')
         ).order_by('user__groups__name').all()
@@ -87,18 +104,23 @@ class ClientManager(models.Manager):
     def update_or_create(self, defaults=None, **kwargs):
         from orders_manager.utils.data_utils import trim_phone_number
         try:
-            client = self.get(phone=trim_phone_number(kwargs.get('phone')))
+            if kwargs.get('id'):
+                client = self.get(id=kwargs.pop('id'))
+            else:
+                client = self.get(phone=trim_phone_number(kwargs.get('phone')))
             for attr, val in kwargs.items():
-                if hasattr(client, attr) and attr != 'phone':
-                    setattr(client, attr, val)
+                setattr(client, attr, val)
             client.save()
         except self.model.DoesNotExist:
             client = self.create(**kwargs)
         return client
 
+    def all(self):
+        return super(ClientManager, self).all().filter(is_active=True)
+
     def search(self, key):
-        return self.filter(
-            Q(name__icontains=key) | Q(phone__contains=key)).all()
+        return self.all().filter(
+            Q(name__icontains=key) | Q(phone__contains=key))
 
 
 class ClientChildrenManager(models.Manager):
@@ -120,8 +142,11 @@ class ClientChildrenManager(models.Manager):
 
     def update_or_create(self, defaults=None, **kwargs):
         try:
-            child = self.get(name=kwargs.get('name'))
-            child.client_id = kwargs.get('client_id')
+            client_id = kwargs.get('client_id')
+            child = self.get(
+                Q(name=kwargs.get('name')) &
+                Q(client__id=client_id)
+            )
 
             if kwargs.get('birthday'):
                 child.birthday = kwargs.get('birthday')
@@ -136,25 +161,24 @@ class ClientChildrenManager(models.Manager):
         return child
 
     def _calculate_child_birthday(self, current_age, celebrate_date):
-        import datetime
+        from datetime import datetime
 
         def clean_celebrate_date(celebrate_date):
-            import re
-            row_data = re.search('Дата: (?P<date>[\d.]{10})', celebrate_date)
-            if row_data:
-                return datetime.datetime.strptime(
-                    row_data.group('date'), '%d.%m.%Y')
-            row_data = re.search('^(?P<date>[\d-]{10})$', celebrate_date)
-            if row_data:
-                return datetime.datetime.strptime(
-                    row_data.group('date'), '%Y-%m-%d')
-            return None
+            try:
+                date = datetime.strptime(celebrate_date,
+                                         '%Y-%m-%dT%H:%M:%S.%fZ')
+            except ValueError:
+                date = datetime.strptime(celebrate_date, '%Y-%m-%d')
+            return date
 
         celebrate_date = clean_celebrate_date(celebrate_date)
         date_time = celebrate_date.replace(
             year=(celebrate_date.year - (int(current_age) + 1))
         )
         return date_time.strftime('%Y-%m-%d')
+
+    def all(self):
+        return super(ClientChildrenManager, self).all().filter(is_active=True)
 
 
 class ProgramManager(models.Manager):
@@ -169,7 +193,9 @@ class ProgramManager(models.Manager):
         program.save()
 
         for pos_executor in kwargs.get('possible_executors'):
-            ex = UserProfile.objects.get(user_id=pos_executor.user.id)
+            user_id = (pos_executor.user.id if isinstance(
+                pos_executor, UserProfile) else pos_executor.get('user').get('id'))
+            ex = UserProfile.objects.get(user_id=user_id)
             program.possible_executors.add(ex)
         program.save()
 
@@ -179,14 +205,17 @@ class ProgramManager(models.Manager):
         from orders_manager.models import UserProfile
 
         try:
-            program = self.get(title=kwargs.get('title'))
+            program = self.get(id=kwargs.get('id'))
+            program.title = kwargs.get('title')
             program.characters = kwargs.get('characters')
             program.num_executors = kwargs.get('num_executors')
 
             program.possible_executors = UserProfile.objects.none()
 
             for pos_executor in kwargs.get('possible_executors'):
-                ex = UserProfile.objects.get(user_id=pos_executor.user.id)
+                user_id = (pos_executor.user.id if isinstance(
+                    pos_executor, UserProfile) else pos_executor.get('user').get('id'))
+                ex = UserProfile.objects.get(user_id=user_id)
                 program.possible_executors.add(ex)
 
             program.save()
@@ -195,7 +224,8 @@ class ProgramManager(models.Manager):
         return program
 
     def all(self):
-        return super(ProgramManager, self).all().order_by('title')
+        return super(ProgramManager, self).all().filter(
+            is_active=True).order_by('id')
 
 
 class ProgramPriceManager(models.Manager):
@@ -207,6 +237,8 @@ class ProgramPriceManager(models.Manager):
         program_price.duration = kwargs.get('duration')
         program_price.price = kwargs.get('price')
         program_price.save()
+
+        return program_price
 
     def update_or_create(self, defaults=None, **kwargs):
         try:
@@ -232,7 +264,9 @@ class AdditionalServiceManager(models.Manager):
         service.save()
 
         for pos_executor in kwargs.get('possible_executors'):
-            ex = UserProfile.objects.get(user_id=pos_executor.user.id)
+            user_id = (pos_executor.user.id if isinstance(
+                pos_executor, UserProfile) else pos_executor.get('user').get('id'))
+            ex = UserProfile.objects.get(user_id=user_id)
             service.possible_executors.add(ex)
         service.save()
 
@@ -242,14 +276,17 @@ class AdditionalServiceManager(models.Manager):
         from orders_manager.models import UserProfile
 
         try:
-            service = self.get(title=kwargs.get('title'))
-            for attr_name in ('num_executors', 'price'):
+            service = self.get(id=kwargs.get('id'))
+
+            for attr_name in ('num_executors', 'price', 'title'):
                 setattr(service, attr_name, kwargs.get(attr_name))
 
             service.possible_executors = UserProfile.objects.none()
 
             for pos_executor in kwargs.get('possible_executors'):
-                ex = UserProfile.objects.get(user_id=pos_executor.user.id)
+                user_id = (pos_executor.user.id if isinstance(
+                    pos_executor, UserProfile) else pos_executor.get('user').get('id'))
+                ex = UserProfile.objects.get(user_id=user_id)
                 service.possible_executors.add(ex)
 
             service.save()
@@ -258,47 +295,164 @@ class AdditionalServiceManager(models.Manager):
         return service
 
     def all(self):
-        return super(AdditionalServiceManager, self).all().order_by('title')
+        return super(AdditionalServiceManager, self).all().filter(
+            is_active=True).order_by('id')
+
+    def all_possible_executors(self, additional_services_ids):
+        possible_executors = set()
+
+        for service_id in additional_services_ids:
+            service = self.get(id=service_id)
+            possible_executors.update(service.possible_executors.all())
+
+        return list(possible_executors)
 
 
 class OrdersManager(models.Manager):
+    def _get_author(self, **kwargs):
+        from orders_manager.models import UserProfile
+
+        if kwargs.get('author_id'):
+            author_id = kwargs.get('author_id')
+        else:
+            author_id = kwargs.get('author').get('user').get('id')
+        return UserProfile.objects.get(user_id=author_id)
+
+    def _get_client_id(self, **kwargs):
+        if kwargs.get('client_id'):
+            client_id = kwargs.get('client_id')
+        else:
+            client_id = kwargs.get('client').get('id')
+        return client_id
+
+    def _get_program_id(self, **kwargs):
+        if kwargs.get('program_id'):
+            program_id = kwargs.get('program_id')
+        else:
+            program_id = kwargs.get('program').get('id')
+        return program_id
+
+    def _get_discount_id(self, **kwargs):
+        if kwargs.get('discount_id'):
+            discount_id = kwargs.get('discount_id')
+        else:
+            discount_id = kwargs.get('discount').get('id')
+        return discount_id
+
+    def _get_client_children_ids(self, **kwargs):
+        return kwargs.get('client_children') if kwargs.get(
+            'client_children') else kwargs.get('client_children_id', [])
+
+    def _get_program_executors_ids(self, **kwargs):
+        res = kwargs.get('program_executors') if kwargs.get(
+            'program_executors') else kwargs.get('program_executors_id', [])
+        return res or []
+
+    def _get_services_executors_ids(self, **kwargs):
+        res = kwargs.get('services_executors') if kwargs.get(
+            'services_executors') else kwargs.get('services_executors_id', [])
+        return res or []
+
+    def _get_additional_services(self, **kwargs):
+        res = kwargs.get('additional_services') if kwargs.get(
+            'additional_services') else kwargs.get('additional_services_id', [])
+        return res or []
+
     def create(self, **kwargs):
-        from orders_manager.models import Order, AdditionalService, Discount, \
-            Program, ClientChild, Client
+        from orders_manager.models import (Order, AdditionalService,
+            ClientChild, UserProfile)
 
         order = Order()
         order.code = '{0}-{1}'.format(
             format_date(pattern='%Y%m%d'),
             generate_str(num_chars=3)
         )
-        order.author_id = kwargs.get('author_id')
-        order.client_id = kwargs.get('client_id')
+
+        order.author = self._get_author(**kwargs)
+        order.client_id = self._get_client_id(**kwargs)
+        order.children_num = kwargs.get('children_num')
         order.celebrate_date = kwargs.get('celebrate_date')
         order.celebrate_time = kwargs.get('celebrate_time')
         order.celebrate_place = kwargs.get('celebrate_place')
         order.address = kwargs.get('address')
-        order.program_id = kwargs.get('program_id')
+        order.program_id = self._get_program_id(**kwargs)
         order.duration = kwargs.get('duration')
         order.price = kwargs.get('price')
+        order.discount_id = self._get_discount_id(**kwargs)
         order.total_price = kwargs.get('total_price')
         order.total_price_with_discounts = kwargs.get(
             'total_price_with_discounts')
-        order.status = kwargs.get('status')
         order.details = kwargs.get('details')
         order.executor_comment = kwargs.get('executor_comment')
 
         order.save()
 
-        for child_id in kwargs.get('client_children_id'):
+        for child_id in self._get_client_children_ids(**kwargs):
             child = ClientChild.objects.get(id=child_id)
             order.client_children.add(child)
 
-        for service_id in kwargs.get('additional_services_id'):
+        for prog_executor_id in self._get_program_executors_ids(**kwargs):
+            executor = UserProfile.objects.get(user__id=prog_executor_id)
+            order.program_executors.add(executor)
+
+        for service_executor_id in self._get_services_executors_ids(**kwargs):
+            executor = UserProfile.objects.get(user__id=service_executor_id)
+            order.services_executors.add(executor)
+
+        for service_id in self._get_additional_services(**kwargs):
             serv = AdditionalService.objects.get(id=service_id)
             order.additional_services.add(serv)
 
-        for discount_id in kwargs.get('discounts_id'):
-            discount = Discount.objects.get(id=discount_id)
-            order.discounts.add(discount)
+        return order
+
+    def update(self, **kwargs):
+        from orders_manager.models import (Order, AdditionalService,
+            ClientChild, UserProfile)
+
+        try:
+            order = self.get(id=kwargs.get('id'))
+
+            order.author = self._get_author(**kwargs)
+            order.client_id = self._get_client_id(**kwargs)
+            order.children_num = kwargs.get('children_num')
+            order.celebrate_date = kwargs.get('celebrate_date')
+            order.celebrate_time = kwargs.get('celebrate_time')
+            order.celebrate_place = kwargs.get('celebrate_place')
+            order.address = kwargs.get('address')
+            order.program_id = self._get_program_id(**kwargs)
+            order.duration = kwargs.get('duration')
+            order.price = kwargs.get('price')
+            order.discount_id = self._get_discount_id(**kwargs)
+            order.total_price = kwargs.get('total_price')
+            order.total_price_with_discounts = kwargs.get(
+                'total_price_with_discounts')
+            order.details = kwargs.get('details')
+            order.executor_comment = kwargs.get('executor_comment')
+
+            order.save()
+
+            order.client_children.clear()
+            for child_id in self._get_client_children_ids(**kwargs):
+                child = ClientChild.objects.get(id=child_id)
+                order.client_children.add(child)
+
+            order.program_executors.clear()
+            for prog_executor_id in self._get_program_executors_ids(**kwargs):
+                executor = UserProfile.objects.get(user__id=prog_executor_id)
+                order.program_executors.add(executor)
+
+            order.services_executors.clear()
+            for service_executor_id in self._get_services_executors_ids(
+                    **kwargs):
+                executor = UserProfile.objects.get(user__id=service_executor_id)
+                order.services_executors.add(executor)
+
+            order.additional_services.clear()
+            for service_id in self._get_additional_services(**kwargs):
+                serv = AdditionalService.objects.get(id=service_id)
+                order.additional_services.add(serv)
+
+        except self.model.DoesNotExist:
+            order = self.create(**kwargs)
 
         return order

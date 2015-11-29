@@ -1,0 +1,22 @@
+<div class="form-group">
+    <div>
+        <label for="model[options.id || index]" class="control-label"
+               ng-if="options.templateOptions.label">{{ options.templateOptions.label }}</label>
+        <div class="field-container">
+            <ol class="nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12 form-control" ng-model="model[options.key]"
+                data-live-search="true" disabled="options.templateOptions.options.length === 0"
+                optional-directives id="model[options.key]">
+                <hr>
+                <li nya-bs-option="option in options.templateOptions.options track by $index">
+                    <a class="client-option">
+                        <span class="name">{{ option.name }}</span>
+                        <span class="phone">{{ option.phone }}</span>
+                        <span class="glyphicon glyphicon-ok check-mark"></span>
+                    </a>
+                </li>
+            </ol>
+            <button type="button" class="btn btn-default btn-custom"
+                    ng-click="onButtonClick()">{{ options.templateOptions.btnName }}</button>
+        </div>
+    </div>
+</div>

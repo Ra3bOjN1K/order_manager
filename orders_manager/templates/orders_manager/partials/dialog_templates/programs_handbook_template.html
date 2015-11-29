@@ -1,0 +1,61 @@
+<div class="programs-content" ng-controller="ProgramsHandbookCtrl as vm">
+    <div class="panel panel-default dialog-wrapper">
+        <div class="panel-heading dialog-header">
+            <div class="title">Управление программами</div>
+            <div class="ngdialog-close"></div>
+        </div>
+        <div class="panel-body programs-panel-body">
+            <div class="loading-content" ng-show="vm.loadingEvent">
+                <span>Загрузка...</span>
+                <img class="loading-content__preloader" src="/static/orders_manager/img/preloader.gif">
+            </div>
+            <div class="grid-wrapper" show-dialog-content-loading>
+                <div class="grid-control-panel">
+                    <button class="btn btn-default btn-sm btn-add"
+                            ng-click="vm.program.addNewRow()"><i class="fa fa-plus"></i></button>
+                    <input type="text" class="form-control search-field"
+                           ng-change="vm.filter()" ng-model="vm.filterSearchWord"
+                           placeholder="Поиск по названию..">
+                </div>
+                <div ui-grid="vm.gridOptions" ui-grid-pagination ui-grid-selection class="grid"></div>
+                <div class="pagination-container">
+                    <button class="btn btn-default btn-sm" ng-click="vm.gridApi.pagination.previousPage()">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <span>Страница: {{ vm.gridApi.pagination.getPage() }} из
+                        {{ vm.gridApi.pagination.getTotalPages()}}</span>
+                    <button class="btn btn-default btn-sm" ng-click="vm.gridApi.pagination.nextPage()">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="details-wrapper" show-dialog-content-loading>
+                <div class="program-prices" ng-if="vm.detailsMode.programPrices">
+                    <div class="details-header">
+                        <button class="btn btn-default btn-sm btn-add"
+                                ng-click="vm.programPricesMode.addPriceRow()"><i class="fa fa-plus"></i></button>
+                    </div>
+                    <div class="details-body">
+                        <div ui-grid="vm.pricesGridOptions" ui-grid-edit ui-grid-row-edit class="grid"></div>
+                    </div>
+                </div>
+                <form class="program-form" name="vm.form" novalidate ng-if="vm.detailsMode.programDetails">
+                    <div class="details-body">
+                        <formly-form model="vm.program.selectedProgram" form="vm.form" fields="vm.formFields"
+                                     options="vm.formOptions"></formly-form>
+                        <div class="form-btns-container" ng-if="vm.programEditMode.isActiveMode">
+                            <button type="button" class="btn btn-primary btn-save"
+                                    ng-disabled="vm.form.$pristine || vm.form.$invalid"
+                                    ng-click="vm.programEditMode.saveProgram()"><i class="fa fa-check"></i></button>
+                            <button type="button" class="btn btn-default btn-cancel" ng-if="!vm.program.isNewProgram"
+                                    ng-disabled="vm.form.$pristine"
+                                    ng-click="vm.programEditMode.cancelEdit()"><i class="fa fa-times"></i></button>
+                            <button type="button" class="btn btn-danger btn-delete" ng-if="vm.program.isNewProgram"
+                                    ng-click="vm.programEditMode.deleteNewProgram()"><i class="fa fa-trash-o"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
