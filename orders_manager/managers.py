@@ -18,7 +18,7 @@ class UserProfileManager(models.Manager):
         user.email = kwargs.get('email')
         user.first_name = kwargs.get('first_name')
         user.last_name = kwargs.get('last_name')
-        user.set_password(kwargs.get('password'))
+        user.set_password(kwargs.get('password', '12345'))
         user.save()
         profile = UserProfile()
         profile.user = user

@@ -22,6 +22,7 @@
                  lc_ctype='en_US.UTF-8'
                  template='template0'
                  state=present
+                 # state=absent
 
 - name: Create User
   sudo: yes
