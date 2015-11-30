@@ -1,5 +1,19 @@
----
+system_packages:
+  - build-essential
+  - ntp
+  - htop
+  - git
+  - libpq-dev
+  - supervisor
+  - vim
+  - sshpass
 
-create_swap_file: no
-swap_file_path: /swapfile
-swap_file_size_kb: 512
+  # Python Dev
+  - python-dev
+  - python3-dev
+  - python-setuptools
+  - python3-setuptools
+  - python-pip
+  - python3-pip
+  - python-virtualenv
+  - python3-pycurl

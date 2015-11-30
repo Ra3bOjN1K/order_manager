@@ -1,4 +1,11 @@
----
+- name: Restart Postgres
+  sudo: yes
+  service: name=postgresql state=restarted
 
-- name: restart postgresql
-  service: name=postgresql state=restarted enabled=yes
+#- name: Postgres Create Cluster
+#  sudo: yes
+#  command: pg_createcluster 9.3 main --start
+
+#- name: Stop Postgres
+#  sudo: yes
+#  service: name=postgresql state=stopped

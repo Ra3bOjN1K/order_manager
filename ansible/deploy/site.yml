@@ -1,3 +1,11 @@
 ---
+- name: Start deploying
+  hosts: webservers
+  sudo: yes
+  vars_files:
+    - env_vars/base.yml
+  roles:
+    - base
+    - db
+    - web
 
-- include: webservers.yml

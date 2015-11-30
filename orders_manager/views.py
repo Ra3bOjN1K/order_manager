@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.core.exceptions import PermissionDenied
 from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator

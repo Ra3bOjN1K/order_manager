@@ -1,17 +1,20 @@
----
+- name: Install database packages
+  sudo: yes
+  apt: pkg={{ item }}
+      state=installed
+      update_cache=yes
+  with_items: db_packages
 
-- name: Install PostgreSQL
-  apt: name={{ item }} update_cache={{ update_apt_cache }} state=installed
-  with_items:
-    - postgresql
-    - postgresql-contrib
-    - python-psycopg2
-  tags: packages
+- name: Allow password authentication for local socket users
+  sudo: yes
+  copy: src=pg_hba.conf
+        dest=/etc/postgresql/{{ pg_version }}/main/pg_hba.conf
+        force=yes
+  notify:
+      - Restart Postgres
 
-- name: Ensure the PostgreSQL service is running
-  service: name=postgresql state=started enabled=yes
-
-- name: Ensure database is created
+- name: Create Database
+  sudo: yes
   sudo_user: postgres
   postgresql_db: name={{ db_name }}
                  encoding='UTF-8'
@@ -20,16 +23,17 @@
                  template='template0'
                  state=present
 
-- name: Ensure user has access to the database
-  sudo_user: postgres
-  postgresql_user: db={{ db_name }}
-                   name={{ db_user }}
-                   password={{ db_password }}
-                   priv=ALL
-                   state=present
-
-- name: Ensure user does not have unnecessary privileges
+- name: Create User
+  sudo: yes
   sudo_user: postgres
   postgresql_user: name={{ db_user }}
-                   role_attr_flags=NOSUPERUSER,NOCREATEDB
-                   state=present
+                    password={{ db_password }}
+                    role_attr_flags=SUPERUSER,CREATEDB
+                    state=present
+
+- name: Provide user with DB permissions
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: user={{ db_user }}
+                    db={{ db_name }}
+                    priv=ALL
