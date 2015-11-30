@@ -1568,7 +1568,7 @@ angular.module('OrderManagerApp')
             modelData.id = data.id;
             modelData.name = data.name;
             modelData.phone = data.phone.addPhoneCountryCode();
-            modelData.phone_2 = data.phone_2.addPhoneCountryCode();
+            modelData.phone_2 = !!data.phone_2 ? data.phone_2.addPhoneCountryCode() : "";
             modelData.email = data.email;
             modelData.vk_link = data.vk_link;
             modelData.odnoklassniki_link = data.odnoklassniki_link;
