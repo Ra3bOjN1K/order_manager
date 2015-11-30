@@ -157,7 +157,7 @@ class AdditionalServiceSerializer(DynamicFieldsModelSerializer):
 
 
 class DiscountSerializer(DynamicFieldsModelSerializer):
-    id = serializers.CharField()
+    id = serializers.CharField(required=False)
 
     class Meta:
         model = Discount
