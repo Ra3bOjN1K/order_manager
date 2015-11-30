@@ -3,15 +3,23 @@
 - name: Install packages required by the Django app inside virtualenv
   pip: virtualenv={{ virtualenv_path }} requirements={{ requirements_file }}
 
-#- name: Run the Django syncdb command
-#  django_manage:
-#    command: syncdb
-#    app_path: "{{ project_path }}"
-#    virtualenv: "{{ virtualenv_path }}"
-#    settings: "{{ django_settings_file }}"
-#  environment: django_environment
-#  when: run_django_syncdb is defined and run_django_syncdb
-#  tags: django.syncdb
+- name: copy Django settings
+  template: src=django_settings.j2
+            dest={{ project_path }}/app/settings.py
+            owner={{ gunicorn_user }}
+            group={{ gunicorn_group }}
+            force=yes
+            mode=0755
+            backup=yes
+
+- name: Migrate Django Auth module
+  django_manage:
+    command: "migrate auth"
+    app_path: "{{ project_path }}"
+    virtualenv: "{{ virtualenv_path }}"
+  environment: django_environment
+  when: run_django_db_migrations is defined and run_django_db_migrations
+  tags: django.migrate
 
 - name: Run Django database migrations
   django_manage:

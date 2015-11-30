@@ -5,6 +5,7 @@
             dest=/etc/supervisor/conf.d/{{ application_name }}.conf
             backup=yes
 
+
 - name: Re-read the Supervisor config files
   supervisorctl: name={{ application_name }} state=present
 

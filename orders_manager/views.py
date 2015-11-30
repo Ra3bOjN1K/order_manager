@@ -16,7 +16,7 @@ from rest_framework.generics import (ListAPIView, RetrieveUpdateDestroyAPIView,
 from rest_framework.response import Response
 from guardian.mixins import PermissionRequiredMixin
 from orders_manager.models import (UserProfile, Client, Order, ClientChild,
-    Program, ProgramPrice, AdditionalService, Discount)
+    Program, ProgramPrice, AdditionalService, Discount, User)
 from orders_manager.serializers import (UserProfileSerializer, ClientSerializer,
     OrderSerializer, ClientChildrenSerializer, ProgramSerializer,
     ProgramPriceSerializer, AdditionalServiceSerializer, DiscountSerializer)
@@ -29,6 +29,7 @@ class PopulateDatabaseView(View):
         from orders_manager.roles import init_roles
 
         init_roles()
+        User.objects.create_superuser('admin', 'prorab.ks@gmail.com', '12345')
         populate_database()
 
         return HttpResponse('Done')

@@ -23,6 +23,7 @@ gunicorn_max_requests: 0
 
 
 # Nginx settings
+nginx_server_name: "test_deploy.com"
 nginx_http_port: 80
 nginx_https_port: 443
 nginx_access_log_file: "{{ application_log_dir }}/nginx_access.log"
@@ -33,7 +34,7 @@ nginx_media_dir: "{{ virtualenv_path }}/media/"
 
 # Django Environment variables
 django_settings_file: "app.settings"
-django_secret_key: "akr2icmg1n8%z^3fe3c+)5d0(t^cy-2_25rrl35a7@!scna^1#"
+django_secret_key: "d=77*)v%a3vg2ral4d0@c30*0mn=u$#kewx6rh9&hkg7g$0^v4"
 
 django_environment:
   DJANGO_SETTINGS_MODULE: "{{ django_settings_file }}"
