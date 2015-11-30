@@ -30,9 +30,11 @@ class PopulateDatabaseView(View):
 
         init_roles()
         User.objects.create_superuser('admin', 'prorab.ks@gmail.com', '12345')
-        populate_database()
+        Discount.objects.create(name='Нет скидки', value=0)
+        # populate_database()
 
         return HttpResponse('Done')
+
 
 
 class LoginFormView(FormView):

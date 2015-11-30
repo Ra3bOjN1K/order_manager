@@ -5,7 +5,7 @@
 - name: Install packages
   sudo: yes
   apt: pkg={{ item }} state=installed update_cache=yes
-  with_items: "{{ system_packages }}"
+  with_items: "system_packages"
 
 - name: Allow password authentication for local socket users
   sudo: yes
@@ -16,7 +16,7 @@
 - name: Create Database
   sudo: yes
   sudo_user: postgres
-  postgresql_db: name={{ pg_db_name }} 
+  postgresql_db: name={{ pg_db_name }}
 
 - name: Create User
   sudo: yes

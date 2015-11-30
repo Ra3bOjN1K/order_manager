@@ -717,8 +717,15 @@ angular.module('OrderManagerApp')
                                                 phone: client.phone,
                                                 value: client.id
                                             };
-
-                                            $scope.to.options.push(item);
+                                            var hasItem = false;
+                                            angular.forEach($scope.to.options, function (opt) {
+                                                if (opt.value === item.value) {
+                                                    hasItem = true;
+                                                }
+                                            });
+                                            if (!hasItem) {
+                                                $scope.to.options.push(item);
+                                            }
                                             $scope.model.client = item;
                                         })
                                     }
@@ -1380,7 +1387,7 @@ angular.module('OrderManagerApp')
                     modelData.executor_comment = data.executor_comment.trim();
                 }
 
-                modelData.discount = {id: data.discount.value.toString()};
+                modelData.discount = {id: data.discount.value};
                 modelData.total_price = data.total_price;
                 modelData.total_price_with_discounts = data.total_price_with_discounts;
 

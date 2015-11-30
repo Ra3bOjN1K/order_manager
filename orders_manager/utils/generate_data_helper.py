@@ -270,8 +270,7 @@ class DiscountsGenerator:
     def generate(self):
         from orders_manager.models import Discount
         discounts = []
-        for name, val in (('Нет скидки', 0),
-                          ('Скидка №1', 5),
+        for name, val in (('Скидка №1', 5),
                           ('Скидка №2', 10),
                           ('Скидка №3', 50)):
             discounts.append(Discount.objects.create(name=name, value=val))
