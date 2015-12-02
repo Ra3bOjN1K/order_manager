@@ -1164,12 +1164,13 @@ angular.module('OrderManagerApp')
                         },
                         controller: function ($scope) {
 
-                            var possibleExecutors = [],
-                                resultServExecutors = [],
-                                origServExec = angular.copy($scope.model.services_executors);
+                            var resultServExecutors = [],
+                            origServExec = angular.copy($scope.model.services_executors);
 
                             $scope.$watch('model.additional_services', function (newVal, oldVal) {
                                 $timeout(function () {
+                                    var possibleExecutors = [];
+
                                     angular.forEach($scope.formState.additionalServices, function (formStateService) {
 
                                         angular.forEach(newVal, function (newValItem) {

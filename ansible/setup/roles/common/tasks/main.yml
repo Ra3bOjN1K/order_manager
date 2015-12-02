@@ -18,7 +18,7 @@
 - name: Create Database
   sudo: yes
   sudo_user: postgres
-  postgresql_db: name={{ pg_db_name }}
+  postgresql_db: name={{ pg_db_name }} state=present
 
 - name: Create User
   sudo: yes
