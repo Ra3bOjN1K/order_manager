@@ -4,6 +4,12 @@ app_root_path: /var/www/{{ project_name }}_app
 
 
 system_packages:
+  - build-essential
+  - ntp
+  - htop
+  - git
+  - libpq-dev
+  - supervisor
   - vim
   - sshpass
 

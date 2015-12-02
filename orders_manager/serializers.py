@@ -124,14 +124,14 @@ class ProgramPriceSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = ProgramPrice
 
+    def get_unique_together_validators(self):
+        return []
+
     def create(self, validated_data):
         validated_data.update({'program_id': validated_data.get('program').id})
         del validated_data['program']
 
-        if validated_data.get('id'):
-            instance = ProgramPrice.objects.update_or_create(**validated_data)
-        else:
-            instance = ProgramPrice.objects.create(**validated_data)
+        instance = ProgramPrice.objects.update_or_create(**validated_data)
 
         return instance
 

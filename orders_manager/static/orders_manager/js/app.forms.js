@@ -16,7 +16,7 @@ angular.module('OrderManagerApp')
             templateUrl: 'error-messages.html'
         });
     })
-    .run(function (formlyConfig, formlyValidationMessages) {
+    .run(function ($rootScope, formlyConfig, formlyValidationMessages) {
         //formlyConfig.extras.errorExistsAndShouldBeVisibleExpression = 'fc.$touched || form.$submitted';
         //formlyValidationMessages.addStringMessage('required', 'This field is required');
 
@@ -69,6 +69,39 @@ angular.module('OrderManagerApp')
             templateUrl: '/static/form_field_templates/client_select_template.html',
             link: function (scope, element, attrs) {
                 element.find('ul.dropdown-menu').addClass('single-item-mode');
+            }
+        });
+
+        formlyConfig.setType({
+            name: 'clientChildrenSelect',
+            templateUrl: '/static/form_field_templates/single_select_template.html',
+            link: function (scope, element, attrs) {
+                if (scope.options.templateOptions.multiple) {
+                    element.find('ul.dropdown-menu').addClass('multiple-mode');
+                }
+                else {
+                    element.find('ul.dropdown-menu').addClass('single-item-mode');
+                }
+
+                if (scope.model) {
+
+                    var dropdownToggle = $(element).find('.dropdown-toggle');
+                    var nuaSelect = $(element).find('.nya-bs-select');
+
+                    scope.$watch(function () {
+                        return dropdownToggle.text();
+                    }, function (newVal, oldVal) {
+                        if (!angular.equals(newVal, '--- ') && !angular.equals(newVal, oldVal)) {
+                            if (nuaSelect.hasClass('open')) {
+                                nuaSelect.triggerHandler('blur');
+                            }
+
+                            nuaSelect.find('.nya-bs-option').on('click', function () {
+                                nuaSelect.removeClass('open');
+                            });
+                        }
+                    });
+                }
             }
         });
 
@@ -130,7 +163,7 @@ angular.module('OrderManagerApp')
     .directive('fieldsSeparator', function ($timeout, $rootScope) {
         return {
             link: function (scope, element, attrs) {
-                $rootScope.$on('OrderForm.rendered', function() {
+                $rootScope.$on('OrderForm.rendered', function () {
                     $timeout(function () {
                         var fields = element.find('.formly-field');
                         fields.splice(-1, 1);
@@ -248,7 +281,7 @@ angular.module('OrderManagerApp')
                             label: 'Клиент',
                             disabled: true
                         },
-                        hideExpression: function($viewValue, $modelValue, scope) {
+                        hideExpression: function ($viewValue, $modelValue, scope) {
                             return !scope.model.client;
                         },
                         controller: function ($scope) {
@@ -266,7 +299,7 @@ angular.module('OrderManagerApp')
                         templateOptions: {
                             label: 'Именинник(-и)'
                         },
-                        hideExpression: function($viewValue, $modelValue, scope) {
+                        hideExpression: function ($viewValue, $modelValue, scope) {
                             return !scope.model.client_children;
                         },
                         controller: function ($scope) {
@@ -295,7 +328,7 @@ angular.module('OrderManagerApp')
                         templateOptions: {
                             label: 'Количество детей'
                         },
-                        hideExpression: function($viewValue, $modelValue, scope) {
+                        hideExpression: function ($viewValue, $modelValue, scope) {
                             return !scope.model.children_num;
                         }
                     },
@@ -383,7 +416,7 @@ angular.module('OrderManagerApp')
                             label: 'Стоимость программы',
                             disabled: true
                         },
-                        hideExpression: function($viewValue, $modelValue, scope) {
+                        hideExpression: function ($viewValue, $modelValue, scope) {
                             return !scope.model.price;
                         }
                     },
@@ -394,7 +427,7 @@ angular.module('OrderManagerApp')
                         templateOptions: {
                             label: 'Исполнители программы'
                         },
-                        hideExpression: function($viewValue, $modelValue, scope) {
+                        hideExpression: function ($viewValue, $modelValue, scope) {
                             return !scope.model.program_executors;
                         },
                         controller: function ($scope) {
@@ -423,7 +456,7 @@ angular.module('OrderManagerApp')
                         templateOptions: {
                             label: 'Список дополнительных услуг'
                         },
-                        hideExpression: function($viewValue, $modelValue, scope) {
+                        hideExpression: function ($viewValue, $modelValue, scope) {
                             return !scope.model.additional_services;
                         },
                         controller: function ($scope) {
@@ -453,7 +486,7 @@ angular.module('OrderManagerApp')
                         templateOptions: {
                             label: 'Исполнители дополнительных услуг'
                         },
-                        hideExpression: function($viewValue, $modelValue, scope) {
+                        hideExpression: function ($viewValue, $modelValue, scope) {
                             return !scope.model.services_executors;
                         },
                         controller: function ($scope) {
@@ -480,7 +513,7 @@ angular.module('OrderManagerApp')
                             label: 'Дополнительная информация',
                             disabled: true
                         },
-                        hideExpression: function($viewValue, $modelValue, scope) {
+                        hideExpression: function ($viewValue, $modelValue, scope) {
                             return !scope.model.details;
                         }
                     },
@@ -513,7 +546,7 @@ angular.module('OrderManagerApp')
                             label: 'Скидка',
                             disabled: true
                         },
-                        hideExpression: function($viewValue, $modelValue, scope) {
+                        hideExpression: function ($viewValue, $modelValue, scope) {
                             return !scope.model.discount;
                         },
                         controller: function ($scope) {
@@ -554,7 +587,7 @@ angular.module('OrderManagerApp')
                             label: 'Стоимость заказа',
                             disabled: true
                         },
-                        hideExpression: function($viewValue, $modelValue, scope) {
+                        hideExpression: function ($viewValue, $modelValue, scope) {
                             return !scope.model.total_price;
                         },
                         controller: function ($scope) {
@@ -583,7 +616,7 @@ angular.module('OrderManagerApp')
                             label: 'Стоимость заказа с учетом скидки',
                             disabled: true
                         },
-                        hideExpression: function($viewValue, $modelValue, scope) {
+                        hideExpression: function ($viewValue, $modelValue, scope) {
                             return !scope.model.total_price_with_discounts;
                         },
                         controller: function ($scope) {
@@ -741,7 +774,7 @@ angular.module('OrderManagerApp')
                         }
                     },
                     {
-                        type: 'vSelect',
+                        type: 'clientChildrenSelect',
                         key: 'client_children',
                         templateOptions: {
                             id: 'clientChildrenId',

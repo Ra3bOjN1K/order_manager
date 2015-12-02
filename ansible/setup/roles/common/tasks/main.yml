@@ -2,6 +2,8 @@
 
 - shell: "echo 'alias python=python3' >> ~/.bashrc"
 
+- user: name=vagrant generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/id_rsa
+
 - name: Install packages
   sudo: yes
   apt: pkg={{ item }} state=installed update_cache=yes
