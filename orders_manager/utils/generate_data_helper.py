@@ -506,6 +506,14 @@ class OrderGenerator:
         rand_num = randint(3, 20)
         return rand_num
 
+    def _get_where_was_found(self):
+        from random import choice
+        return choice(('Яндекс',))
+
+    def _get_cost_of_the_way(self):
+        from random import randint
+        return int(randint(50000, 300000) / 100) * 100
+
     def generate(self, num_events=60, num_days=45):
         from orders_manager.models import Order
         from mixer.main import mixer
@@ -556,6 +564,8 @@ class OrderGenerator:
                 'discount_id': self._get_discount(),
                 'details': data.details,
                 'executor_comment': data.executor_comment,
+                'where_was_found': self._get_where_was_found(),
+                'cost_of_the_way': self._get_cost_of_the_way(),
                 'price': program_price,
                 'total_price': program_price,
                 'total_price_with_discounts': program_price

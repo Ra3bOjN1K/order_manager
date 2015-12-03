@@ -146,6 +146,7 @@ class Animator(AbstractUserRole):
 
     available_permissions = (
         'see_orders',
+        'see_executors',
         'see_client_details',
         'see_client_children',
         'see_program_details',
@@ -157,6 +158,7 @@ class Photographer(AbstractUserRole):
 
     available_permissions = (
         'see_orders',
+        'see_executors',
         'see_client_details',
         'see_client_children',
         'see_program_details',

@@ -384,6 +384,8 @@ class OrdersManager(models.Manager):
             'total_price_with_discounts')
         order.details = kwargs.get('details')
         order.executor_comment = kwargs.get('executor_comment')
+        order.where_was_found = kwargs.get('where_was_found')
+        order.cost_of_the_way = kwargs.get('cost_of_the_way')
 
         order.save()
 
@@ -428,6 +430,8 @@ class OrdersManager(models.Manager):
                 'total_price_with_discounts')
             order.details = kwargs.get('details')
             order.executor_comment = kwargs.get('executor_comment')
+            order.where_was_found = kwargs.get('where_was_found')
+            order.cost_of_the_way = kwargs.get('cost_of_the_way')
 
             order.save()
 

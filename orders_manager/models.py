@@ -13,13 +13,16 @@ from orders_manager.roles import ROLES, get_user_role
 
 class Weekends(models.Model):
     date = models.DateField()
+    time_start = models.TimeField(null=True, blank=True)
+    time_end = models.TimeField(null=True, blank=True)
+    all_day = models.BooleanField(default=False)
 
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, related_name='profile')
     address = models.TextField(null=False, blank=False)
     phone = models.CharField(max_length=20, null=False, blank=False)
-    weekends = models.ManyToManyField(Weekends)
+    weekends = models.ManyToManyField(Weekends, related_name='user_profile')
     created = models.DateTimeField(auto_now_add=True)
 
     objects = UserProfileManager()
@@ -244,6 +247,7 @@ class Order(models.Model):
         ClientChild,
         verbose_name='Виновник(-и) торжества'
     )
+
     children_num = models.SmallIntegerField(verbose_name='Количество детей')
     celebrate_date = models.DateField(verbose_name='Дата торжества')
     celebrate_time = models.TimeField(verbose_name='Время торжества')
@@ -253,10 +257,12 @@ class Order(models.Model):
         blank=True,
         verbose_name='Место проведения'
     )
+
     address = models.TextField(name='address', verbose_name='Адрес проведения')
     program = models.ForeignKey(Program, verbose_name='Программа')
     program_executors = models.ManyToManyField(UserProfile,
                                                related_name='orders')
+
     duration = models.IntegerField(verbose_name='Продолжительность')
     price = models.IntegerField(verbose_name='Стоимость')
     additional_services = models.ManyToManyField(
@@ -264,17 +270,28 @@ class Order(models.Model):
         related_name='orders',
         verbose_name='Дополнительные услуги'
     )
+
     services_executors = models.ManyToManyField(UserProfile)
     details = models.TextField(verbose_name='Подробности', blank=True,
                                null=True)
+
     executor_comment = models.TextField(
         verbose_name='Комментарии исполнителя', blank=True, null=True)
+
+    where_was_found = models.CharField(max_length=64, null=True, blank=True,
+                                       verbose_name='Откуда узнали о нас?')
+
     discount = models.ForeignKey(
         Discount, related_name='orders', verbose_name='Скидка')
+
+    cost_of_the_way = models.IntegerField(verbose_name='Стоимость дороги',
+                                          default=0)
+
     total_price = models.IntegerField(verbose_name='Цена')
     total_price_with_discounts = models.IntegerField(
         verbose_name='Цена с учетом скидки'
     )
+
     created = models.DateTimeField(auto_now_add=True)
 
     objects = OrdersManager()

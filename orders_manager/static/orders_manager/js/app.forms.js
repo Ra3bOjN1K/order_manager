@@ -581,6 +581,15 @@ angular.module('OrderManagerApp')
                     },
                     {
                         type: 'currencyInputType',
+                        key: 'cost_of_the_way',
+                        templateOptions: {
+                            id: 'costWayId',
+                            label: 'Стоимость дороги',
+                            disabled: true
+                        }
+                    },
+                    {
+                        type: 'currencyInputType',
                         key: 'total_price',
                         id: 'totalPriceId',
                         templateOptions: {
@@ -591,20 +600,8 @@ angular.module('OrderManagerApp')
                             return !scope.model.total_price;
                         },
                         controller: function ($scope) {
-                            if (!!$scope.model.total_price) {
-                                $scope.$watchGroup(['model.price', 'model.additional_services'], function (newValues) {
-                                    var programPrice = newValues[0];
-                                    var sumServicesPrices = 0;
-                                    angular.forEach($scope.formState.additionalServices, function (origService) {
-                                        angular.forEach($scope.model.additional_services, function (modelService) {
-                                            if (origService.id === modelService.value) {
-                                                sumServicesPrices += origService.price;
-                                            }
-                                        })
-                                    });
-                                    var price = programPrice + sumServicesPrices;
-                                    $scope.model.total_price = Math.round(price / 100) * 100;
-                                });
+                            if (!$scope.model.total_price) {
+                                $scope.model.total_price = 0;
                             }
                         }
                     },
@@ -620,31 +617,8 @@ angular.module('OrderManagerApp')
                             return !scope.model.total_price_with_discounts;
                         },
                         controller: function ($scope) {
-                            if (!!$scope.model.total_price_with_discounts) {
-                                $scope.$watchGroup(['model.price', 'model.additional_services', 'model.discount'], function (newValues) {
-                                    var programPrice = newValues[0];
-                                    var discountPercent = 0;
-                                    var sumServicesPrices = 0;
-
-                                    if ($scope.model.discount !== undefined) {
-                                        angular.forEach($scope.formState.discounts, function (origDiscount) {
-                                            if (origDiscount.id === $scope.model.discount.value) {
-                                                discountPercent = origDiscount.value;
-                                            }
-                                        });
-                                    }
-
-                                    angular.forEach($scope.formState.additionalServices, function (origService) {
-                                        angular.forEach($scope.model.additional_services, function (modelService) {
-                                            if (origService.id === modelService.value) {
-                                                sumServicesPrices += origService.price;
-                                            }
-                                        })
-                                    });
-                                    var programPriceWithDiscount = programPrice - (programPrice * (discountPercent / 100));
-                                    var price = programPriceWithDiscount + sumServicesPrices;
-                                    $scope.model.total_price_with_discounts = Math.round(price / 100) * 100;
-                                });
+                            if (!$scope.model.total_price_with_discounts) {
+                                $scope.model.total_price_with_discounts = 0;
                             }
                         },
                         link: function (scope, elem, attrs, ctrl) {
@@ -1165,7 +1139,7 @@ angular.module('OrderManagerApp')
                         controller: function ($scope) {
 
                             var resultServExecutors = [],
-                            origServExec = angular.copy($scope.model.services_executors);
+                                origServExec = angular.copy($scope.model.services_executors);
 
                             $scope.$watch('model.additional_services', function (newVal, oldVal) {
                                 $timeout(function () {
@@ -1249,6 +1223,35 @@ angular.module('OrderManagerApp')
                         }
                     },
                     {
+                        type: 'simpleSelect',
+                        key: 'where_was_found',
+                        defaultValue: 'Не задано',
+                        templateOptions: {
+                            label: 'Откуда о нас узнали?',
+                            options: [],
+                            size: 5
+                        },
+                        controller: function ($scope) {
+                            var items = [
+                                {'name': 'Не задано', 'value': 1},
+                                {'name': 'Яндекс', 'value': 2},
+                                {'name': 'Google', 'value': 3},
+                                {'name': 'Повторный', 'value': 4},
+                                {'name': 'Посоветовали', 'value': 5},
+                                {'name': 'VK', 'value': 6},
+                                {'name': 'Second', 'value': 7},
+                                {'name': 'Другое', 'value': 8}
+                            ];
+
+                            angular.forEach(items, function (item) {
+                                if (angular.equals(item.name, $scope.model.where_was_found)) {
+                                    $scope.model.where_was_found = item;
+                                }
+                            });
+                            $scope.to.options = items;
+                        }
+                    },
+                    {
                         type: 'vSelect',
                         key: 'discount',
                         defaultValue: {id: '1'},
@@ -1287,6 +1290,16 @@ angular.module('OrderManagerApp')
                         }
                     },
                     {
+                        type: 'input',
+                        key: 'cost_of_the_way',
+                        defaultValue: 0,
+                        templateOptions: {
+                            id: 'costWayId',
+                            label: 'Стоимость дороги',
+                            type: 'number'
+                        }
+                    },
+                    {
                         type: 'currencyInputType',
                         key: 'total_price',
                         templateOptions: {
@@ -1295,19 +1308,22 @@ angular.module('OrderManagerApp')
                             disabled: true
                         },
                         controller: function ($scope) {
-                            $scope.$watchGroup(['model.price', 'model.additional_services'], function (newValues) {
-                                var programPrice = newValues[0];
-                                var sumServicesPrices = 0;
-                                angular.forEach($scope.formState.additionalServices, function (origService) {
-                                    angular.forEach($scope.model.additional_services, function (modelService) {
-                                        if (origService.id === modelService.value) {
-                                            sumServicesPrices += origService.price;
-                                        }
-                                    })
+                            $scope.$watchGroup(['model.price', 'model.additional_services', 'model.cost_of_the_way'],
+                                function (newValues) {
+
+                                    var programPrice = newValues[0];
+                                    var costOfTheWay = newValues[2];
+                                    var sumServicesPrices = 0;
+                                    angular.forEach($scope.formState.additionalServices, function (origService) {
+                                        angular.forEach($scope.model.additional_services, function (modelService) {
+                                            if (origService.id === modelService.value) {
+                                                sumServicesPrices += origService.price;
+                                            }
+                                        })
+                                    });
+                                    var price = programPrice + sumServicesPrices + costOfTheWay;
+                                    $scope.model.total_price = Math.round(price / 100) * 100;
                                 });
-                                var price = programPrice + sumServicesPrices;
-                                $scope.model.total_price = Math.round(price / 100) * 100;
-                            });
                         }
                     },
                     {
@@ -1319,30 +1335,33 @@ angular.module('OrderManagerApp')
                             disabled: true
                         },
                         controller: function ($scope) {
-                            $scope.$watchGroup(['model.price', 'model.additional_services', 'model.discount'], function (newValues) {
-                                var programPrice = newValues[0];
-                                var discountPercent = 0;
-                                var sumServicesPrices = 0;
+                            $scope.$watchGroup([
+                                    'model.price', 'model.additional_services', 'model.discount', 'model.cost_of_the_way'],
+                                function (newValues) {
+                                    var programPrice = newValues[0];
+                                    var discountPercent = 0;
+                                    var sumServicesPrices = 0;
+                                    var costOfTheWay = newValues[3];
 
-                                if ($scope.model.discount !== undefined) {
-                                    angular.forEach($scope.formState.discounts, function (origDiscount) {
-                                        if (origDiscount.id === $scope.model.discount.value) {
-                                            discountPercent = origDiscount.value;
-                                        }
+                                    if ($scope.model.discount !== undefined) {
+                                        angular.forEach($scope.formState.discounts, function (origDiscount) {
+                                            if (origDiscount.id === $scope.model.discount.value) {
+                                                discountPercent = origDiscount.value;
+                                            }
+                                        });
+                                    }
+
+                                    angular.forEach($scope.formState.additionalServices, function (origService) {
+                                        angular.forEach($scope.model.additional_services, function (modelService) {
+                                            if (origService.id === modelService.value) {
+                                                sumServicesPrices += origService.price;
+                                            }
+                                        })
                                     });
-                                }
-
-                                angular.forEach($scope.formState.additionalServices, function (origService) {
-                                    angular.forEach($scope.model.additional_services, function (modelService) {
-                                        if (origService.id === modelService.value) {
-                                            sumServicesPrices += origService.price;
-                                        }
-                                    })
+                                    var programPriceWithDiscount = programPrice - (programPrice * (discountPercent / 100));
+                                    var price = programPriceWithDiscount + sumServicesPrices + costOfTheWay;
+                                    $scope.model.total_price_with_discounts = Math.round(price / 100) * 100;
                                 });
-                                var programPriceWithDiscount = programPrice - (programPrice * (discountPercent / 100));
-                                var price = programPriceWithDiscount + sumServicesPrices;
-                                $scope.model.total_price_with_discounts = Math.round(price / 100) * 100;
-                            });
                         },
                         link: function (scope, elem, attrs, ctrl) {
                             $rootScope.$broadcast('OrderForm.rendered');
@@ -1420,6 +1439,9 @@ angular.module('OrderManagerApp')
                 if (data.executor_comment !== undefined && data.executor_comment) {
                     modelData.executor_comment = data.executor_comment.trim();
                 }
+
+                modelData.where_was_found = !!data.where_was_found.name ? data.where_was_found.name : 'Не задано';
+                modelData.cost_of_the_way = !!data.cost_of_the_way ? data.cost_of_the_way : 0;
 
                 modelData.discount = {id: data.discount.value};
                 modelData.total_price = data.total_price;
