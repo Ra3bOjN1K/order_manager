@@ -155,6 +155,18 @@ angular.module('OrderManagerApp')
             wrapper: ['bootstrapLabel', 'bootstrapHasError']
         });
 
+        formlyConfig.setType({
+            name: 'timePicker',
+            templateUrl: '/static/form_field_templates/time_picker_template.html',
+            wrapper: ['bootstrapLabel', 'bootstrapHasError']
+        });
+
+        formlyConfig.setType({
+            name: 'datePicker',
+            templateUrl: '/static/form_field_templates/date_picker_template.html',
+            wrapper: ['bootstrapLabel', 'bootstrapHasError']
+        });
+
         formlyConfig.setWrapper({
             name: 'loading',
             templateUrl: 'loading.html'
@@ -586,6 +598,9 @@ angular.module('OrderManagerApp')
                             id: 'costWayId',
                             label: 'Стоимость дороги',
                             disabled: true
+                        },
+                        hideExpression: function ($viewValue, $modelValue, scope) {
+                            return !scope.model.cost_of_the_way;
                         }
                     },
                     {
@@ -1234,13 +1249,16 @@ angular.module('OrderManagerApp')
                         controller: function ($scope) {
                             var items = [
                                 {'name': 'Не задано', 'value': 1},
-                                {'name': 'Яндекс', 'value': 2},
-                                {'name': 'Google', 'value': 3},
-                                {'name': 'Повторный', 'value': 4},
-                                {'name': 'Посоветовали', 'value': 5},
+                                {'name': 'Google', 'value': 2},
+                                {'name': 'Yandex', 'value': 3},
+                                {'name': 'Mail.ru', 'value': 4},
+                                {'name': 'Second', 'value': 5},
                                 {'name': 'VK', 'value': 6},
-                                {'name': 'Second', 'value': 7},
-                                {'name': 'Другое', 'value': 8}
+                                {'name': 'Посоветовали', 'value': 7},
+                                {'name': 'Повторный', 'value': 8},
+                                {'name': 'Листовка', 'value': 9},
+                                {'name': 'Рассылка', 'value': 10},
+                                {'name': 'Другое', 'value': 11}
                             ];
 
                             angular.forEach(items, function (item) {
@@ -1452,6 +1470,97 @@ angular.module('OrderManagerApp')
 
             return orderForm;
         }])
+    .factory('ExecutorDayOffForm', [function() {
+        var dayOffForm = {};
+
+        dayOffForm.getFieldsOptions = function () {
+            return [
+                {
+                    type: 'input',
+                    key: 'user_profile',
+                    hideExpression: 'true'
+                },
+                {
+                    type: 'datePicker',
+                    key: 'date',
+                    defaultValue: moment(),
+                    templateOptions: {
+                        label: 'Дата'
+                    },
+                    controller: function ($scope) {
+                        $scope.isOpenDate = false;
+
+                        $scope.dateOptions = {
+                            showWeeks: false,
+                            startingDay: 1
+                        };
+
+                        if (typeof($scope.model.date) === 'string') {
+                            $scope.model.date = moment($scope.model.date, 'YYYY-MM-DD');
+                        }
+
+                        $scope.model.date = $scope.model.date.toDate();
+                    }
+                },
+                {
+                    type: 'timePicker',
+                    key: 'time_start',
+                    defaultValue: '00:00',
+                    templateOptions: {
+                        label: 'с'
+                    },
+                    controller: function ($scope) {
+                        $scope.isOpenTime = false;
+
+                        $scope.timeOptions = {
+                            showMeridian: false
+                        };
+
+                        var time = moment($scope.model.time_start, 'HH:mm');
+                        $scope.model.time_start = moment(moment()).set({
+                            hour: time.hours(),
+                            minute: time.minutes()
+                        }).toDate();
+                    }
+                },
+                {
+                    type: 'timePicker',
+                    key: 'time_end',
+                    defaultValue: '00:00',
+                    templateOptions: {
+                        label: 'до'
+                    },
+                    controller: function ($scope) {
+                        $scope.isOpenTime = false;
+
+                        $scope.timeOptions = {
+                            showMeridian: false
+                        };
+
+                        var time = moment($scope.model.time_end, 'HH:mm');
+                        $scope.model.time_end = moment(moment()).set({
+                            hour: time.hours(),
+                            minute: time.minutes()
+                        }).toDate();
+                    }
+                }
+            ]
+        };
+
+        dayOffForm.convertDataToModel = function (data) {
+            var modelData = {};
+
+            modelData.id = data.id;
+            modelData.user_id = data.user_profile;
+            modelData.date = moment(data.date).format('YYYY-MM-DD');
+            modelData.time_start = moment(data.time_start).format('HH:mm');
+            modelData.time_end = moment(data.time_end).format('HH:mm');
+
+            return modelData;
+        };
+
+        return dayOffForm;
+    }])
     .factory('ClientForm', [function () {
         var clientForm = {};
 

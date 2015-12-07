@@ -1,7 +1,7 @@
 angular.module('OrderManagerApp', [
         'ngStorage', 'ngAnimate', 'ngMessages', 'ngDialog', 'ui.bootstrap', 'ui.bootstrap.datetimepicker', 'ui.grid',
-        'ui.grid.edit', 'ui.grid.rowEdit', 'ui.grid.pagination', 'ui.grid.selection', 'xeditable', 'CalendarApp',
-        'restangular', 'formly', 'formlyBootstrap', 'nya.bootstrap.select', 'ng-slide-down', 'ui.mask'])
+        'ui.grid.edit', 'ui.grid.rowEdit', 'ui.grid.pagination', 'ui.grid.selection', 'CalendarApp', 'restangular',
+        'formly', 'formlyBootstrap', 'nya.bootstrap.select', 'ng-slide-down', 'ui.mask'])
 
     .config(['$httpProvider', function ($httpProvider) {
         $httpProvider.defaults.xsrfCookieName = 'csrftoken';
@@ -144,6 +144,10 @@ angular.module('OrderManagerApp', [
             $scope.basePage.loading = false;
         });
 
+        $scope.$on('Calendar.showDayOffDialog', function (event, date, dayOff) {
+            $scope.dlgManager.dayOff.showDlg(date, dayOff);
+        });
+
         $scope.auth = {
             hasPermission: function (permission) {
                 return Auth.hasPermission(permission)
@@ -157,6 +161,19 @@ angular.module('OrderManagerApp', [
                         template: 'change_password_template.html',
                         showClose: false,
                         closeByDocument: false
+                    });
+                }
+            },
+            dayOff: {
+                showDlg: function (date, dayOff) {
+                    $scope.checkedDate = date;
+                    $scope.checkedDayOff = dayOff;
+
+                    $scope.dayOffDialog = ngDialog.open({
+                        template: 'dayoff_template.html',
+                        showClose: false,
+                        closeByDocument: false,
+                        scope: $scope
                     });
                 }
             },
@@ -218,6 +235,44 @@ angular.module('OrderManagerApp', [
             }
         }
     }])
+    .controller('ExecutorDayOffCtrl', [
+        '$scope', 'ExecutorDayOffForm', 'ExecutorDayOffService',
+        function ($scope, ExecutorDayOffForm, ExecutorDayOffService) {
+
+            var vm = this;
+
+            var checkedDayOffId = $scope.checkedDayOff !== undefined ? $scope.checkedDayOff.id : 0;
+
+            ExecutorDayOffService.getDayOff(checkedDayOffId).then(function (data) {
+                vm.model = data;
+                if (vm.model.date === undefined) {
+                    vm.model.date = $scope.checkedDate;
+                }
+                vm.fields = ExecutorDayOffForm.getFieldsOptions();
+            });
+
+            vm.onSetDayOffSubmit = function () {
+                if (vm.form.$valid) {
+                    var convertedData = ExecutorDayOffForm.convertDataToModel(vm.model);
+                    if (!!convertedData.id) {
+                        ExecutorDayOffService.updateDayOff(convertedData).then(function () {
+                            $scope.dayOffDialog.close();
+                        });
+                    }
+                    else {
+                        ExecutorDayOffService.saveDayOff(convertedData).then(function () {
+                            $scope.dayOffDialog.close();
+                        });
+                    }
+                }
+            };
+
+            vm.onDayOffDelete = function () {
+                ExecutorDayOffService.deleteDayOff(vm.model.id).then(function () {
+                    $scope.dayOffDialog.close();
+                })
+            }
+        }])
     .controller('UserChangePwdCtrl', [
         '$window', 'ngDialog', 'UserService', 'ChangePasswordForm',
         function ($window, ngDialog, UserService, ChangePasswordForm) {
@@ -1207,8 +1262,12 @@ angular.module('OrderManagerApp', [
             })
         }])
     .controller('UsersManagerCtrl', [
-        '$q', '$scope', '$timeout', '$interval', 'ConfirmationDialog', 'Auth', 'UserService', 'UserProfileForm', 'uiGridConstants',
-        function ($q, $scope, $timeout, $interval, ConfirmationDialog, Auth, UserService, UserProfileForm, uiGridConstants) {
+
+        '$q', '$controller', '$scope', '$timeout', '$interval', 'ConfirmationDialog', 'Auth', 'UserService', 'UserProfileForm',
+        'uiGridConstants', 'ExecutorDayOffForm', 'ExecutorDayOffService',
+
+        function ($q, $controller, $scope, $timeout, $interval, ConfirmationDialog, Auth, UserService, UserProfileForm,
+                  uiGridConstants, ExecutorDayOffForm, ExecutorDayOffService) {
 
             var vm = this;
 
@@ -1241,7 +1300,7 @@ angular.module('OrderManagerApp', [
                     {
                         name: 'full_name',
                         displayName: 'Имя',
-                        width: 314
+                        width: 290
                     },
                     {
                         name: 'role',
@@ -1274,6 +1333,7 @@ angular.module('OrderManagerApp', [
                         vm.userProfile.selectedUserProfile = angular.copy(row.entity);
 
                         if (!vm.detailsMode.userProfileDetails || row.entity.id === undefined) {
+                            vm.addDayOffMode.deactivate();
                             vm.detailsMode.setUserProfileDetailsMode();
                         }
 
@@ -1302,10 +1362,48 @@ angular.module('OrderManagerApp', [
                 }
             };
 
+            vm.addDayOffMode = {
+                isActive: false,
+
+                activate: function () {
+                    vm.addDayOffMode.model = {
+                        user_profile: vm.userProfile.selectedUserProfile.id
+                    };
+                    vm.addDayOffMode.formFields = ExecutorDayOffForm.getFieldsOptions();
+                    vm.addDayOffMode.isActive = true;
+                },
+
+                deactivate: function () {
+                    vm.addDayOffMode.isActive = false;
+                },
+
+                onSubmit: function () {
+                    ExecutorDayOffService.saveDayOff(ExecutorDayOffForm.convertDataToModel(vm.addDayOffMode.model)).then(function () {
+                        vm.userProfile.setMode('detailsMode');
+                    })
+                }
+            };
+
             vm.userProfile = {
                 selectedUserProfile: null,
                 isNewUserProfile: false,
                 isExecutorsHandbook: true,
+                setMode: function (mode) {
+                    if (mode === 'detailsMode') {
+                        if (vm.detailsMode.userProfileDetails) {
+                            vm.userProfileEditMode.activate();
+                        }
+                        else {
+                            vm.detailsMode.setUserProfileDetailsMode();
+                        }
+                        vm.addDayOffMode.deactivate();
+                    }
+                    else if (mode === 'addDayOffMode') {
+                        vm.userProfileEditMode.deactivate();
+                        vm.detailsMode.userProfileDetails = false;
+                        vm.addDayOffMode.activate();
+                    }
+                },
                 addNewRow: function () {
                     vm.gridOptions.data.unshift({
                         full_name: 'Новый пользователь'

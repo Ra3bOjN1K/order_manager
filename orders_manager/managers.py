@@ -82,6 +82,33 @@ class UserProfileManager(models.Manager):
         ).order_by('user__groups__name').all()
 
 
+class DayOffManager(models.Manager):
+    def create(self, **kwargs):
+        from orders_manager.models import DayOff
+
+        day_off = DayOff()
+        day_off.user_profile_id = kwargs.get('user_id')
+        day_off.date = kwargs.get('date')
+        day_off.time_start = kwargs.get('time_start')
+        day_off.time_end = kwargs.get('time_end')
+        day_off.save()
+
+        return day_off
+
+    def update_or_create(self, defaults=None, **kwargs):
+        try:
+            day_off = self.get(id=kwargs.get('id', -1))
+            day_off.date = kwargs.get('date')
+            day_off.time_start = kwargs.get('time_start')
+            day_off.time_end = kwargs.get('time_end')
+            day_off.save()
+
+        except self.model.DoesNotExist:
+            day_off = self.create(**kwargs)
+
+        return day_off
+
+
 class ClientManager(models.Manager):
     def create(self, **kwargs):
         from orders_manager.models import Client

@@ -141,6 +141,21 @@
   border: 1px solid darken(#817299, 12%);
 }
 
+.day-off {
+  background: #ed715e;
+  border: 1px solid darken(#ed715e, 12%);
+}
+
+.day-off.event-in-past {
+  background: #d8a6a6;
+  border: 1px solid darken(#d8a6a6, 12%);
+}
+
+.day-off.event-today {
+  background: #e55242;
+  border: 1px solid darken(#e55242, 12%);
+}
+
 .event-window-background {
   @include init-flex-position(column);
   @include justify-content(center);

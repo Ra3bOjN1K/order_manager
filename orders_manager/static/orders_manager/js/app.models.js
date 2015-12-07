@@ -52,6 +52,10 @@ angular.module('OrderManagerApp')
                     return !!id ? _orderService.get(id) : $q.when({});
                 },
 
+                getOrders: function () {
+                    return _allOrders;
+                },
+
                 createOrder: function (order) {
                     return _orderService.post(order).then(function (order) {
                         _allOrders.push(order);
@@ -113,17 +117,17 @@ angular.module('OrderManagerApp')
                     return this.reloadExecutors();
                 },
 
-                reloadAllProfiles: function() {
-                    return _userService.getList().then(function(data) {
+                reloadAllProfiles: function () {
+                    return _userService.getList().then(function (data) {
                         _allUserProfiles = data;
                     })
                 },
 
-                getAllUserProfiles: function() {
+                getAllUserProfiles: function () {
                     return _allUserProfiles;
                 },
 
-                reloadExecutors: function() {
+                reloadExecutors: function () {
                     return _userService.getList({'filters': {'group': 'executor'}}).then(function (data) {
                         _allExecutors = data;
                     })
@@ -148,7 +152,7 @@ angular.module('OrderManagerApp')
         }
     ])
     .factory('ClientService', [
-        '$q','Restangular', function ($q, Restangular) {
+        '$q', 'Restangular', function ($q, Restangular) {
             var restAngular = Restangular.withConfig(function (RestangularConfigurer) {
                 RestangularConfigurer.setBaseUrl('/api/v1/');
                 RestangularConfigurer.setRequestSuffix('/');
@@ -166,7 +170,7 @@ angular.module('OrderManagerApp')
                     return this.reloadClients();
                 },
 
-                reloadClients: function() {
+                reloadClients: function () {
                     return _clientService.getList().then(function (data) {
                         _allClients = data;
                     })
@@ -192,7 +196,7 @@ angular.module('OrderManagerApp')
                     return _clientService.post(client)
                 },
 
-                deleteClient: function(clientId) {
+                deleteClient: function (clientId) {
                     return _clientService.post({'mode': 'delete', 'client_id': clientId})
                 },
 
@@ -200,8 +204,11 @@ angular.module('OrderManagerApp')
                     return restAngular.one('clients', data.client).post('children', data)
                 },
 
-                deleteClientChild: function(clientId, childId) {
-                    return restAngular.one('clients', clientId).all('children').post({'mode': 'delete', 'child_id': childId})
+                deleteClientChild: function (clientId, childId) {
+                    return restAngular.one('clients', clientId).all('children').post({
+                        'mode': 'delete',
+                        'child_id': childId
+                    })
                 }
             }
         }
@@ -240,8 +247,11 @@ angular.module('OrderManagerApp')
                     return restAngular.one('programs', data.program).post('prices', data)
                 },
 
-                deleteProgramPrice: function(programId, priceId) {
-                    return restAngular.one('programs', programId).all('prices').post({'mode': 'delete', 'price_id': priceId})
+                deleteProgramPrice: function (programId, priceId) {
+                    return restAngular.one('programs', programId).all('prices').post({
+                        'mode': 'delete',
+                        'price_id': priceId
+                    })
                 }
             }
         }
@@ -265,7 +275,10 @@ angular.module('OrderManagerApp')
                 },
 
                 deleteAdditionalService: function (additionalServiceId) {
-                    return _additionalServiceFactory.post({'mode': 'delete', 'additional_service_id': additionalServiceId})
+                    return _additionalServiceFactory.post({
+                        'mode': 'delete',
+                        'additional_service_id': additionalServiceId
+                    })
                 }
             }
         }
@@ -296,8 +309,67 @@ angular.module('OrderManagerApp')
                     return _discountService.post(discount)
                 },
 
-                deleteDiscount: function(discountId) {
+                deleteDiscount: function (discountId) {
                     return _discountService.post({'mode': 'delete', 'id': discountId})
+                }
+            }
+        }
+    ])
+    .factory('ExecutorDayOffService', [
+        '$q', '$rootScope', 'Restangular', function ($q, $rootScope, Restangular) {
+            var restAngular = Restangular.withConfig(function (RestangularConfigurer) {
+                RestangularConfigurer.setBaseUrl('/api/v1/');
+                RestangularConfigurer.setRequestSuffix('/');
+            });
+
+            var _dayoffService = restAngular.all('days_off');
+            var _allDaysOff = [];
+
+            $rootScope.$watchCollection(function () {
+                return _allDaysOff;
+            }, function (newVal) {
+                $rootScope.$broadcast('ExecutorDayOffService:list:updated', newVal)
+            });
+
+            return {
+                reloadDaysOff: function () {
+                    return _dayoffService.getList().then(function (data) {
+                        _allDaysOff = data;
+                    })
+                },
+
+                getDaysOff: function () {
+                    return _allDaysOff;
+                },
+
+                getDayOff: function (id) {
+                    return !!id ? _allDaysOff.get(id) : $q.when({});
+                },
+
+                saveDayOff: function (dayOff) {
+                    return _dayoffService.post(dayOff).then(function (item) {
+                        _allDaysOff.push(item);
+                    })
+                },
+
+                updateDayOff: function (dayOff) {
+                    return _dayoffService.post(dayOff).then(function (data) {
+                        angular.forEach(_allDaysOff, function (daysOffItem, idx) {
+                            if (data.id === daysOffItem.id) {
+                                _allDaysOff[idx] = data
+                            }
+                        });
+                    });
+                },
+
+                deleteDayOff: function (dayOffId) {
+                    return _dayoffService.post({'mode': 'delete', 'id': dayOffId}).then(function () {
+                        angular.forEach(_allDaysOff, function (dayOff, idx) {
+                            if (dayOff.id === dayOffId) {
+                                _allDaysOff.splice(idx, 1)
+                            }
+                        });
+                    })
                 }
             }
         }

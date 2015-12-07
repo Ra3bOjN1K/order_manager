@@ -5,7 +5,7 @@ from django.contrib.auth.models import Permission
 from rest_framework import serializers
 
 from orders_manager.models import (UserProfile, Client, Order, Program,
-    AdditionalService, ClientChild, ProgramPrice, Discount)
+    AdditionalService, ClientChild, ProgramPrice, Discount, DayOff)
 
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -204,3 +204,17 @@ class OrderSerializer(DynamicFieldsModelSerializer):
             instance = Order.objects.create(**validated_data)
 
         return instance
+
+
+class DayOffSerializer(DynamicFieldsModelSerializer):
+    id = serializers.CharField(required=False)
+    user_full_name = serializers.SerializerMethodField()
+    date = serializers.CharField()
+    time_start = serializers.CharField()
+    time_end = serializers.CharField()
+
+    class Meta:
+        model = DayOff
+
+    def get_user_full_name(self, obj):
+        return obj.user_profile.get_full_name()

@@ -162,6 +162,21 @@
   border: 1px solid #635677;
 }
 
+.day-off {
+  background: #ed715e;
+  border: 1px solid #e74027;
+}
+
+.day-off.event-in-past {
+  background: #d8a6a6;
+  border: 1px solid #c57b7b;
+}
+
+.day-off.event-today {
+  background: #e55242;
+  border: 1px solid #ce2e1c;
+}
+
 .event-window-background {
   display: -moz-box;
   -moz-box-orient: vertical;

@@ -81,12 +81,14 @@
     margin: 4px;
   }
 
-  .user-profile-form {
+  .user-profile-form,
+  .add-dayoff-form {
     @include init-flex-position(column);
     @include flex(1 1);
   }
 
-  .user-profile-form .details-body {
+  .user-profile-form .details-body,
+  .add-dayoff-form .details-body {
     @include init-flex-position(column);
     //@include justify-content(space-between);
     @include justify-content(center);
@@ -156,6 +158,48 @@
       padding: 4px;
       resize: none;
       width: auto;
+    }
+  }
+
+  .add-dayoff-form {
+
+    .formly {
+      @include init-flex-position(column);
+      @include justify-content(flex-start);
+    }
+
+    .formly-field {
+      margin: 6px 0;
+    }
+
+    .form-group > div {
+      @include init-flex-position(row);
+      @include align-items(center);
+      @include flex(1 1);
+    }
+
+    .form-control {
+      @include flex(1 1);
+      width: auto;
+    }
+
+    .control-label {
+      width: 60px;
+    }
+
+    .time-container, .date-container {
+      @include init-flex-position(row);
+      position: relative;
+
+      input {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+      }
+    }
+
+    .btn-group.pull-left {
+      display: none;
+      position: absolute;
     }
   }
 }

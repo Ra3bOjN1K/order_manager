@@ -7,3 +7,4 @@ psycopg2
 pyyaml
 pytz
 mixer
+google-api-python-client

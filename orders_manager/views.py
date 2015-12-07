@@ -16,10 +16,11 @@ from rest_framework.generics import (ListAPIView, RetrieveUpdateDestroyAPIView,
 from rest_framework.response import Response
 from guardian.mixins import PermissionRequiredMixin
 from orders_manager.models import (UserProfile, Client, Order, ClientChild,
-    Program, ProgramPrice, AdditionalService, Discount, User)
+    Program, ProgramPrice, AdditionalService, Discount, User, DayOff)
 from orders_manager.serializers import (UserProfileSerializer, ClientSerializer,
     OrderSerializer, ClientChildrenSerializer, ProgramSerializer,
-    ProgramPriceSerializer, AdditionalServiceSerializer, DiscountSerializer)
+    ProgramPriceSerializer, AdditionalServiceSerializer, DiscountSerializer,
+    DayOffSerializer)
 from orders_manager.roles import get_user_role
 
 
@@ -31,7 +32,7 @@ class PopulateDatabaseView(View):
         init_roles()
         User.objects.create_superuser('admin', 'prorab.ks@gmail.com', '12345')
         Discount.objects.create(name='Нет скидки', value=0)
-        # populate_database()
+        populate_database()
 
         return HttpResponse('Done')
 
@@ -458,6 +459,51 @@ class AdditionalServicesListView(ListCreateAPIView):
 
         return super(AdditionalServicesListView, self).post(
             request, *args, **kwargs)
+
+
+class DayOffListView(ListCreateAPIView):
+    serializer_class = DayOffSerializer
+
+    def post(self, request, *args, **kwargs):
+        if request.data.get('mode'):
+            action = request.data.pop('mode')
+            if action == 'delete':
+                day_off_id = request.data.get('id')
+                day_off = DayOff.objects.get(id=day_off_id)
+                day_off.delete()
+
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+        req_user_id = request.data.get('user_id')
+
+        user_id = request.user.id if not req_user_id else req_user_id
+
+        data = {
+            'id': request.data.get('id'),
+            'user_id': user_id,
+            'date': request.data.get('date'),
+            'time_start': request.data.get('time_start'),
+            'time_end': request.data.get('time_end')
+        }
+
+        day_off = DayOff.objects.update_or_create(**data)
+        day_off_ser = DayOffSerializer(day_off)
+
+        return Response(day_off_ser.data, status=status.HTTP_201_CREATED)
+
+    def get_queryset(self):
+        from orders_manager.models import get_user_role
+        if get_user_role(self.request.user) in ('manager', 'superuser'):
+            return DayOff.objects.all()
+        else:
+            return self.request.user.profile.days_off.all()
+
+
+class DayOffView(RetrieveAPIView):
+    def get(self, request, *args, **kwargs):
+        obj = DayOff.objects.get(id=kwargs.get('pk'))
+        ser_obj = DayOffSerializer(obj)
+        return Response(ser_obj.data)
 
 
 class DiscountListView(ListCreateAPIView):

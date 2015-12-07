@@ -8,7 +8,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from orders_manager.models import (UserProfile, Client, ClientChild,
-    AdditionalService, Order, Program, ProgramPrice, Discount)
+    AdditionalService, Order, Program, ProgramPrice, Discount, DayOff)
 from orders_manager.utils.generate_data_helper import (UserProfileGenerator,
     ProgramGenerator, AdditionalServicesGenerator)
 from orders_manager.roles import get_user_role, init_roles
@@ -446,6 +446,54 @@ class DiscountsTestCase(TestCase):
         discount = Discount.objects.create(name='Скидка №666', value=66)
         self.assertEqual('Скидка №666', discount.name)
         self.assertEqual(66, discount.value)
+
+# ==============================================================================
+
+class DaysOffTestCase(TestCase):
+    def setUp(self):
+        from orders_manager.models import UserProfile
+        from orders_manager.roles import init_roles
+
+        init_roles()
+        gen_us = UserProfileGenerator()
+        gen_us.generate(UserProfileGenerator.ANIMATOR, 4)
+        user_profiles = UserProfile.objects.all()
+        user_profile = UserProfile.objects.first()
+        self.day_off_data = {
+            'user_id': user_profile.user.id,
+            'date': '2015-12-03',
+            'time_start': '10:00:00',
+            'time_end': '15:00:00'
+        }
+
+    def test_create_day_off(self):
+        day_off = DayOff.objects.create(**self.day_off_data)
+        self.assertIsInstance(day_off, DayOff)
+        self.assertEqual('2015-12-03', day_off.date)
+
+    def test_update_day_off(self):
+        DayOff.objects.create(**self.day_off_data)
+
+        self.day_off_data.update({
+            'time_start': '04:00:00',
+            'time_end': '08:00:00'
+        })
+        day_off = DayOff.objects.update_or_create(**self.day_off_data)
+        self.assertEqual(self.day_off_data.get('time_start'), day_off.time_start)
+        self.assertEqual(self.day_off_data.get('time_end'), day_off.time_end)
+
+        self.day_off_data.update({
+            'id': day_off.id,
+            'time_start': '12:00:00',
+            'time_end': '16:00:00'
+        })
+
+        del self.day_off_data['user_id']
+        del self.day_off_data['date']
+
+        day_off = DayOff.objects.update_or_create(**self.day_off_data)
+        self.assertEqual(self.day_off_data.get('time_start'), day_off.time_start)
+        self.assertEqual(self.day_off_data.get('time_end'), day_off.time_end)
 
 
 # ==============================================================================

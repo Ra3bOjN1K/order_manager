@@ -127,7 +127,6 @@ class UserProfileGenerator:
                 'email': data.email,
                 'phone': common_gen.generate_phone(),
                 'password': '12345',
-                'weekends': self._generate_user_weekends_str(),
                 'address': data.address,
             }
 
@@ -357,6 +356,39 @@ class ClientGenerator:
         return clients
 
 
+class DaysOffGenerator:
+    def generate(self, num_days_off=10, days_spread_future=15):
+        from random import choice
+        from orders_manager.models import UserProfile, DayOff
+
+        all_executors = UserProfile.objects.all_executors()
+
+        common_gen = CommonDataGenerator()
+
+        days_off_list = []
+
+        def _gen_start_and_end_times():
+            t = [
+                common_gen.generate_time(time_to=17),
+                common_gen.generate_time(time_to=17)
+            ]
+            t.sort()
+            return t
+
+        while len(days_off_list) < num_days_off:
+            date = common_gen.generate_date_in_future(
+                        num_days_for_start=-3, num_days_for_end=days_spread_future)
+            executor_id = choice(all_executors).user_id
+            day_off_times = _gen_start_and_end_times()
+            days_off_list.append(DayOff.objects.create(**{
+                'user_id': executor_id,
+                'date': date,
+                'time_start': day_off_times[0],
+                'time_end': day_off_times[1]
+            }))
+
+
+
 class OrderGenerator:
     def _get_author_id(self):
         from orders_manager.models import UserProfile
@@ -508,7 +540,11 @@ class OrderGenerator:
 
     def _get_where_was_found(self):
         from random import choice
-        return choice(('Яндекс',))
+
+        return choice(
+            ('Не задано', 'Google', 'Yandex', 'Mail.ru', 'Second', 'VK',
+             'Посоветовали', 'Повторный', 'Листовка', 'Рассылка', 'Другое')
+        )
 
     def _get_cost_of_the_way(self):
         from random import randint
@@ -583,4 +619,5 @@ def populate_database():
     AdditionalServicesGenerator().generate()
     DiscountsGenerator().generate()
     ClientGenerator().generate(16)
+    DaysOffGenerator().generate(28, 25)
     OrderGenerator().generate(num_events=60, num_days=45)

@@ -1,0 +1,65 @@
+@import 'settings';
+
+.dayoff-content {
+  @include init-flex-position(column);
+  width: 360px;
+
+  .panel {
+    @include init-flex-position(column);
+    @include flex(1 1);
+    margin: 0;
+  }
+
+  .panel-heading {
+    @include init-flex-position(row);
+    @include flex(1 1);
+    @include justify-content(space-between);
+  }
+
+  .panel-body {
+    @include init-flex-position(column);
+    @include justify-content(center);
+    @include flex(1 1);
+    min-height: 220px;
+    padding: 16px;
+  }
+
+  .formly {
+    @include init-flex-position(column);
+  }
+
+  .formly-field {
+    @include flex(1 1);
+    margin: 6px 0;
+  }
+
+  .form-group > div {
+    @include init-flex-position(row);
+    @include align-items(center);
+    @include flex(1 1);
+  }
+
+  .form-control {
+    @include flex(1 1);
+    width: auto;
+  }
+
+  .control-label {
+    width: 60px;
+  }
+
+  .time-container, .date-container {
+    @include init-flex-position(row);
+    position: relative;
+
+    input {
+      border-bottom-right-radius: 0;
+      border-top-right-radius: 0;
+    }
+  }
+
+  li .pull-left {
+    display: none;
+    position: absolute;
+  }
+}

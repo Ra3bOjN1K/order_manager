@@ -132,7 +132,8 @@
   flex: 1 1;
   margin: 4px;
 }
-.user-profiles-content .user-profile-form {
+.user-profiles-content .user-profile-form,
+.user-profiles-content .add-dayoff-form {
   display: -moz-box;
   -moz-box-orient: vertical;
   display: -webkit-box;
@@ -146,7 +147,8 @@
   -webkit-flex: 1 1;
   flex: 1 1;
 }
-.user-profiles-content .user-profile-form .details-body {
+.user-profiles-content .user-profile-form .details-body,
+.user-profiles-content .add-dayoff-form .details-body {
   display: -moz-box;
   -moz-box-orient: vertical;
   display: -webkit-box;
@@ -164,7 +166,8 @@
   background: #fafafa;
   border: 1px solid #ccc;
 }
-.user-profiles-content .user-profile-form .details-body .formly {
+.user-profiles-content .user-profile-form .details-body .formly,
+.user-profiles-content .add-dayoff-form .details-body .formly {
   display: -moz-box;
   -moz-box-orient: vertical;
   display: -webkit-box;
@@ -179,7 +182,8 @@
   flex: 1 1;
   margin: 46px 14px;
 }
-.user-profiles-content .user-profile-form .details-body .form-btns-container {
+.user-profiles-content .user-profile-form .details-body .form-btns-container,
+.user-profiles-content .add-dayoff-form .details-body .form-btns-container {
   display: -moz-box;
   -moz-box-orient: horizontal;
   display: -webkit-box;
@@ -198,7 +202,8 @@
   height: 46px;
   padding-right: 6px;
 }
-.user-profiles-content .user-profile-form .details-body .form-btns-container .btn-save {
+.user-profiles-content .user-profile-form .details-body .form-btns-container .btn-save,
+.user-profiles-content .add-dayoff-form .details-body .form-btns-container .btn-save {
   margin-right: 4px;
 }
 .user-profiles-content .user-profile-form .form-group {
@@ -256,4 +261,66 @@
   padding: 4px;
   resize: none;
   width: auto;
+}
+.user-profiles-content .add-dayoff-form .formly {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+}
+.user-profiles-content .add-dayoff-form .formly-field {
+  margin: 6px 0;
+}
+.user-profiles-content .add-dayoff-form .form-group > div {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+}
+.user-profiles-content .add-dayoff-form .form-control {
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  width: auto;
+}
+.user-profiles-content .add-dayoff-form .control-label {
+  width: 60px;
+}
+.user-profiles-content .add-dayoff-form .time-container, .user-profiles-content .add-dayoff-form .date-container {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+.user-profiles-content .add-dayoff-form .time-container input, .user-profiles-content .add-dayoff-form .date-container input {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+.user-profiles-content .add-dayoff-form .btn-group.pull-left {
+  display: none;
+  position: absolute;
 }

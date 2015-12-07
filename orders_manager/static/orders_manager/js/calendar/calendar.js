@@ -26,15 +26,21 @@ angular.module('CalendarApp', ['ui.calendar'])
         }
     })
     .controller('CalendarCtrl', [
-        '$rootScope', '$scope', '$timeout', 'ngDialog', 'OrderService', 'Auth', 'uiCalendarConfig',
-        function ($rootScope, $scope, $timeout, ngDialog, OrderService, Auth, uiCalendarConfig) {
+        '$rootScope', '$scope', '$timeout', 'ngDialog', 'OrderService', 'ExecutorDayOffService', 'Auth', 'uiCalendarConfig',
+        function ($rootScope, $scope, $timeout, ngDialog, OrderService, ExecutorDayOffService, Auth, uiCalendarConfig) {
+
+            ExecutorDayOffService.reloadDaysOff();
 
             OrderService.loadOrders().finally(function () {
                 $rootScope.$broadcast('basePageLoaded')
             });
 
-            $scope.$on('orderService:list:updated', function (event, data) {
-                $scope.events.addEventList(data);
+            $scope.$on('orderService:list:updated', function (event, orderList) {
+                $scope.events.addEventList(orderList, ExecutorDayOffService.getDaysOff());
+            });
+
+            $scope.$on('ExecutorDayOffService:list:updated', function(event, dayOffList) {
+                $scope.events.addEventList(OrderService.getOrders(), dayOffList);
             });
 
             $scope.$on('ngDialog.closed', function () {
@@ -44,45 +50,80 @@ angular.module('CalendarApp', ['ui.calendar'])
             $scope.events = {
                 list: [],
 
-                addEventList: function (modelOrders) {
+                addEventList: function (modelOrders, modelDaysOff) {
                     $timeout(function () {
                         $scope.events.list.length = 0;
                     }).then(function () {
+                        angular.forEach(modelDaysOff, function (dayOff) {
+                            dayOff.lbl = 'dayOff';
+                            $scope.events.addEvent(dayOff);
+                        })
+                    }).then(function () {
                         angular.forEach(modelOrders, function (order) {
+                            order.lbl = 'order';
                             $scope.events.addEvent(order);
                         })
                     })
                 },
 
-                addEvent: function (modelOrder) {
-                    $scope.events.list.push({
-                        id: modelOrder.id,
-                        title: modelOrder.program.title,
-                        start: getStartDateTime(),
-                        end: getEndDateTime()
-                    });
+                addEvent: function (model) {
 
-                    function getStartDateTime() {
-                        return modelOrder.celebrate_date + ' ' + modelOrder.celebrate_time;
+                    var modelItem = {
+                        label: model.lbl
+                    };
+
+                    if (model.lbl === 'order') {
+                        modelItem.id = model.id;
+                        modelItem.title = model.program.title;
+                        modelItem.start = getStartDateTime();
+                        modelItem.end = getEndDateTime();
+
+                        function getStartDateTime() {
+                            return model.celebrate_date + ' ' + model.celebrate_time;
+                        }
+
+                        function getEndDateTime() {
+                            var start = moment(
+                                model.celebrate_date + ' ' + model.celebrate_time,
+                                'YYYY-MM-DD HH:mm'
+                            );
+                            return start.add(model.duration, 'm').format('YYYY-MM-DD HH:mm');
+                        }
+                    }
+                    else if (model.lbl === 'dayOff') {
+                        modelItem.id = model.id;
+                        var time_start = model.time_start.substring(0, 5);
+                        var time_end = model.time_end.substring(0, 5);
+                        if (time_start !== "00:00" && time_end !== "00:00") {
+                            modelItem.title = '({0}-{1}) {2}'.format(time_start, time_end, model.user_full_name);
+                        }
+                        else {
+                            modelItem.title = model.user_full_name;
+                        }
+                        modelItem.start = model.date + ' ' + model.time_start;
                     }
 
-                    function getEndDateTime() {
-                        var start = moment(
-                            modelOrder.celebrate_date + ' ' + modelOrder.celebrate_time,
-                            'YYYY-MM-DD HH:mm'
-                        );
-                        return start.add(modelOrder.duration, 'm').format('YYYY-MM-DD HH:mm');
-                    }
+                    $scope.events.list.push(modelItem);
                 },
 
                 createEvent: function (date, jsEvent, view) {
-                    if (Auth.hasPermission('add_order') && !$scope.calendar.isDateInPast(date)) {
-                        $scope.eventWindow.showOrderWindow(date, jsEvent, view)
+                    if (!$scope.calendar.isDateInPast(date)) {
+                        if (Auth.hasPermission('add_order')) {
+                            $scope.eventWindow.showOrderWindow(date, jsEvent, view)
+                        }
+                        else {
+                            $rootScope.$broadcast('Calendar.showDayOffDialog', date);
+                        }
                     }
                 },
 
                 showEvent: function (calEvent, jsEvent, view) {
-                    $scope.eventWindow.showOrderWindow(calEvent.start, jsEvent, view, calEvent.id)
+                    if (calEvent.label === 'order') {
+                        $scope.eventWindow.showOrderWindow(calEvent.start, jsEvent, view, calEvent.id)
+                    }
+                    else {
+                        $rootScope.$broadcast('Calendar.showDayOffDialog', calEvent.start, calEvent);
+                    }
                 }
             };
 
@@ -102,6 +143,11 @@ angular.module('CalendarApp', ['ui.calendar'])
                 },
 
                 renderEvent: function (event, element, view) {
+                    if (event.label === 'dayOff') {
+                        element.addClass('day-off');
+                        $(element).find('span.fc-time').remove();
+                    }
+
                     if ($scope.calendar.isDateInPast(event.start)) {
                         element.addClass('event-in-past');
                     }

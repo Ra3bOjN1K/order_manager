@@ -6,23 +6,15 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from orders_manager.managers import (UserProfileManager, ClientManager,
     ProgramManager, AdditionalServiceManager, OrdersManager,
-    ClientChildrenManager, ProgramPriceManager)
+    ClientChildrenManager, ProgramPriceManager, DayOffManager)
 from orders_manager.utils.data_utils import calculate_age
 from orders_manager.roles import ROLES, get_user_role
-
-
-class Weekends(models.Model):
-    date = models.DateField()
-    time_start = models.TimeField(null=True, blank=True)
-    time_end = models.TimeField(null=True, blank=True)
-    all_day = models.BooleanField(default=False)
 
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, related_name='profile')
     address = models.TextField(null=False, blank=False)
     phone = models.CharField(max_length=20, null=False, blank=False)
-    weekends = models.ManyToManyField(Weekends, related_name='user_profile')
     created = models.DateTimeField(auto_now_add=True)
 
     objects = UserProfileManager()
@@ -70,6 +62,15 @@ class UserProfile(models.Model):
     def deactivate(self):
         self.user.is_active = False
         self.user.save()
+
+
+class DayOff(models.Model):
+    user_profile = models.ForeignKey(UserProfile, related_name='days_off')
+    date = models.DateField()
+    time_start = models.TimeField(default='00:00:00')
+    time_end = models.TimeField(default='23:59:59')
+
+    objects = DayOffManager()
 
 
 class Client(models.Model):

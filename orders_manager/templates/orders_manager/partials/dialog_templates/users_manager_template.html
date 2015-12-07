@@ -23,13 +23,13 @@
                         <i class="fa fa-chevron-left"></i>
                     </button>
                     <span>Страница: {{ vm.gridApi.pagination.getPage() }} из
-                        {{ vm.gridApi.pagination.getTotalPages()}}</span>
+                        {{ vm.gridApi.pagination.getTotalPages() }}</span>
                     <button class="btn btn-default btn-sm" ng-click="vm.gridApi.pagination.nextPage()">
                         <i class="fa fa-chevron-right"></i>
                     </button>
                 </div>
             </div>
-            <div class="details-wrapper hidden" show-dialog-content-loading>
+            <div class="details-wrapper hidden" ng-if="vm.detailsMode.userProfileDetails" show-dialog-content-loading>
                 <form class="user-profile-form" name="vm.form" novalidate>
                     <div class="details-body">
                         <formly-form model="vm.userProfile.selectedUserProfile" form="vm.form" fields="vm.formFields"
@@ -43,6 +43,19 @@
                                     ng-click="vm.userProfileEditMode.cancelEdit()"><i class="fa fa-times"></i></button>
                             <button type="button" class="btn btn-danger btn-delete" ng-if="vm.userProfile.isNewUserProfile"
                                     ng-click="vm.userProfileEditMode.deleteNewUserProfile()"><i class="fa fa-trash-o"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="details-wrapper" ng-if="vm.addDayOffMode.isActive">
+                <form class="add-dayoff-form" name="vm.addDayOffMode.form" novalidate>
+                    <div class="details-body">
+                        <formly-form model="vm.addDayOffMode.model" form="vm.addDayOffMode.form"
+                                     fields="vm.addDayOffMode.formFields"
+                                     options="vm.addDayOffMode.formOptions"></formly-form>
+                        <div class="form-btns-container" ng-if="vm.addDayOffMode.isActive">
+                            <button type="button" class="btn btn-primary btn-save"
+                                    ng-click="vm.addDayOffMode.onSubmit()"><i class="fa fa-check"></i></button>
                         </div>
                     </div>
                 </form>

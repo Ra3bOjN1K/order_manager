@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="{% static "vendors/css/nya-bs-select.min.css" %}">
     <link rel="stylesheet" href="{% static "vendors/css/ngDialog.min.css" %}">
     <link rel="stylesheet" href="{% static "vendors/css/ui-grid-stable.min.css" %}">
-    <link rel="stylesheet" href="{% static "vendors/css/xeditable.css" %}">
     <link rel="stylesheet" href="{% static "orders_manager/css/ngDialog-theme.css" %}">
     <link rel="stylesheet" href="{% static "orders_manager/css/base.css" %}"/>
     <link rel="stylesheet" href="{% static "orders_manager/css/profile.css" %}"/>
@@ -17,6 +16,7 @@
     <link rel="stylesheet" href="{% static "orders_manager/css/hb_additional_services.css" %}"/>
     <link rel="stylesheet" href="{% static "orders_manager/css/hb_discounts.css" %}"/>
     <link rel="stylesheet" href="{% static "orders_manager/css/users_manager.css" %}"/>
+    <link rel="stylesheet" href="{% static "orders_manager/css/day_off_dlg_style.css" %}"/>
     <link rel="shortcut icon" href="{% static 'orders_manager/img/favicon.png' %}" type="image/png"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/fonts/FontAwesome.otf">
@@ -167,7 +167,9 @@
 </script>
 <script type="text/ng-template" id="user-profile-row-ctrl-btns-template.html">
     <a class="btn btn-default ctrl-btn"
-       ng-click="grid.appScope.vm.userProfileEditMode.toggleActivate()"><i class="fa fa-lg fa-pencil-square-o"></i></a>
+       ng-click="grid.appScope.vm.userProfile.setMode('detailsMode')"><i class="fa fa-lg fa-pencil-square-o"></i></a>
+    <a class="btn btn-default ctrl-btn"
+       ng-click="grid.appScope.vm.userProfile.setMode('addDayOffMode')"><i class="fa fa-lg fa-calendar-plus-o"></i></a>
     <a class="btn btn-default ctrl-btn"
        ng-click="grid.appScope.vm.userProfile.deleteUserProfile(row)"><i class="fa fa-lg fa-trash-o"></i></a>
 </script>
@@ -200,6 +202,9 @@
 <script type="text/ng-template" id="users_manager_template.html">
     <div ng-include="'/static/dialog_templates/users_manager_template.html'"></div>
 </script>
+<script type="text/ng-template" id="dayoff_template.html">
+    <div ng-include="'/static/dialog_templates/dayoff_template.html'"></div>
+</script>
 <script type="text/ng-template" id="confirmation_template.html">
     <div ng-include="'/static/dialog_templates/confirmation_template.html'"></div>
 </script>
@@ -212,7 +217,6 @@
 <script type="text/javascript" src="{% static "vendors/js/formly.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendors/js/ngDialog.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendors/js/ui-grid-stable.min.js" %}"></script>
-<script type="text/javascript" src="{% static "vendors/js/xeditable.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendors/js/angular-messages.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendors/js/jquery.price_format.2.0.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendors/js/nya-bs-select.min.js" %}"></script>
