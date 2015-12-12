@@ -10,6 +10,4 @@ mixer
 pycrypto
 google-api-python-client
 celery
-redis
 django-celery
-celery-with-redis
