@@ -9,9 +9,11 @@ from orders_manager import views
 urlpatterns = [
     url(r'^$', RedirectView.as_view(
         pattern_name='orders_manager:orders_list', permanent=True)),
-    url(r'^login/$', views.LoginFormView.as_view(), name='login'),
+    # url(r'^login/$', views.LoginFormView.as_view(), name='login'),
     url(r'^logout/$', views.LogoutFormView.as_view(), name='logout'),
     url(r'^database/populate/$', views.PopulateDatabaseView.as_view()),
+
+    url(r'^login/', views.GoogleOauthView.as_view()),
 
     url(r'^api/v1/permissions/$', views.UserPermissionList.as_view()),
     url(r'^api/v1/users/$', views.UserListView.as_view(), name='profiles_list'),

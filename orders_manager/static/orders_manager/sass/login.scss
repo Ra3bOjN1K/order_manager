@@ -62,4 +62,39 @@ form {
     min-width: 164px;
     padding: 12px 8px;
   }
+
+}
+
+.oauth-container {
+  @include align-self(center);
+  @include init-flex-position(column);
+  @include flex(1 1);
+  @include justify-content(center);
+  height: 100%;
+  position: absolute;
+  width: 100%;
+
+  .oauth-btn {
+    @include align-self(center);
+    @include single-box-shadow(.3px, .3px, 2px, .3px, #bbb);
+    background: #607E9E;
+    border: 1px solid darken(#607E9E, 6%);
+    color: #eee;
+    cursor: hand;
+    cursor: pointer;
+    font-size: 18px;
+    min-width: 250px;
+    padding: 28px 18px;
+  }
+
+  .error-messages {
+    @include align-self(center);
+    color: #761c19;
+    font-size: 12pt;
+    margin-top: 4px;
+  }
+}
+
+.hidden {
+  display: none;
 }

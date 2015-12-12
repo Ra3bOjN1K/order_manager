@@ -1,0 +1,124 @@
+.dayoff-content {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+}
+.dayoff-content .panel {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  margin: 0;
+}
+.dayoff-content .panel-heading {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+.dayoff-content .panel-body {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  min-height: 220px;
+  padding: 16px;
+}
+.dayoff-content .formly {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+}
+.dayoff-content .formly-field {
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  margin: 6px 0;
+}
+.dayoff-content .form-group > div {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+}
+.dayoff-content .form-control {
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  width: auto;
+}
+.dayoff-content .control-label {
+  width: 60px;
+}
+.dayoff-content .time-container, .dayoff-content .date-container {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+.dayoff-content .time-container input, .dayoff-content .date-container input {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+.dayoff-content li .pull-left {
+  display: none;
+  position: absolute;
+}

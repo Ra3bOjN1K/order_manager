@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import json
+
+from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
-from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, Http404
+from django.http import (HttpResponseRedirect, Http404, HttpResponse,
+    JsonResponse)
 from django.views.generic import View, TemplateView
 from django.views.generic.edit import FormView
 from django.contrib.auth import login, logout
@@ -22,6 +25,7 @@ from orders_manager.serializers import (UserProfileSerializer, ClientSerializer,
     ProgramPriceSerializer, AdditionalServiceSerializer, DiscountSerializer,
     DayOffSerializer)
 from orders_manager.roles import get_user_role
+from orders_manager.google_apis import GoogleAuth
 
 
 class PopulateDatabaseView(View):
@@ -36,6 +40,43 @@ class PopulateDatabaseView(View):
 
         return HttpResponse('Done')
 
+
+class GoogleOauthView(TemplateView):
+    template_name = 'orders_manager/authorization/google_oauth.html'
+
+    def __init__(self, **kwargs):
+        super(GoogleOauthView, self).__init__(**kwargs)
+        self.google_oauth = GoogleAuth()
+
+    def post(self, request, *args, **kwargs):
+        if request.POST.get('auth_code'):
+            credential = self.google_oauth.exchange_auth_code(
+                request.POST.get('auth_code'))
+
+            if self.is_google_user_valid(credential):
+                cred = self.google_oauth.update_user_credentials(credential)
+                if cred:
+                    user = User.objects.get(
+                        email=self.google_oauth.get_google_user_email(cred))
+                    user.backend = 'django.contrib.auth.backends.ModelBackend'
+                    login(request, user)
+                    return HttpResponseRedirect('/')
+            else:
+                return render(request, self.template_name, context={
+                    'error': 'Данный email не имеет доступа к приложению!'})
+        return self.render_to_response({})
+
+    def is_google_user_valid(self, credentials):
+        google_user_email = self.google_oauth.get_google_user_email(credentials)
+        return self._is_exists_user_with_email(google_user_email)
+
+    def _is_exists_user_with_email(self, email):
+        user = UserProfile.objects.filter(user__email=email).first()
+        return user is not None and user.user.is_active
+
+    def get_context_data(self, **kwargs):
+        kwargs.update({'auth_uri': self.google_oauth.get_auth_uri()})
+        return kwargs
 
 
 class LoginFormView(FormView):
@@ -237,7 +278,6 @@ class ClientListView(ListCreateAPIView):
 
 
 class ClientView(RetrieveAPIView):
-
     def get(self, request, *args, **kwargs):
         _raise_denied_if_has_no_perm(self.request.user, 'see_client_details')
 
@@ -397,7 +437,8 @@ class ProgramListView(ListCreateAPIView):
         if request.data.get('mode'):
             action = request.data.pop('mode')
             if action == 'delete':
-                _raise_denied_if_has_no_perm(self.request.user, 'delete_program')
+                _raise_denied_if_has_no_perm(self.request.user,
+                                             'delete_program')
 
                 program_id = request.data.get('program_id')
                 program = Program.objects.get(id=program_id)
@@ -426,7 +467,8 @@ class ProgramPriceListView(ListCreateAPIView):
         if request.data.get('mode'):
             action = request.data.pop('mode')
             if action == 'delete':
-                _raise_denied_if_has_no_perm(self.request.user, 'delete_programprice')
+                _raise_denied_if_has_no_perm(self.request.user,
+                                             'delete_programprice')
                 price_id = request.data.get('price_id')
                 price = ProgramPrice.objects.get(id=price_id)
                 price.delete()

@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'guardian',
     'orders_manager',
+    'djcelery',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -82,8 +83,8 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'tilibom_db',
-        'USER': 'tilibom_admin',
+        'NAME': 'tilibom_order_manager_db',
+        'USER': 'tilibom_order_manager_user',
         'PASSWORD': '796ab0f12c5c784e',
         'HOST': '127.0.0.1',
         'PORT': '5432',
@@ -125,12 +126,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static'),
+#     os.path.join(BASE_DIR, 'orders_manager', 'static'),
+#     os.path.join(
+#         BASE_DIR, 'orders_manager', 'templates', 'orders_manager', 'partials'),
+# ]
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'orders_manager', 'static'),
-    os.path.join(
-        BASE_DIR, 'orders_manager', 'templates', 'orders_manager', 'partials'),
+    os.path.join('static'),
+    os.path.join('orders_manager', 'static'),
+    os.path.join('orders_manager', 'templates', 'orders_manager', 'partials'),
 ]
-# STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static/')
+
+STATIC_ROOT = '/webapps/static'
+
 
 LOGIN_URL = '/login/'

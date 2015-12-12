@@ -7,3 +7,9 @@ psycopg2
 pyyaml
 pytz
 mixer
+pycrypto
+google-api-python-client
+celery
+redis
+django-celery
+celery-with-redis

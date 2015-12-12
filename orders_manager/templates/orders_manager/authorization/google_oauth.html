@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html ng-app="GoogleOauthModule">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{% block title %}Авторизация пользователя{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static "orders_manager/css/login.css" %}"/>
+    <script type="text/javascript" src="{% static "vendors/js/jquery.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/angular.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/lodash.compat.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/restangular.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "orders_manager/js/google_oauth.js" %}"></script>
+</head>
+<body ng-controller="BaseCtrl">
+<div class="page-container" ng-cloak>
+    <div class="oauth-container" ng-if="!isGettingTokenMode">
+        {% autoescape off %}
+            <div class="hidden">{{ auth_uri }}</div>
+        {% endautoescape %}
+
+        <button type="button" class="oauth-btn" ng-click="getUserToken()">Авторизация</button>
+
+        {% if error %}
+            <span class="error-messages">{{ error }}</span>
+        {% endif %}
+    </div>
+
+    <form action="" method="post" ng-if="isGettingTokenMode">
+        {% csrf_token %}
+        <div class="field_label">Введите полученный код:</div>
+        <div class="register__title">
+            <input name="auth_code" ng-model="model.auth_code">
+        </div>
+
+        <button type="submit">Войти</button>
+    </form>
+</div>
+</body>
+</html>

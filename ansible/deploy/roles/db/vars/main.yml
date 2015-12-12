@@ -1,9 +1,0 @@
-db_packages:
-  - postgresql-9.3
-  - libpq-dev
-  - python-psycopg2
-
-pg_version: 9.3
-db_name: "{{project_name}}_db"
-db_user: "{{project_name}}_user"
-db_password: 796ab0f12c5c784e

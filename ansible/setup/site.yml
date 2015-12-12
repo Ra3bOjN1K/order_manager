@@ -1,6 +1,0 @@
----
-- name: Start provisioning
-  hosts: localsrv
-  roles:
-    - common
-

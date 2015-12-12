@@ -89,3 +89,51 @@ form button {
   min-width: 164px;
   padding: 12px 8px;
 }
+
+.oauth-container {
+  -webkit-align-self: center;
+  align-self: center;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  -webkit-justify-content: center;
+  justify-content: center;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+.oauth-container .oauth-btn {
+  -webkit-align-self: center;
+  align-self: center;
+  -moz-box-shadow: 0.3px 0.3px 2px 0.3px #bbb;
+  -webkit-box-shadow: 0.3px 0.3px 2px 0.3px #bbb;
+  box-shadow: 0.3px 0.3px 2px 0.3px #bbb;
+  background: #607E9E;
+  border: 1px solid #546f8b;
+  color: #eee;
+  cursor: hand;
+  cursor: pointer;
+  font-size: 18px;
+  min-width: 250px;
+  padding: 28px 18px;
+}
+.oauth-container .error-messages {
+  -webkit-align-self: center;
+  align-self: center;
+  color: #761c19;
+  font-size: 12pt;
+  margin-top: 4px;
+}
+
+.hidden {
+  display: none;
+}

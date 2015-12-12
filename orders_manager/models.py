@@ -10,6 +10,13 @@ from orders_manager.managers import (UserProfileManager, ClientManager,
 from orders_manager.utils.data_utils import calculate_age
 from orders_manager.roles import ROLES, get_user_role
 
+from oauth2client.django_orm import CredentialsField
+
+
+class CredentialsModel(models.Model):
+    id = models.OneToOneField(User, primary_key=True)
+    credential = CredentialsField()
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, related_name='profile')
