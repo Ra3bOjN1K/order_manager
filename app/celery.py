@@ -13,6 +13,12 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 app = Celery('app')
 
 app.config_from_object('django.conf:settings')
+
+app.conf.update(
+    BROKER_URL='amqp://{user}:{pwd}@{host}:5672//'.format(
+        settings.RABBITMQ_USER, settings.RABBITMQ_PASSWORD, settings.RABBITMQ_HOST)
+)
+
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 
