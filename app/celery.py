@@ -15,9 +15,7 @@ app = Celery('app')
 app.config_from_object('django.conf:settings')
 
 app.conf.update(
-    BROKER_URL='amqp://{user}:{pwd}@{host}:5672//'.format(
-        user=settings.RABBITMQ_USER, pwd=settings.RABBITMQ_PASSWORD,
-        host=settings.RABBITMQ_HOST)
+    BROKER_URL='amqp://{0}@localhost:5672//'.format(settings.RABBITMQ_USER)
 )
 
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
