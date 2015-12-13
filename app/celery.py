@@ -16,7 +16,8 @@ app.config_from_object('django.conf:settings')
 
 app.conf.update(
     BROKER_URL='amqp://{user}:{pwd}@{host}:5672//'.format(
-        settings.RABBITMQ_USER, settings.RABBITMQ_PASSWORD, settings.RABBITMQ_HOST)
+        user=settings.RABBITMQ_USER, pwd=settings.RABBITMQ_PASSWORD,
+        host=settings.RABBITMQ_HOST)
 )
 
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
