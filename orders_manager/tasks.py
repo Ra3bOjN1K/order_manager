@@ -3,6 +3,6 @@
 from app.celery import app
 
 
-@app.task
+@app.task(bind=True, default_retry_delay=8)
 def add(x, y):
-    return x + y
+    print(x + y)
