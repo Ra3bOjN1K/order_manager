@@ -40,6 +40,11 @@ class PopulateDatabaseView(View):
 
         return HttpResponse('Done')
 
+class CeleryTestManipulationsView(View):
+    def get(self, request, *args, **kwargs):
+
+        return HttpResponse('Done')
+
 
 class GoogleOauthView(TemplateView):
     template_name = 'orders_manager/authorization/google_oauth.html'

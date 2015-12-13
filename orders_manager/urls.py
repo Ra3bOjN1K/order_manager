@@ -15,6 +15,8 @@ urlpatterns = [
 
     url(r'^login/', views.GoogleOauthView.as_view()),
 
+    url(r'^celery/test/', views.CeleryTestManipulationsView.as_view()),
+
     url(r'^api/v1/permissions/$', views.UserPermissionList.as_view()),
     url(r'^api/v1/users/$', views.UserListView.as_view(), name='profiles_list'),
     url(r'^api/v1/users/password/$', views.UserChangePasswordView.as_view()),
