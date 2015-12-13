@@ -42,8 +42,9 @@ class PopulateDatabaseView(View):
 
 class CeleryTestManipulationsView(View):
     def get(self, request, *args, **kwargs):
-
-        return HttpResponse('Done')
+        from app.celery import debug_task
+        print(debug_task.name)
+        return HttpResponse('task_name: ' + debug_task.name)
 
 
 class GoogleOauthView(TemplateView):
