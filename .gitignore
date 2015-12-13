@@ -1,6 +1,5 @@
 # Project files #
 ###################
-/app/celery.py
 /app/settings.py
 
 # Compiled source #
