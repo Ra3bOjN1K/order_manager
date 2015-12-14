@@ -9,7 +9,6 @@ from orders_manager.managers import (UserProfileManager, ClientManager,
     ClientChildrenManager, ProgramPriceManager, DayOffManager)
 from orders_manager.utils.data_utils import calculate_age
 from orders_manager.roles import ROLES, get_user_role
-
 from oauth2client.django_orm import CredentialsField
 
 
@@ -279,7 +278,8 @@ class Order(models.Model):
         verbose_name='Дополнительные услуги'
     )
 
-    services_executors = models.ManyToManyField(UserProfile)
+    services_executors = models.ManyToManyField(UserProfile,
+                                                through='OrderServiceExecutors')
     details = models.TextField(verbose_name='Подробности', blank=True,
                                null=True)
 
@@ -310,6 +310,12 @@ class Order(models.Model):
             ('see_orders', 'Can see orders'),
             ('assign_order', 'Can assign order'),
         )
+
+
+class OrderServiceExecutors(models.Model):
+    order = models.ForeignKey(Order)
+    executor = models.ForeignKey(UserProfile)
+    additional_service = models.ForeignKey(AdditionalService)
 
 
 def set_superuser_permissions(sender, instance, created, **kwargs):

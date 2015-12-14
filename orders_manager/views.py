@@ -25,6 +25,7 @@ from orders_manager.serializers import (UserProfileSerializer, ClientSerializer,
     DayOffSerializer)
 from orders_manager.roles import get_user_role
 from orders_manager.google_apis import GoogleAuth
+from orders_manager.tasks import send_order_to_users
 
 
 class PopulateDatabaseView(View):
@@ -33,7 +34,7 @@ class PopulateDatabaseView(View):
         from orders_manager.roles import init_roles
 
         init_roles()
-        User.objects.create_superuser('admin', 'prorab.ks@gmail.com', '12345')
+        User.objects.create_superuser('admin', 'zakaz.tilibom@gmail.com', '12345')
         Discount.objects.create(name='Нет скидки', value=0)
         populate_database()
 
@@ -379,7 +380,10 @@ class OrderListView(ListCreateAPIView):
                    request.user.id)
         request.data.update(
             {'author': {'id': user_id, 'full_name': ''}})
-        return super(OrderListView, self).post(request, *args, **kwargs)
+        response = super(OrderListView, self).post(request, *args, **kwargs)
+        if response:
+            send_order_to_users.delay(request.data)
+        return response
 
     def get_queryset(self):
         import datetime

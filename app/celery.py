@@ -21,6 +21,8 @@ app.conf.update(
     CELERY_RESULT_BACKEND='amqp://{0}:{1}@localhost:5672/{2}'.format(
         settings.RABBITMQ_USER, settings.RABBITMQ_PASSWORD,
         settings.RABBITMQ_HOST),
+    CELERY_TIMEZONE=settings.TIME_ZONE,
+    CELERY_ENABLE_UTC=True
 )
 
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)

@@ -3,6 +3,11 @@
 from app.celery import app
 
 
-@app.task(bind=True, default_retry_delay=8)
+@app.task
 def add(x, y):
-    print(x + y)
+    return x + y
+
+
+@app.task
+def send_order_to_users(order_data):
+    pass
