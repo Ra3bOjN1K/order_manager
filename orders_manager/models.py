@@ -272,29 +272,24 @@ class Order(models.Model):
 
     duration = models.IntegerField(verbose_name='Продолжительность')
     price = models.IntegerField(verbose_name='Стоимость')
-    additional_services = models.ManyToManyField(
-        AdditionalService,
-        related_name='orders',
-        verbose_name='Дополнительные услуги'
-    )
-
-    services_executors = models.ManyToManyField(UserProfile,
-                                                through='OrderServiceExecutors')
-    details = models.TextField(verbose_name='Подробности', blank=True,
-                               null=True)
-
+    # additional_services = models.ManyToManyField(
+    #     AdditionalService,
+    #     related_name='orders',
+    #     verbose_name='Дополнительные услуги'
+    # )
+    additional_services_executors = models.ManyToManyField(
+        UserProfile, through='OrderServiceExecutors')
+    details = models.TextField(
+        verbose_name='Подробности', blank=True, null=True)
     executor_comment = models.TextField(
         verbose_name='Комментарии исполнителя', blank=True, null=True)
-
-    where_was_found = models.CharField(max_length=64, null=True, blank=True,
-                                       verbose_name='Откуда узнали о нас?')
-
+    where_was_found = models.CharField(
+        max_length=64, null=True, blank=True,
+        verbose_name='Откуда узнали о нас?')
     discount = models.ForeignKey(
         Discount, related_name='orders', verbose_name='Скидка')
-
-    cost_of_the_way = models.IntegerField(verbose_name='Стоимость дороги',
-                                          default=0)
-
+    cost_of_the_way = models.IntegerField(
+        verbose_name='Стоимость дороги', default=0)
     total_price = models.IntegerField(verbose_name='Цена')
     total_price_with_discounts = models.IntegerField(
         verbose_name='Цена с учетом скидки'
@@ -316,6 +311,9 @@ class OrderServiceExecutors(models.Model):
     order = models.ForeignKey(Order)
     executor = models.ForeignKey(UserProfile)
     additional_service = models.ForeignKey(AdditionalService)
+
+    class Meta:
+        unique_together = ('order', 'executor', 'additional_service')
 
 
 def set_superuser_permissions(sender, instance, created, **kwargs):

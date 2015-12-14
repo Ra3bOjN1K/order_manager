@@ -1,18 +1,14 @@
 import copy
 from datetime import date
-
 from django.db.utils import IntegrityError
 from django.db import transaction
 from django.test import TestCase
-
 from rest_framework.test import APIClient
-
 from orders_manager.models import (UserProfile, Client, ClientChild,
     AdditionalService, Order, Program, ProgramPrice, Discount, DayOff)
 from orders_manager.utils.generate_data_helper import (UserProfileGenerator,
     ProgramGenerator, AdditionalServicesGenerator)
 from orders_manager.roles import get_user_role, init_roles
-
 from orders_manager.roles import Animator
 
 
@@ -57,13 +53,13 @@ class UserRolesTestCase(TestCase):
         for perm in Animator.available_permissions:
             self.assertTrue(animator.user.has_perm('orders_manager.%s' % perm))
 
-
     def test_create_photographer(self):
         UserProfile.objects.create_photographer(**self.user_info)
         photographer = UserProfile.objects.filter(
             user__username=self.user_info['username']).first()
         self.assertTrue(
-            get_user_role(photographer.user) == UserProfileGenerator.PHOTOGRAPHER)
+            get_user_role(
+                photographer.user) == UserProfileGenerator.PHOTOGRAPHER)
 
     def test_create_manager(self):
         UserProfile.objects.create_manager(**self.user_info)
@@ -447,6 +443,7 @@ class DiscountsTestCase(TestCase):
         self.assertEqual('Скидка №666', discount.name)
         self.assertEqual(66, discount.value)
 
+
 # ==============================================================================
 
 class DaysOffTestCase(TestCase):
@@ -479,7 +476,8 @@ class DaysOffTestCase(TestCase):
             'time_end': '08:00:00'
         })
         day_off = DayOff.objects.update_or_create(**self.day_off_data)
-        self.assertEqual(self.day_off_data.get('time_start'), day_off.time_start)
+        self.assertEqual(self.day_off_data.get('time_start'),
+                         day_off.time_start)
         self.assertEqual(self.day_off_data.get('time_end'), day_off.time_end)
 
         self.day_off_data.update({
@@ -492,7 +490,8 @@ class DaysOffTestCase(TestCase):
         del self.day_off_data['date']
 
         day_off = DayOff.objects.update_or_create(**self.day_off_data)
-        self.assertEqual(self.day_off_data.get('time_start'), day_off.time_start)
+        self.assertEqual(self.day_off_data.get('time_start'),
+                         day_off.time_start)
         self.assertEqual(self.day_off_data.get('time_end'), day_off.time_end)
 
 
@@ -552,8 +551,21 @@ class OrdersTestCase(TestCase):
                          order.total_price_with_discounts)
 
     def test_rest_api_create_order_common(self):
-        request_data = {"client":{"id":"12"},"client_children":[{"id":"12"}],
-                        "celebrate_date":"2015-11-08","celebrate_time":"09:40","celebrate_place":"Школа","address":"7280 Alfonso Forest","program":{"id":"2"},"program_executors":[{"id":"7"},{"id":"4"}],"duration":"60","price":850,"additional_services":[{"id":"3"},{"id":"1"}],"services_executors":[{"id":"9"},{"id":"10"},{"id":"12"}],"details":"Omnis voluptates.","executor_comment":"Ut unde ex ad eum.","discount":{"id":"2"},"total_price":904300,"total_price_with_discounts":904200}
+        request_data = {"client": {"id": "12"},
+                        "client_children": [{"id": "12"}],
+                        "celebrate_date": "2015-11-08",
+                        "celebrate_time": "09:40", "celebrate_place": "Школа",
+                        "address": "7280 Alfonso Forest",
+                        "program": {"id": "2"},
+                        "program_executors": [{"id": "7"}, {"id": "4"}],
+                        "duration": "60", "price": 850,
+                        "additional_services": [{"id": "3"}, {"id": "1"}],
+                        "services_executors": [{"id": "9"}, {"id": "10"},
+                                               {"id": "12"}],
+                        "details": "Omnis voluptates.",
+                        "executor_comment": "Ut unde ex ad eum.",
+                        "discount": {"id": "2"}, "total_price": 904300,
+                        "total_price_with_discounts": 904200}
 
         with transaction.atomic():
             client = APIClient()

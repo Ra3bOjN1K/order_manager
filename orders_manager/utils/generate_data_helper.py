@@ -377,7 +377,7 @@ class DaysOffGenerator:
 
         while len(days_off_list) < num_days_off:
             date = common_gen.generate_date_in_future(
-                        num_days_for_start=-3, num_days_for_end=days_spread_future)
+                num_days_for_start=-3, num_days_for_end=days_spread_future)
             executor_id = choice(all_executors).user_id
             day_off_times = _gen_start_and_end_times()
             days_off_list.append(DayOff.objects.create(**{
@@ -386,7 +386,6 @@ class DaysOffGenerator:
                 'time_start': day_off_times[0],
                 'time_end': day_off_times[1]
             }))
-
 
 
 class OrderGenerator:
@@ -462,28 +461,31 @@ class OrderGenerator:
 
         return list(executors_list)
 
-    def _get_services_executors_ids(self, services_ids):
+    def _get_services_to_executors(self, services_ids):
         from orders_manager.models import AdditionalService
         from random import choice
 
-        executors_ids_list = set()
-
-        num_exec_required = 0
+        services_to_executors = {}
 
         for serv_id in services_ids:
-            num_exec_required += AdditionalService.objects.get(
-                id=serv_id).num_executors
+            services_to_executors.update({
+                serv_id: []
+            })
+            executors_ids_list = set()
+            service = AdditionalService.objects.get(id=serv_id)
 
-        possible_executors = AdditionalService.objects.all_possible_executors(
-            services_ids)
+            if service.possible_executors:
+                while len(executors_ids_list) < service.num_executors:
+                    executors_ids_list.add(
+                        choice(service.possible_executors.all()).user.id
+                    )
+            else:
+                raise IndexError(
+                    'Additional services has not possible executors!')
 
-        if possible_executors:
-            while len(executors_ids_list) < num_exec_required:
-                executors_ids_list.add(choice(possible_executors).user.id)
-        else:
-            raise IndexError('Additional services has not possible executors!')
+            services_to_executors[serv_id] = list(executors_ids_list)
 
-        return list(executors_ids_list)
+        return services_to_executors
 
     def _get_program_duration(self, program_id):
         from orders_manager.models import ProgramPrice
@@ -594,8 +596,7 @@ class OrderGenerator:
                 'program_executors_id': self._get_program_executors_ids(
                     program_id),
                 'duration': program_duration,
-                'additional_services_id': additional_services_ids,
-                'services_executors_id': self._get_services_executors_ids(
+                'services_executors': self._get_services_to_executors(
                     additional_services_ids),
                 'discount_id': self._get_discount(),
                 'details': data.details,

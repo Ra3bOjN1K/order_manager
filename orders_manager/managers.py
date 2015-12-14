@@ -221,7 +221,8 @@ class ProgramManager(models.Manager):
 
         for pos_executor in kwargs.get('possible_executors'):
             user_id = (pos_executor.user.id if isinstance(
-                pos_executor, UserProfile) else pos_executor.get('user').get('id'))
+                pos_executor, UserProfile) else pos_executor.get('user').get(
+                'id'))
             ex = UserProfile.objects.get(user_id=user_id)
             program.possible_executors.add(ex)
         program.save()
@@ -241,7 +242,8 @@ class ProgramManager(models.Manager):
 
             for pos_executor in kwargs.get('possible_executors'):
                 user_id = (pos_executor.user.id if isinstance(
-                    pos_executor, UserProfile) else pos_executor.get('user').get('id'))
+                    pos_executor, UserProfile) else pos_executor.get(
+                    'user').get('id'))
                 ex = UserProfile.objects.get(user_id=user_id)
                 program.possible_executors.add(ex)
 
@@ -292,7 +294,8 @@ class AdditionalServiceManager(models.Manager):
 
         for pos_executor in kwargs.get('possible_executors'):
             user_id = (pos_executor.user.id if isinstance(
-                pos_executor, UserProfile) else pos_executor.get('user').get('id'))
+                pos_executor, UserProfile) else pos_executor.get('user').get(
+                'id'))
             ex = UserProfile.objects.get(user_id=user_id)
             service.possible_executors.add(ex)
         service.save()
@@ -312,7 +315,8 @@ class AdditionalServiceManager(models.Manager):
 
             for pos_executor in kwargs.get('possible_executors'):
                 user_id = (pos_executor.user.id if isinstance(
-                    pos_executor, UserProfile) else pos_executor.get('user').get('id'))
+                    pos_executor, UserProfile) else pos_executor.get(
+                    'user').get('id'))
                 ex = UserProfile.objects.get(user_id=user_id)
                 service.possible_executors.add(ex)
 
@@ -375,10 +379,8 @@ class OrdersManager(models.Manager):
             'program_executors') else kwargs.get('program_executors_id', [])
         return res or []
 
-    def _get_services_executors_ids(self, **kwargs):
-        res = kwargs.get('services_executors') if kwargs.get(
-            'services_executors') else kwargs.get('services_executors_id', [])
-        return res or []
+    def _get_services_to_executors(self, **kwargs):
+        return kwargs.get('services_executors', {})
 
     def _get_additional_services(self, **kwargs):
         res = kwargs.get('additional_services') if kwargs.get(
@@ -387,7 +389,7 @@ class OrdersManager(models.Manager):
 
     def create(self, **kwargs):
         from orders_manager.models import (Order, AdditionalService,
-            ClientChild, UserProfile)
+            ClientChild, UserProfile, OrderServiceExecutors)
 
         order = Order()
         order.code = '{0}-{1}'.format(
@@ -420,13 +422,15 @@ class OrdersManager(models.Manager):
             child = ClientChild.objects.get(id=child_id)
             order.client_children.add(child)
 
-        for prog_executor_id in self._get_program_executors_ids(**kwargs):
-            executor = UserProfile.objects.get(user__id=prog_executor_id)
-            order.program_executors.add(executor)
+        # for prog_executor_id in self._get_program_executors_ids(**kwargs):
+        #     executor = UserProfile.objects.get(user__id=prog_executor_id)
+        #     order.program_executors.add(executor)
 
-        for service_executor_id in self._get_services_executors_ids(**kwargs):
-            executor = UserProfile.objects.get(user__id=service_executor_id)
-            order.services_executors.add(executor)
+        for srv, executors in self._get_services_to_executors(**kwargs).items():
+            for ex_id in executors:
+                data = {'order_id': order.id, 'executor_id': ex_id,
+                        'additional_service_id': srv}
+                OrderServiceExecutors.objects.create(**data)
 
         for service_id in self._get_additional_services(**kwargs):
             serv = AdditionalService.objects.get(id=service_id)
@@ -436,7 +440,7 @@ class OrdersManager(models.Manager):
 
     def update(self, **kwargs):
         from orders_manager.models import (Order, AdditionalService,
-            ClientChild, UserProfile)
+            ClientChild, UserProfile, OrderServiceExecutors)
 
         try:
             order = self.get(id=kwargs.get('id'))
@@ -467,16 +471,18 @@ class OrdersManager(models.Manager):
                 child = ClientChild.objects.get(id=child_id)
                 order.client_children.add(child)
 
-            order.program_executors.clear()
-            for prog_executor_id in self._get_program_executors_ids(**kwargs):
-                executor = UserProfile.objects.get(user__id=prog_executor_id)
-                order.program_executors.add(executor)
+            # order.program_executors.clear()
+            # for prog_executor_id in self._get_program_executors_ids(**kwargs):
+            #     executor = UserProfile.objects.get(user__id=prog_executor_id)
+            #     order.program_executors.add(executor)
 
-            order.services_executors.clear()
-            for service_executor_id in self._get_services_executors_ids(
-                    **kwargs):
-                executor = UserProfile.objects.get(user__id=service_executor_id)
-                order.services_executors.add(executor)
+            order.additional_services_executors.clear()
+            for srv, executors in self._get_services_to_executors(
+                    **kwargs).items():
+                for ex_id in executors:
+                    data = {'order_id': order.id, 'executor_id': ex_id,
+                            'additional_service_id': srv}
+                    OrderServiceExecutors.objects.create(**data)
 
             order.additional_services.clear()
             for service_id in self._get_additional_services(**kwargs):
