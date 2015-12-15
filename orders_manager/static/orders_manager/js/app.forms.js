@@ -75,7 +75,7 @@ angular.module('OrderManagerApp')
 
                 function addRandomIds(fields) {
                     unique++;
-                    angular.forEach(fields, function(field, index) {
+                    angular.forEach(fields, function (field, index) {
                         if (field.templateOptions && field.templateOptions.fields) {
                             addRandomIds(field.templateOptions.fields);
                         }
@@ -510,58 +510,96 @@ angular.module('OrderManagerApp')
                     },
                     {
                         type: 'manyToManyReadOnlyType',
-                        key: 'additional_services',
+                        key: 'additional_services_executors',
                         id: 'additionalServicesIds',
                         templateOptions: {
                             label: 'Список дополнительных услуг'
                         },
                         hideExpression: function ($viewValue, $modelValue, scope) {
-                            return !scope.model.additional_services;
+                            return !scope.model.additional_services_executors;
                         },
                         controller: function ($scope) {
-                            if (!!$scope.model.additional_services) {
-                                AdditionalServiceFactory.getAllAdditionalServices().then(function (services) {
+                            AdditionalServiceFactory.getAllAdditionalServices().then(function (services) {
 
-                                    $scope.formState.additionalServices = services;
-                                    var additionalServ = [];
+                                $scope.formState.additionalServices = services;
+                                var addit_serv_executs = angular.copy($scope.model.additional_services_executors);
+                                var additionalServ = [];
 
+                                $timeout(function () {
                                     angular.forEach(services, function (service) {
-                                        angular.forEach($scope.model.additional_services, function (serv) {
+                                        angular.forEach(addit_serv_executs, function (serv) {
                                             if (serv.id === service.id) {
-                                                additionalServ.push(service.title)
+                                                additionalServ.push({
+                                                    name: service.title,
+                                                    value: service.id,
+                                                    executors: serv.executors || []
+                                                });
                                             }
                                         });
                                     });
 
-                                    $scope.model.additional_services = additionalServ;
+                                }).then(function () {
+                                    $timeout(function () {
+                                        $scope.model.additional_services_executors = additionalServ;
+                                        $scope.formState.additionalServicesChanged = true;
+                                    })
                                 })
-                            }
+                            })
                         }
                     },
                     {
-                        type: 'manyToManyReadOnlyType',
-                        key: 'services_executors',
-                        id: 'servicesExecutorsIds',
+                        type: 'repeatSection',
+                        key: 'additional_services_executors',
                         templateOptions: {
-                            label: 'Исполнители дополнительных услуг'
+                            label: 'Исполнители дополнительных услуг',
+                            fields: [
+                                {
+                                    type: 'manyToManyReadOnlyType',
+                                    key: 'executors',
+                                    className: 'service-executor',
+                                    templateOptions: {
+                                        id: 'servicesExecutorsIds'
+                                    },
+                                    controller: function ($scope) {
+                                        $scope.$watch('formState.additionalServicesChanged', function () {
+                                            var executor_items = [],
+                                                checked_executors = angular.copy($scope.model.executors);
+
+                                            $timeout(function () {
+                                                angular.forEach($scope.formState.additionalServices, function (serv) {
+
+                                                    var model_serv_id = $scope.model.value || $scope.model.id;
+
+                                                    if (model_serv_id === serv.id) {
+
+                                                        $scope.to.label = serv.title;
+
+                                                        angular.forEach(serv.possible_executors, function (pos_exec) {
+                                                            angular.forEach(checked_executors, function (ex) {
+                                                                if (angular.equals(ex.id || ex.value, pos_exec.id)) {
+                                                                    executor_items.push({
+                                                                        name: pos_exec.full_name,
+                                                                        value: pos_exec.id
+                                                                    })
+                                                                }
+                                                            });
+                                                        });
+                                                    }
+                                                });
+
+                                            })
+                                                .then(function () {
+                                                    $timeout(function () {
+                                                        $scope.model.executors = executor_items;
+                                                    }, 800)
+                                                });
+                                        });
+                                    }
+                                }
+                            ]
                         },
                         hideExpression: function ($viewValue, $modelValue, scope) {
-                            return !scope.model.services_executors;
-                        },
-                        controller: function ($scope) {
-                            if (!!$scope.model.services_executors) {
-                                UserService.reloadExecutors().then(function () {
-                                    var resultServExecutors = [];
-                                    angular.forEach(UserService.getExecutors(), function (executor) {
-                                        angular.forEach($scope.model.services_executors, function (serEx, idx) {
-                                            if (executor.id === serEx.id) {
-                                                resultServExecutors.push(executor.full_name)
-                                            }
-                                        })
-                                    });
-                                    $scope.model.services_executors = resultServExecutors;
-                                });
-                            }
+                            return !scope.model.additional_services_executors;
                         }
                     },
                     {
@@ -1161,6 +1199,7 @@ angular.module('OrderManagerApp')
                             AdditionalServiceFactory.getAllAdditionalServices().then(function (services) {
 
                                 $scope.formState.additionalServices = services;
+                                var addit_serv_executs = angular.copy($scope.model.additional_services_executors);
                                 var additionalServ = [];
 
                                 $timeout(function () {
@@ -1172,7 +1211,7 @@ angular.module('OrderManagerApp')
                                             executors: []
                                         };
 
-                                        angular.forEach($scope.model.additional_services_executors, function (serv) {
+                                        angular.forEach(addit_serv_executs, function (serv) {
                                             if (serv.id === item.value) {
                                                 item.executors = serv.executors;
                                                 additionalServ.push(item);
@@ -1194,6 +1233,7 @@ angular.module('OrderManagerApp')
                         type: 'repeatSection',
                         key: 'additional_services_executors',
                         templateOptions: {
+                            label: 'Исполнители дополнительных услуг',
                             fields: [
                                 {
                                     type: 'vSelect',
@@ -1212,7 +1252,7 @@ angular.module('OrderManagerApp')
                                             checked_executors = angular.copy($scope.model.executors);
 
                                         $timeout(function () {
-                                            angular.forEach($scope.formState.additionalServices, function(serv) {
+                                            angular.forEach($scope.formState.additionalServices, function (serv) {
 
                                                 var model_serv_id = $scope.model.value || $scope.model.id;
 
@@ -1220,7 +1260,7 @@ angular.module('OrderManagerApp')
 
                                                     $scope.to.label = serv.title;
 
-                                                    angular.forEach(serv.possible_executors, function(pos_exec) {
+                                                    angular.forEach(serv.possible_executors, function (pos_exec) {
                                                         var item = {
                                                             name: pos_exec.full_name,
                                                             value: pos_exec.id
@@ -1232,6 +1272,10 @@ angular.module('OrderManagerApp')
                                                             }
                                                         });
 
+                                                        if (serv.possible_executors.length === 1) {
+                                                            executor_items.push(item);
+                                                        }
+
                                                         opts.push(item);
                                                     });
                                                 }
@@ -1240,7 +1284,9 @@ angular.module('OrderManagerApp')
                                             $scope.to.options = opts;
 
                                         }).then(function () {
-                                            //$scope.model.executors = executor_items;
+                                            $timeout(function () {
+                                                $scope.model.executors = executor_items;
+                                            }, 1000)
                                         });
                                     }
                                 }
@@ -1496,7 +1542,7 @@ angular.module('OrderManagerApp')
 
             return orderForm;
         }])
-    .factory('ExecutorDayOffForm', [function() {
+    .factory('ExecutorDayOffForm', [function () {
         var dayOffForm = {};
 
         dayOffForm.getFieldsOptions = function () {

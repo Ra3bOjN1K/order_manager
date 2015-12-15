@@ -4,7 +4,8 @@
                ng-if="options.templateOptions.label">{{ options.templateOptions.label }}</label>
         <div class="many-to-many-group">
             <div class="many-to-many-container">
-                <div class="item-value" ng-repeat="value in model[options.key]">{{ value }}</div>
+                <div class="item-value" ng-repeat="value in model[options.key]" ng-if="value.name">{{ value.name }}</div>
+                <div class="item-value" ng-repeat="value in model[options.key]" ng-if="!value.name">{{ value }}</div>
             </div>
         </div>
     </div>

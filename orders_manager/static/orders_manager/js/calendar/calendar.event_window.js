@@ -10,7 +10,7 @@ angular.module('CalendarApp')
             $rootScope.$on('OrderForm.rendered', function () {
                 $timeout(function () {
                     vm.loadingEvent = false;
-                }, 200);
+                }, 1000);
             });
 
             OrderService.loadOrders().then(function() {

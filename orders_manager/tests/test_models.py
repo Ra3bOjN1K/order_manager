@@ -582,7 +582,7 @@ class OrdersTestCase(TestCase):
         additional_services = AdditionalServicesGenerator().generate()
         DiscountsGenerator().generate()
         ClientGenerator().generate(5)
-        OrderGenerator().generate(num_events=6, num_days=45)
+        OrderGenerator().generate(num_events=60, num_days=45)
 
         orders = Order.objects.all()
 

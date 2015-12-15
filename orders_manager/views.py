@@ -398,7 +398,7 @@ class OrderListView(ListCreateAPIView):
             queryset = Order.objects.filter(
                 (
                     Q(program_executors__user_id=self.request.user.id) |
-                    Q(services_executors__user_id=self.request.user.id)
+                    Q(additional_services_executors__executor_id=self.request.user.id)
                 )
                 & Q(celebrate_date__gte=datetime.date.today())
             ).distinct('id')

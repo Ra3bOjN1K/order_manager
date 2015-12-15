@@ -190,6 +190,7 @@
   flex-direction: column;
   -webkit-justify-content: center;
   justify-content: center;
+  font-family: "Lora", serif;
 }
 .event-window-background .loading-msg {
   -webkit-align-self: center;
@@ -218,10 +219,10 @@
   -webkit-flex-direction: column;
   display: flex;
   flex-direction: column;
-  -moz-box-shadow: 2px 2px 8px 0.6px #888;
-  -webkit-box-shadow: 2px 2px 8px 0.6px #888;
-  box-shadow: 2px 2px 8px 0.6px #888;
-  border: 1px solid #999;
+  -moz-box-shadow: 2px 2px 8px 0.6px #555;
+  -webkit-box-shadow: 2px 2px 8px 0.6px #555;
+  box-shadow: 2px 2px 8px 0.6px #555;
+  border: 1px solid #666;
   border-radius: 1px;
   height: 600px;
   margin: auto;
@@ -553,8 +554,8 @@
   -webkit-flex-direction: row;
   display: flex;
   flex-direction: row;
-  -webkit-justify-content: space-between;
-  justify-content: space-between;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
   -moz-box-shadow: 0 -0.5px 6px 0.05px #aaa;
   -webkit-box-shadow: 0 -0.5px 6px 0.05px #aaa;
   box-shadow: 0 -0.5px 6px 0.05px #aaa;
@@ -566,6 +567,10 @@
   -moz-box-shadow: 1px 1px 3px 0.2px #bbb;
   -webkit-box-shadow: 1px 1px 3px 0.2px #bbb;
   box-shadow: 1px 1px 3px 0.2px #bbb;
+}
+.event-window-background .event-window__footer .spacer {
+  -webkit-flex: 1 1;
+  flex: 1 1;
 }
 
 .multiple-mode, .single-item-mode {
@@ -646,4 +651,20 @@
 .multiple-mode li.active.selected > a:hover, .single-item-mode li.selected > a:hover,
 .single-item-mode li.active.selected > a:hover {
   background: #bad6de;
+}
+
+.services-executors-block {
+  padding-left: 12px;
+}
+.services-executors-block .repeatsection {
+  margin-bottom: 4px;
+}
+.services-executors-block .formly-field:first-child {
+  margin-top: 0;
+}
+.services-executors-block label {
+  font-weight: normal;
+  font-size: 11pt;
+  text-decoration: underline;
+  margin-bottom: 2px;
 }
