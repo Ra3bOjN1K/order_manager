@@ -1,4 +1,4 @@
-@import url(../fonts/arnamuserif/arnamuserif.css);
+@import url(../../../../static/vendors/fonts/arnamuserif/arnamuserif.css);
 html,
 body {
   height: 100%;
@@ -22,7 +22,7 @@ body {
   align-items: center;
   background: #18BD9B;
   color: #666;
-  font-family: arian_amu_serifregular, serif;
+  font-family: 'Lora', serif;
   font-size: 11pt;
 }
 body:after {
@@ -87,7 +87,7 @@ body:after {
   -webkit-align-items: center;
   align-items: center;
   background: white;
-  font-family: arian_amu_serifregular, serif;
+  font-family: "Lora", serif;
   font-size: 12pt;
   position: absolute;
   z-index: 9999;

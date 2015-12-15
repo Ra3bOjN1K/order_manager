@@ -246,6 +246,11 @@ class Discount(models.Model):
         self.save()
 
 
+class OrderServiceExecutors(models.Model):
+    executor = models.ForeignKey(UserProfile, null=True, blank=True)
+    additional_service = models.ForeignKey(AdditionalService)
+
+
 class Order(models.Model):
     code = models.CharField(max_length=12, unique=True)
     author = models.ForeignKey(UserProfile, related_name='created_orders')
@@ -277,8 +282,7 @@ class Order(models.Model):
     #     related_name='orders',
     #     verbose_name='Дополнительные услуги'
     # )
-    additional_services_executors = models.ManyToManyField(
-        UserProfile, through='OrderServiceExecutors')
+    additional_services_executors = models.ManyToManyField(OrderServiceExecutors)
     details = models.TextField(
         verbose_name='Подробности', blank=True, null=True)
     executor_comment = models.TextField(
@@ -305,15 +309,6 @@ class Order(models.Model):
             ('see_orders', 'Can see orders'),
             ('assign_order', 'Can assign order'),
         )
-
-
-class OrderServiceExecutors(models.Model):
-    order = models.ForeignKey(Order)
-    executor = models.ForeignKey(UserProfile)
-    additional_service = models.ForeignKey(AdditionalService)
-
-    class Meta:
-        unique_together = ('order', 'executor', 'additional_service')
 
 
 def set_superuser_permissions(sender, instance, created, **kwargs):

@@ -465,12 +465,13 @@ class OrderGenerator:
         from orders_manager.models import AdditionalService
         from random import choice
 
-        services_to_executors = {}
+        services_to_executors = []
 
         for serv_id in services_ids:
-            services_to_executors.update({
-                serv_id: []
-            })
+            s_to_e = {
+                'service_id': serv_id,
+                'executors': []
+            }
             executors_ids_list = set()
             service = AdditionalService.objects.get(id=serv_id)
 
@@ -483,7 +484,8 @@ class OrderGenerator:
                 raise IndexError(
                     'Additional services has not possible executors!')
 
-            services_to_executors[serv_id] = list(executors_ids_list)
+            s_to_e['executors'] = [{'id': i} for i in executors_ids_list]
+            services_to_executors.append(s_to_e)
 
         return services_to_executors
 
@@ -612,7 +614,8 @@ class OrderGenerator:
         return orders_list
 
 
-def populate_database():
+def populate_database(skipped_items=None):
+    skipped_items = skipped_items or []
     UserProfileGenerator().generate(UserProfileGenerator.MANAGER, num=5)
     UserProfileGenerator().generate(UserProfileGenerator.ANIMATOR, num=7)
     UserProfileGenerator().generate(UserProfileGenerator.PHOTOGRAPHER, num=3)
@@ -621,4 +624,5 @@ def populate_database():
     DiscountsGenerator().generate()
     ClientGenerator().generate(16)
     DaysOffGenerator().generate(28, 25)
-    OrderGenerator().generate(num_events=60, num_days=45)
+    if 'orders' not in skipped_items:
+        OrderGenerator().generate(num_events=60, num_days=45)

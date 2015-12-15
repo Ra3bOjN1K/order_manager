@@ -47,6 +47,49 @@ angular.module('OrderManagerApp')
         });
 
         formlyConfig.setType({
+            name: 'repeatSection',
+            templateUrl: '/static/form_field_templates/repeatSection.html',
+            controller: function ($scope) {
+                $scope.formOptions = {formState: $scope.formState};
+                $scope.addNew = addNew;
+                $scope.copyFields = copyFields;
+
+                function copyFields(fields) {
+                    fields = angular.copy(fields);
+                    addRandomIds(fields);
+                    return fields;
+                }
+
+                function addNew() {
+                    $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
+                    var repeatSection = $scope.model[$scope.options.key];
+                    var lastSection = repeatSection[repeatSection.length - 1];
+                    var newSection = {};
+                    if (lastSection) {
+                        newSection = angular.copy(lastSection);
+                    }
+                    repeatSection.push(newSection);
+                }
+
+                var unique = 1;
+
+                function addRandomIds(fields) {
+                    unique++;
+                    angular.forEach(fields, function(field, index) {
+                        if (field.templateOptions && field.templateOptions.fields) {
+                            addRandomIds(field.templateOptions.fields);
+                        }
+                        field.id = field.id || (field.key + '_' + index + '_' + unique + getRandomInt(0, 9999));
+                    });
+                }
+
+                function getRandomInt(min, max) {
+                    return Math.floor(Math.random() * (max - min)) + min;
+                }
+            }
+        });
+
+        formlyConfig.setType({
             name: 'simpleSelect',
             templateUrl: '/static/form_field_templates/simple_select_template.html',
             link: function (scope, element, attrs) {
@@ -179,8 +222,12 @@ angular.module('OrderManagerApp')
                     $timeout(function () {
                         var fields = element.find('.formly-field');
                         fields.splice(-1, 1);
-                        fields.after('<hr/>')
+                        fields.after('<hr/>');
                     });
+                    $timeout(function () {
+                        var repeatSectionHr = $(element).find('.service-executor').next();
+                        repeatSectionHr.remove()
+                    }, 500)
                 });
             }
         }
@@ -1102,7 +1149,7 @@ angular.module('OrderManagerApp')
                     },
                     {
                         type: 'vSelect',
-                        key: 'additional_services',
+                        key: 'additional_services_executors',
                         templateOptions: {
                             id: 'additionalServicesIds',
                             label: 'Список дополнительных услуг',
@@ -1121,11 +1168,13 @@ angular.module('OrderManagerApp')
                                     angular.forEach(services, function (service) {
                                         var item = {
                                             name: service.title,
-                                            value: service.id
+                                            value: service.id,
+                                            executors: []
                                         };
 
-                                        angular.forEach($scope.model.additional_services, function (serv) {
+                                        angular.forEach($scope.model.additional_services_executors, function (serv) {
                                             if (serv.id === item.value) {
+                                                item.executors = serv.executors;
                                                 additionalServ.push(item);
                                             }
                                         });
@@ -1136,89 +1185,66 @@ angular.module('OrderManagerApp')
                                     $scope.to.options = opts;
 
                                 }).then(function () {
-                                    $scope.model.additional_services = additionalServ;
+                                    $scope.model.additional_services_executors = additionalServ;
                                 })
                             })
                         }
                     },
                     {
-                        type: 'vSelect',
-                        key: 'services_executors',
+                        type: 'repeatSection',
+                        key: 'additional_services_executors',
                         templateOptions: {
-                            id: 'servicesExecutorsIds',
-                            label: 'Исполнители дополнительных услуг',
-                            size: 6,
-                            options: [],
-                            multiple: true
-                        },
-                        controller: function ($scope) {
+                            fields: [
+                                {
+                                    type: 'vSelect',
+                                    key: 'executors',
+                                    className: 'service-executor',
+                                    templateOptions: {
+                                        id: 'servicesExecutorsIds',
+                                        label: 'Исполнители дополнительных услуг',
+                                        size: 6,
+                                        options: [],
+                                        multiple: true
+                                    },
+                                    controller: function ($scope) {
+                                        var executor_items = [],
+                                            opts = [],
+                                            checked_executors = angular.copy($scope.model.executors);
 
-                            var resultServExecutors = [],
-                                origServExec = angular.copy($scope.model.services_executors);
+                                        $timeout(function () {
+                                            angular.forEach($scope.formState.additionalServices, function(serv) {
 
-                            $scope.$watch('model.additional_services', function (newVal, oldVal) {
-                                $timeout(function () {
-                                    var possibleExecutors = [];
+                                                var model_serv_id = $scope.model.value || $scope.model.id;
 
-                                    angular.forEach($scope.formState.additionalServices, function (formStateService) {
+                                                if (model_serv_id === serv.id) {
 
-                                        angular.forEach(newVal, function (newValItem) {
+                                                    $scope.to.label = serv.title;
 
-                                            if (angular.equals(
-                                                    formStateService.id,
-                                                    newValItem.id !== undefined ? newValItem.id : newValItem.value)) {
+                                                    angular.forEach(serv.possible_executors, function(pos_exec) {
+                                                        var item = {
+                                                            name: pos_exec.full_name,
+                                                            value: pos_exec.id
+                                                        };
 
-                                                angular.forEach(formStateService.possible_executors, function (executor) {
+                                                        angular.forEach(checked_executors, function (ex) {
+                                                            if (angular.equals(ex.id || ex.value, item.value)) {
+                                                                executor_items.push(item)
+                                                            }
+                                                        });
 
-                                                    var item = executor.full_name === undefined
-                                                        ? {name: executor.name, value: executor.value}
-                                                        : {name: executor.full_name, value: executor.id};
-
-                                                    possibleExecutors.push(item);
-                                                })
-                                            }
-                                        });
-                                    });
-
-                                    return possibleExecutors;
-
-                                }).then(function (possibleExecutors) {
-
-                                    var uniqueExecutors = [];
-
-                                    angular.forEach(possibleExecutors, function (pos_ex) {
-                                        var exists = false;
-
-                                        angular.forEach(uniqueExecutors, function (unique_ex) {
-                                            if (pos_ex.value === unique_ex.value) {
-                                                exists = true
-                                            }
-                                        });
-
-                                        if (!exists) {
-
-                                            var item = {
-                                                name: pos_ex.name,
-                                                value: pos_ex.value
-                                            };
-
-                                            angular.forEach(origServExec, function (exec) {
-                                                var id = exec.id !== undefined ? exec.id : exec.value;
-                                                if (id === item.value) {
-                                                    resultServExecutors.push(item);
+                                                        opts.push(item);
+                                                    });
                                                 }
                                             });
 
-                                            uniqueExecutors.push(item)
-                                        }
-                                    });
+                                            $scope.to.options = opts;
 
-                                    $scope.to.options = uniqueExecutors;
-                                }).then(function () {
-                                    $scope.model.services_executors = resultServExecutors;
-                                })
-                            });
-
+                                        }).then(function () {
+                                            //$scope.model.executors = executor_items;
+                                        });
+                                    }
+                                }
+                            ]
                         }
                     },
                     {

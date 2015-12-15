@@ -44,7 +44,7 @@ class PopulateDatabaseView(View):
 class CeleryTestManipulationsView(View):
     def get(self, request, *args, **kwargs):
         from orders_manager.tasks import add
-        add.apply_async(45, 85, countdown=8)
+        # add.apply_async(45, 85, countdown=8)
         return HttpResponse('task_name: ' + add.name)
 
 
@@ -334,7 +334,7 @@ class OrderView(RetrieveUpdateDestroyAPIView):
 
     def get_serializer(self, *args, **kwargs):
         user_role = get_user_role(self.request.user)
-        if (not user_role in ('manager', 'superuser') and
+        if (user_role not in ('manager', 'superuser') and
                 self._is_executors_demo_date(self.get_object())):
             kwargs.update({'required_fields': [
                 'id', 'celebrate_date', 'celebrate_time', 'program', 'duration',
@@ -347,7 +347,7 @@ class OrderView(RetrieveUpdateDestroyAPIView):
 
         instance = super(OrderView, self).get_object()
         user_role = get_user_role(self.request.user)
-        if (not user_role in ('manager', 'superuser') and
+        if (user_role not in ('manager', 'superuser') and
                 self._is_executors_demo_date(instance)):
             instance.address = self._trim_address(instance.address)
         return instance
@@ -364,7 +364,7 @@ class OrderView(RetrieveUpdateDestroyAPIView):
         address_dict = loads(address)
 
         for key, value in copy(address_dict).items():
-            if not key in ('city', 'street'):
+            if key not in ('city', 'street'):
                 del address_dict[key]
         return dumps(address_dict)
 

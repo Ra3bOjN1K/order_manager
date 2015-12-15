@@ -1,5 +1,5 @@
 @import 'settings';
-@import '../fonts/arnamuserif/arnamuserif.css';
+@import '../../../../static/vendors/fonts/arnamuserif/arnamuserif.css';
 
 html,
 body {
@@ -15,7 +15,7 @@ body {
   //background-image: url('../img/fon_px.gif');
   background: #18BD9B;
   color: #666;
-  font-family: arian_amu_serifregular, serif;
+  font-family: 'Lora', serif;
   font-size: 11pt;
 }
 
@@ -49,7 +49,7 @@ body {
   @include justify-content(center);
   @include align-items(center);
   background: white;
-  font-family: arian_amu_serifregular, serif;
+  font-family: "Lora", serif;
   font-size: 12pt;
   position: absolute;
   z-index: 9999;

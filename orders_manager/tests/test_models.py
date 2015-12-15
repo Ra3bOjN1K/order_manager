@@ -7,7 +7,8 @@ from rest_framework.test import APIClient
 from orders_manager.models import (UserProfile, Client, ClientChild,
     AdditionalService, Order, Program, ProgramPrice, Discount, DayOff)
 from orders_manager.utils.generate_data_helper import (UserProfileGenerator,
-    ProgramGenerator, AdditionalServicesGenerator)
+    ProgramGenerator, AdditionalServicesGenerator, DiscountsGenerator,
+    ClientGenerator, OrderGenerator, DaysOffGenerator)
 from orders_manager.roles import get_user_role, init_roles
 from orders_manager.roles import Animator
 
@@ -505,12 +506,22 @@ class OrdersTestCase(TestCase):
         'celebrate_date': '2015-11-29',
         'celebrate_time': '15:00',
         'celebrate_place': 'Дом',
+        'children_num': 15,
+        'cost_of_the_way': 150000,
         'address': 'some address',
         'program_id': 1,
         'program_executors_id': [1],
         'duration': 30,
-        'additional_services_id': [1],
-        'services_executors_id': [1],
+        'services_executors': [
+            {
+                'service_id': 2,
+                'executors': [
+                    {'id': 3},
+                    {'id': 5},
+                    {'id': 6}
+                ]
+            }
+        ],
         'discount_id': 1,
         'details': 'some details',
         'executor_comment': 'some comment',
@@ -519,11 +530,20 @@ class OrdersTestCase(TestCase):
         'total_price_with_discounts': 500000
     }
 
-    def setUp(self):
+    def set_up(self):
         from orders_manager.utils.generate_data_helper import populate_database
+        from orders_manager.roles import init_roles
+
+        init_roles()
         populate_database()
 
     def test_create_order(self):
+        from orders_manager.utils.generate_data_helper import populate_database
+        from orders_manager.roles import init_roles
+
+        init_roles()
+        populate_database(skipped_items=('orders',))
+
         order = Order.objects.create(**self.order_info)
         self.assertEqual(12, len(order.code))
         self.assertEqual(self.order_info.get('author_id'), order.author.user.id)
@@ -540,8 +560,6 @@ class OrdersTestCase(TestCase):
         self.assertEqual(self.order_info.get('program_id'), order.program.id)
         self.assertEqual(self.order_info.get('duration'), order.duration)
         self.assertEqual(self.order_info.get('price'), order.price)
-        self.assertEqual(len(self.order_info.get('additional_services_id')),
-                         len(order.additional_services.all()))
         self.assertEqual(self.order_info.get('details'), order.details)
         self.assertEqual(self.order_info.get('executor_comment'),
                          order.executor_comment)
@@ -549,6 +567,37 @@ class OrdersTestCase(TestCase):
         self.assertEqual(self.order_info.get('total_price'), order.total_price)
         self.assertEqual(self.order_info.get('total_price_with_discounts'),
                          order.total_price_with_discounts)
+        order_services = order.additional_services_executors.all()
+        for i in order_services:
+            print('dunya')
+
+    def test_generate_data_helper(self):
+        init_roles()
+
+        UserProfileGenerator().generate(UserProfileGenerator.MANAGER, num=2)
+        UserProfileGenerator().generate(UserProfileGenerator.ANIMATOR, num=3)
+        UserProfileGenerator().generate(UserProfileGenerator.PHOTOGRAPHER,
+                                        num=2)
+        ProgramGenerator().generate(5)
+        additional_services = AdditionalServicesGenerator().generate()
+        DiscountsGenerator().generate()
+        ClientGenerator().generate(5)
+        OrderGenerator().generate(num_events=6, num_days=45)
+
+        orders = Order.objects.all()
+
+        id_to_service = {}
+
+        for s in additional_services:
+            id_to_service.update({s.id: s})
+
+        for order in orders:
+            services_executors = order.additional_services_executors.all()
+            for line in services_executors:
+                self.assertTrue(
+                    line.executor.user.id in [i.user.id for i in id_to_service[
+                        line.additional_service.id].possible_executors.all()]
+                )
 
     def test_rest_api_create_order_common(self):
         request_data = {"client": {"id": "12"},

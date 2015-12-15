@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.models import Permission
-
 from rest_framework import serializers
-
 from orders_manager.models import (UserProfile, Client, Order, Program,
     AdditionalService, ClientChild, ProgramPrice, Discount, DayOff)
 
@@ -149,7 +147,8 @@ class AdditionalServiceSerializer(DynamicFieldsModelSerializer):
 
     def create(self, validated_data):
         if validated_data.get('id'):
-            instance = AdditionalService.objects.update_or_create(**validated_data)
+            instance = AdditionalService.objects.update_or_create(
+                **validated_data)
         else:
             instance = AdditionalService.objects.create(**validated_data)
 
@@ -175,14 +174,26 @@ class OrderSerializer(DynamicFieldsModelSerializer):
     program = ProgramSerializer(required_fields=['id', 'title'])
     program_executors = UserProfileSerializer(
         required_fields=['id'], many=True, required=False)
-    additional_services = AdditionalServiceSerializer(
-        required_fields=['id'], many=True, required= False)
-    services_executors = UserProfileSerializer(
-        required_fields=['id'], many=True, required=False)
+    additional_services_executors = serializers.SerializerMethodField()
     discount = DiscountSerializer(required_fields=['id'])
 
     class Meta:
         model = Order
+
+    def get_additional_services_executors(self, obj):
+        data = []
+
+        for item in obj.additional_services_executors.all():
+            serv_id = str(item.additional_service.id)
+            if serv_id not in [x.get('id') for x in data]:
+                data.append({'id': str(serv_id), 'executors': []})
+            for data_serv in data:
+                if data_serv.get('id') == str(serv_id) and item.executor:
+                    data_serv['executors'].append({
+                        'id': str(item.executor.user.id)
+                    })
+
+        return data
 
     def create(self, validated_data):
         client_children = [x.get('id') for x in validated_data.get(

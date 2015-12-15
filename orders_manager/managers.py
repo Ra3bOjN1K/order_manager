@@ -389,7 +389,7 @@ class OrdersManager(models.Manager):
 
     def create(self, **kwargs):
         from orders_manager.models import (Order, AdditionalService,
-            ClientChild, UserProfile, OrderServiceExecutors)
+            ClientChild, OrderServiceExecutors)
 
         order = Order()
         order.code = '{0}-{1}'.format(
@@ -426,11 +426,15 @@ class OrdersManager(models.Manager):
         #     executor = UserProfile.objects.get(user__id=prog_executor_id)
         #     order.program_executors.add(executor)
 
-        for srv, executors in self._get_services_to_executors(**kwargs).items():
-            for ex_id in executors:
-                data = {'order_id': order.id, 'executor_id': ex_id,
-                        'additional_service_id': srv}
-                OrderServiceExecutors.objects.create(**data)
+        for item in self._get_services_to_executors(**kwargs):
+            for ex in item.get('executors'):
+                executor_id = ex.get('id')
+                if executor_id > 0 and item.get('service_id') > 0:
+                    order_serv_obj = OrderServiceExecutors.objects.create(**{
+                        'executor_id': executor_id,
+                        'additional_service_id': item.get('service_id')
+                    })
+                    order.additional_services_executors.add(order_serv_obj)
 
         for service_id in self._get_additional_services(**kwargs):
             serv = AdditionalService.objects.get(id=service_id)
@@ -439,8 +443,8 @@ class OrdersManager(models.Manager):
         return order
 
     def update(self, **kwargs):
-        from orders_manager.models import (Order, AdditionalService,
-            ClientChild, UserProfile, OrderServiceExecutors)
+        from orders_manager.models import (AdditionalService, ClientChild,
+            OrderServiceExecutors)
 
         try:
             order = self.get(id=kwargs.get('id'))
@@ -477,12 +481,15 @@ class OrdersManager(models.Manager):
             #     order.program_executors.add(executor)
 
             order.additional_services_executors.clear()
-            for srv, executors in self._get_services_to_executors(
-                    **kwargs).items():
-                for ex_id in executors:
-                    data = {'order_id': order.id, 'executor_id': ex_id,
-                            'additional_service_id': srv}
-                    OrderServiceExecutors.objects.create(**data)
+            for item in self._get_services_to_executors(**kwargs):
+                for ex in item.get('executors'):
+                    executor_id = ex.get('id')
+                    if executor_id > 0 and item.get('service_id') > 0:
+                        order_serv_obj = OrderServiceExecutors.objects.create(**{
+                            'executor_id': executor_id,
+                            'additional_service_id': item.get('service_id')
+                        })
+                        order.additional_services_executors.add(order_serv_obj)
 
             order.additional_services.clear()
             for service_id in self._get_additional_services(**kwargs):
