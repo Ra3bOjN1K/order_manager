@@ -380,7 +380,7 @@ class OrdersManager(models.Manager):
         return res or []
 
     def _get_services_to_executors(self, **kwargs):
-        return kwargs.get('services_executors', {})
+        return kwargs.get('additional_services_executors', {})
 
     def _get_additional_services(self, **kwargs):
         res = kwargs.get('additional_services') if kwargs.get(
@@ -429,16 +429,17 @@ class OrdersManager(models.Manager):
         for item in self._get_services_to_executors(**kwargs):
             for ex in item.get('executors'):
                 executor_id = ex.get('id')
-                if executor_id > 0 and item.get('service_id') > 0:
+                if executor_id and item.get('service_id'):
                     order_serv_obj = OrderServiceExecutors.objects.create(**{
                         'executor_id': executor_id,
                         'additional_service_id': item.get('service_id')
                     })
                     order.additional_services_executors.add(order_serv_obj)
+                    order.save()
 
-        for service_id in self._get_additional_services(**kwargs):
-            serv = AdditionalService.objects.get(id=service_id)
-            order.additional_services.add(serv)
+        # for service_id in self._get_additional_services(**kwargs):
+        #     serv = AdditionalService.objects.get(id=service_id)
+        #     order.additional_services.add(serv)
 
         return order
 
@@ -484,17 +485,18 @@ class OrdersManager(models.Manager):
             for item in self._get_services_to_executors(**kwargs):
                 for ex in item.get('executors'):
                     executor_id = ex.get('id')
-                    if executor_id > 0 and item.get('service_id') > 0:
+                    if executor_id and item.get('service_id'):
                         order_serv_obj = OrderServiceExecutors.objects.create(**{
                             'executor_id': executor_id,
                             'additional_service_id': item.get('service_id')
                         })
                         order.additional_services_executors.add(order_serv_obj)
+                        order.save()
 
-            order.additional_services.clear()
-            for service_id in self._get_additional_services(**kwargs):
-                serv = AdditionalService.objects.get(id=service_id)
-                order.additional_services.add(serv)
+            # order.additional_services.clear()
+            # for service_id in self._get_additional_services(**kwargs):
+            #     serv = AdditionalService.objects.get(id=service_id)
+            #     order.additional_services.add(serv)
 
         except self.model.DoesNotExist:
             order = self.create(**kwargs)

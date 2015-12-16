@@ -44,8 +44,11 @@ class PopulateDatabaseView(View):
 class CeleryTestManipulationsView(View):
     def get(self, request, *args, **kwargs):
         from orders_manager.tasks import add
-        # add.apply_async(45, 85, countdown=8)
-        return HttpResponse('task_name: ' + add.name)
+        res = add.delay(45, 85)
+        while not res.ready():
+            pass
+        r = res.result
+        return HttpResponse(r)
 
 
 class GoogleOauthView(TemplateView):

@@ -18,9 +18,7 @@ app.conf.update(
     BROKER_URL='amqp://{0}:{1}@localhost:5672/{2}'.format(
         settings.RABBITMQ_USER, settings.RABBITMQ_PASSWORD,
         settings.RABBITMQ_HOST),
-    CELERY_RESULT_BACKEND='amqp://{0}:{1}@localhost:5672/{2}'.format(
-        settings.RABBITMQ_USER, settings.RABBITMQ_PASSWORD,
-        settings.RABBITMQ_HOST),
+    CELERY_RESULT_BACKEND='amqp',
     CELERY_TIMEZONE=settings.TIME_ZONE,
     CELERY_ENABLE_UTC=True
 )

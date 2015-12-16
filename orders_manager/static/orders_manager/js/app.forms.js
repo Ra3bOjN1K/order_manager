@@ -1502,23 +1502,30 @@ angular.module('OrderManagerApp')
                 modelData.duration = data.duration.name.replace('мин.', '').trim();
                 modelData.price = data.price;
 
-                modelData.additional_services = [];
+                //modelData.additional_services = [];
+                //
+                //if (data.additional_services.length > 0) {
+                //    angular.forEach(data.additional_services, function (service) {
+                //        modelData.additional_services.push({
+                //            id: service.value.toString()
+                //        });
+                //    })
+                //}
 
-                if (data.additional_services.length > 0) {
-                    angular.forEach(data.additional_services, function (service) {
-                        modelData.additional_services.push({
-                            id: service.value.toString()
+                modelData.additional_services_executors = [];
+
+                if (data.additional_services_executors.length > 0) {
+                    angular.forEach(data.additional_services_executors, function (serv_execs) {
+                        var item = {
+                            service_id: serv_execs.value,
+                            executors: []
+                        };
+
+                        angular.forEach(serv_execs.executors, function (ex) {
+                            item.executors.push({id: ex.value})
                         });
-                    })
-                }
 
-                modelData.services_executors = [];
-
-                if (data.services_executors.length > 0) {
-                    angular.forEach(data.services_executors, function (executor) {
-                        modelData.services_executors.push({
-                            id: executor.value.toString()
-                        });
+                        modelData.additional_services_executors.push(item);
                     })
                 }
 

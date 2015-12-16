@@ -277,11 +277,6 @@ class Order(models.Model):
 
     duration = models.IntegerField(verbose_name='Продолжительность')
     price = models.IntegerField(verbose_name='Стоимость')
-    # additional_services = models.ManyToManyField(
-    #     AdditionalService,
-    #     related_name='orders',
-    #     verbose_name='Дополнительные услуги'
-    # )
     additional_services_executors = models.ManyToManyField(OrderServiceExecutors)
     details = models.TextField(
         verbose_name='Подробности', blank=True, null=True)

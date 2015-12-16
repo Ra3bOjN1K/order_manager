@@ -202,12 +202,11 @@ class OrderSerializer(DynamicFieldsModelSerializer):
         program_executors = [x.get('user').get('id') for x in
                              validated_data.get('program_executors')]
         validated_data['program_executors'] = program_executors
-        services_executors = [x.get('user').get('id') for x in
-                              validated_data.get('services_executors')]
-        validated_data['services_executors'] = services_executors
-        additional_services = [x.get('id') for x in validated_data.get(
-            'additional_services')]
-        validated_data['additional_services'] = additional_services
+
+        additional_services_executors = self.initial_data.get(
+            'additional_services_executors')
+        validated_data['additional_services_executors'] = \
+            additional_services_executors
 
         if validated_data.get('id'):
             instance = Order.objects.update(**validated_data)
