@@ -582,7 +582,7 @@ class OrdersTestCase(TestCase):
         additional_services = AdditionalServicesGenerator().generate()
         DiscountsGenerator().generate()
         ClientGenerator().generate(5)
-        OrderGenerator().generate(num_events=60, num_days=45)
+        OrderGenerator().generate(num_events=10, num_days=45)
 
         orders = Order.objects.all()
 
@@ -598,6 +598,8 @@ class OrdersTestCase(TestCase):
                     line.executor.user.id in [i.user.id for i in id_to_service[
                         line.additional_service.id].possible_executors.all()]
                 )
+
+            self.assertTrue(len(order.program_executors.all()) > 0)
 
     def test_rest_api_create_order_common(self):
         request_data = {"client": {"id": "12"},

@@ -389,7 +389,7 @@ class OrdersManager(models.Manager):
 
     def create(self, **kwargs):
         from orders_manager.models import (Order, AdditionalService,
-            ClientChild, OrderServiceExecutors)
+            ClientChild, OrderServiceExecutors, UserProfile)
 
         order = Order()
         order.code = '{0}-{1}'.format(
@@ -422,9 +422,9 @@ class OrdersManager(models.Manager):
             child = ClientChild.objects.get(id=child_id)
             order.client_children.add(child)
 
-        # for prog_executor_id in self._get_program_executors_ids(**kwargs):
-        #     executor = UserProfile.objects.get(user__id=prog_executor_id)
-        #     order.program_executors.add(executor)
+        for prog_executor_id in self._get_program_executors_ids(**kwargs):
+            executor = UserProfile.objects.get(user__id=prog_executor_id)
+            order.program_executors.add(executor)
 
         for item in self._get_services_to_executors(**kwargs):
             for ex in item.get('executors'):
@@ -444,7 +444,7 @@ class OrdersManager(models.Manager):
 
     def update(self, **kwargs):
         from orders_manager.models import (AdditionalService, ClientChild,
-            OrderServiceExecutors)
+            OrderServiceExecutors, UserProfile)
 
         try:
             order = self.get(id=kwargs.get('id'))
@@ -475,10 +475,10 @@ class OrdersManager(models.Manager):
                 child = ClientChild.objects.get(id=child_id)
                 order.client_children.add(child)
 
-            # order.program_executors.clear()
-            # for prog_executor_id in self._get_program_executors_ids(**kwargs):
-            #     executor = UserProfile.objects.get(user__id=prog_executor_id)
-            #     order.program_executors.add(executor)
+            order.program_executors.clear()
+            for prog_executor_id in self._get_program_executors_ids(**kwargs):
+                executor = UserProfile.objects.get(user__id=prog_executor_id)
+                order.program_executors.add(executor)
 
             order.additional_services_executors.clear()
             for item in self._get_services_to_executors(**kwargs):
