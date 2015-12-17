@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import hashlib
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save
@@ -131,6 +132,20 @@ class ClientChild(models.Model):
 
     def age(self):
         return calculate_age(self.birthday)
+
+    def verbose_age(self):
+        def _check_age_lbl(age):
+            if age > 0 and age // 10 != 1:
+                if age % 10 == 1:
+                    return 'год'
+                elif age % 10 in (2, 3, 4):
+                    return 'года'
+                else:
+                    return 'лет'
+            else:
+                return 'лет'
+
+        return '%d %s' % (self.age(), _check_age_lbl(self.age()))
 
     def activate(self):
         self.is_active = True
@@ -304,6 +319,11 @@ class Order(models.Model):
             ('see_orders', 'Can see orders'),
             ('assign_order', 'Can assign order'),
         )
+
+    def hex_id(self):
+        hex_data = hashlib.sha224(
+            (self.code + str(self.id)).encode('ascii', 'ignore')).hexdigest()
+        return hex_data[:10]
 
 
 def set_superuser_permissions(sender, instance, created, **kwargs):

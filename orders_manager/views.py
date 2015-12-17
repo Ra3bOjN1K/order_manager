@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.core.exceptions import PermissionDenied
 from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
@@ -24,7 +24,7 @@ from orders_manager.serializers import (UserProfileSerializer, ClientSerializer,
     ProgramPriceSerializer, AdditionalServiceSerializer, DiscountSerializer,
     DayOffSerializer)
 from orders_manager.roles import get_user_role
-from orders_manager.google_apis import GoogleAuth
+from orders_manager.google_apis import GoogleApiHandler
 from orders_manager.tasks import send_order_to_users
 
 
@@ -34,7 +34,8 @@ class PopulateDatabaseView(View):
         from orders_manager.roles import init_roles
 
         init_roles()
-        User.objects.create_superuser('admin', 'zakaz.tilibom@gmail.com', '12345')
+        User.objects.create_superuser('admin', 'zakaz.tilibom@gmail.com',
+                                      '12345')
         Discount.objects.create(name='Нет скидки', value=0)
         populate_database()
 
@@ -43,12 +44,12 @@ class PopulateDatabaseView(View):
 
 class CeleryTestManipulationsView(View):
     def get(self, request, *args, **kwargs):
-        from orders_manager.tasks import add
-        res = add.delay(45, 85)
-        while not res.ready():
-            pass
-        r = res.result
-        return HttpResponse(r)
+        return HttpResponse({})
+
+
+def robots(request):
+    return render_to_response(template_name='robots.txt',
+                              content_type="text/plain")
 
 
 class GoogleOauthView(TemplateView):
@@ -56,7 +57,7 @@ class GoogleOauthView(TemplateView):
 
     def __init__(self, **kwargs):
         super(GoogleOauthView, self).__init__(**kwargs)
-        self.google_oauth = GoogleAuth()
+        self.google_oauth = GoogleApiHandler()
 
     def post(self, request, *args, **kwargs):
         if request.POST.get('auth_code'):
@@ -239,6 +240,10 @@ class ClientListView(ListCreateAPIView):
     queryset = Client.objects.all().order_by('id')
     serializer_class = ClientSerializer
 
+    def get(self, request, *args, **kwargs):
+        _raise_denied_if_has_no_perm(self.request.user, 'see_client')
+        return super(ClientListView, self).get(request, *args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         if request.data.get('mode') == 'quick_create':
             _raise_denied_if_has_no_perm(self.request.user, 'add_client')
@@ -385,7 +390,9 @@ class OrderListView(ListCreateAPIView):
             {'author': {'id': user_id, 'full_name': ''}})
         response = super(OrderListView, self).post(request, *args, **kwargs)
         if response:
-            send_order_to_users.delay(request.data)
+            r = send_order_to_users.delay(order_id=request.data.get('id'))
+            while not r.ready():
+                pass
         return response
 
     def get_queryset(self):
@@ -401,7 +408,8 @@ class OrderListView(ListCreateAPIView):
             queryset = Order.objects.filter(
                 (
                     Q(program_executors__user_id=self.request.user.id) |
-                    Q(additional_services_executors__executor_id=self.request.user.id)
+                    Q(
+                        additional_services_executors__executor_id=self.request.user.id)
                 )
                 & Q(celebrate_date__gte=datetime.date.today())
             ).distinct('id')
@@ -497,6 +505,11 @@ class AdditionalServicesListView(ListCreateAPIView):
     queryset = AdditionalService.objects.all()
     serializer_class = AdditionalServiceSerializer
 
+    def get(self, request, *args, **kwargs):
+        _raise_denied_if_has_no_perm(self.request.user, 'see_client')
+        return super(AdditionalServicesListView, self).get(request, *args,
+                                                           **kwargs)
+
     def post(self, request, *args, **kwargs):
         if request.data.get('mode'):
             action = request.data.pop('mode')
@@ -564,6 +577,10 @@ class DayOffView(RetrieveAPIView):
 class DiscountListView(ListCreateAPIView):
     queryset = Discount.objects.all()
     serializer_class = DiscountSerializer
+
+    def get(self, request, *args, **kwargs):
+        _raise_denied_if_has_no_perm(self.request.user, 'see_client')
+        return super(DiscountListView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
         res = super(DiscountListView, self).get_queryset().filter(

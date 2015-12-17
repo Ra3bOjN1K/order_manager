@@ -12,6 +12,7 @@ ROLES = [
     ('photographer', 'Фотограф'),
 ]
 
+
 class AbstractUserRole:
     group_name = ''
     available_permissions = ()

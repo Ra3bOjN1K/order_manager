@@ -1291,6 +1291,9 @@ angular.module('OrderManagerApp')
                                     }
                                 }
                             ]
+                        },
+                        hideExpression: function ($viewValue, $modelValue, scope) {
+                            return scope.model.additional_services_executors.length === 0;
                         }
                     },
                     {

@@ -11,3 +11,4 @@ pycrypto
 google-api-python-client
 celery
 django-celery
+flower

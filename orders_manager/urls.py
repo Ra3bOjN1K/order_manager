@@ -7,6 +7,7 @@ from orders_manager import views
 
 
 urlpatterns = [
+    url(r'^robots.txt$', views.robots),
     url(r'^$', RedirectView.as_view(
         pattern_name='orders_manager:orders_list', permanent=True)),
     # url(r'^login/$', views.LoginFormView.as_view(), name='login'),
@@ -47,3 +48,4 @@ urlpatterns = [
     url(r'^orders/$', views.ShowAllOrdersListView.as_view(),
         name='orders_list'),
 ]
+
