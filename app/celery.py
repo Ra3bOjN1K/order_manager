@@ -5,6 +5,7 @@ from __future__ import absolute_import
 import os
 
 from celery import Celery
+from celery.schedules import crontab
 from django.conf import settings
 
 
@@ -21,28 +22,21 @@ app.conf.update(
     CELERY_RESULT_BACKEND='amqp://{0}:{1}@localhost:5672/{2}'.format(
         settings.RABBITMQ_USER, settings.RABBITMQ_PASSWORD,
         settings.RABBITMQ_HOST),
+    CELERY_ACCEPT_CONTENT=['json'],
+    CELERY_TASK_SERIALIZER='json',
+    CELERY_RESULT_SERIALIZER='json',
     CELERY_TIMEZONE=settings.TIME_ZONE,
-    CELERY_ENABLE_UTC=True
+    CELERY_ENABLE_UTC=True,
+    CELERYBEAT_SCHEDULE={
+        'update-google-orders-every-night': {
+            'task': 'orders_manager.tasks.cyclically_update_orders_to_google_calendars',
+            'schedule': crontab(minute=5, hour='*/12'),
+            'args': (),
+        },
+    }
 )
 
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
-
-
-def get_tasks_logger():
-    import logging
-
-    logger = logging.getLogger('celery.tasks')
-    if os.path.exists(settings.CELERY_TASKS_LOG_DIR_PATH):
-        handler = logging.FileHandler(
-            os.path.join(settings.CELERY_TASKS_LOG_DIR_PATH, 'tasks.log'))
-        formatter = logging.Formatter('%(asctime)-15s %(levelname)-8s %(message)s')
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        logger.propagate = False
-    else:
-        raise IOError('Logs dir doesn\'t exists!')
-
-    return logger
 
 
 @app.task(bind=True)

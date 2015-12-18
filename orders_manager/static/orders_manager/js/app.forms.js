@@ -773,6 +773,7 @@ angular.module('OrderManagerApp')
                         type: 'clientSelect',
                         key: 'client',
                         //wrapper: 'loading',
+                        className: 'order-client-select',
                         templateOptions: {
                             id: 'clientId',
                             label: 'Клиент',
@@ -806,6 +807,7 @@ angular.module('OrderManagerApp')
                                         var item = {
                                             name: client.name,
                                             phone: client.phone,
+                                            phone2: client.phone_2,
                                             value: client.id
                                         };
 
@@ -822,6 +824,7 @@ angular.module('OrderManagerApp')
                                             var item = {
                                                 name: client.name,
                                                 phone: client.phone,
+                                                phone2: client.phone_2,
                                                 value: client.id
                                             };
                                             var hasItem = false;
@@ -872,11 +875,26 @@ angular.module('OrderManagerApp')
                             }
                         },
                         controller: function ($scope) {
-                            var birthdayBoys = [];
+
+                            var client_id = 0;
+
+                            if ($scope.model.client !== undefined) {
+                                client_id = angular.copy($scope.model.client.id);
+                            }
+
                             var client_children = angular.copy($scope.model.client_children);
 
                             $scope.$watch('model.client', function (newVal) {
                                 if (!!newVal && !!newVal.value) {
+
+                                    var birthdayBoys = [];
+                                    var newClientId = newVal.id || newVal.value;
+
+                                    if (client_id !== newClientId) {
+                                        client_children = undefined;
+                                        $scope.model.client_children = [];
+                                    }
+
                                     $timeout(function () {
                                         ClientService.getClientChildren(newVal.value).then(function (children) {
                                             var opts = [];
@@ -900,7 +918,14 @@ angular.module('OrderManagerApp')
                                             $scope.to.options = opts;
                                         });
                                     }).then(function () {
-                                        $scope.model.client_children = birthdayBoys;
+
+                                        $timeout(function () {
+                                            if (birthdayBoys.length === 0 && $scope.to.options.length === 1) {
+                                                birthdayBoys.push($scope.to.options[0]);
+                                            }
+
+                                            $scope.model.client_children = birthdayBoys;
+                                        }, 200)
                                     })
                                 }
                                 else {
@@ -1175,7 +1200,15 @@ angular.module('OrderManagerApp')
                                             });
                                             $scope.to.options = opts;
                                         }).then(function () {
-                                            $scope.model.program_executors = programExecutors;
+                                            $timeout(function () {
+
+                                                if (programExecutors.length === 0 && $scope.to.options.length === 1) {
+                                                    programExecutors.push($scope.to.options[0]);
+                                                }
+
+                                                $scope.model.program_executors = programExecutors;
+
+                                            }, 200);
                                         });
                                     });
                                 }
@@ -1293,7 +1326,7 @@ angular.module('OrderManagerApp')
                             ]
                         },
                         hideExpression: function ($viewValue, $modelValue, scope) {
-                            return scope.model.additional_services_executors.length === 0;
+                            return scope.model.additional_services_executors === undefined || scope.model.additional_services_executors.length === 0;
                         }
                     },
                     {
@@ -1660,15 +1693,17 @@ angular.module('OrderManagerApp')
                 {
                     type: 'phoneInputType',
                     key: 'phone',
+                    className: 'order-client-popup-phone',
                     templateOptions: {
                         id: 'clientPhoneId',
                         label: 'Телефон клиента',
                         required: true
                     },
                     controller: function ($scope) {
+                        $scope.model.phone = parseInt($('.order-client-select').find('input').val());
                         $scope.$watch('model.phone', function (newVal) {
                             if (newVal !== undefined) {
-                                $scope.model.phone = $scope.model.phone.trimPhoneCountryCode()
+                                $scope.model.phone = parseInt($scope.model.phone);
                             }
                         })
                     }

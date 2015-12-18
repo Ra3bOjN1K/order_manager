@@ -390,9 +390,7 @@ class OrderListView(ListCreateAPIView):
             {'author': {'id': user_id, 'full_name': ''}})
         response = super(OrderListView, self).post(request, *args, **kwargs)
         if response:
-            r = send_order_to_users.delay(order_id=request.data.get('id'))
-            while not r.ready():
-                pass
+            send_order_to_users.delay(order_id=request.data.get('id'))
         return response
 
     def get_queryset(self):

@@ -374,8 +374,9 @@
   justify-content: space-between;
 }
 .event-window-background .client-option .phone {
-  margin-right: 26px;
+  margin-right: 8px;
   text-decoration: underline;
+  width: 110px;
 }
 .event-window-background .readonly-field {
   -webkit-flex: 1 1;

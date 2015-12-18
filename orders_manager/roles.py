@@ -151,6 +151,8 @@ class Animator(AbstractUserRole):
         'see_client_details',
         'see_client_children',
         'see_program_details',
+        'see_additionalservices',
+        'see_discounts',
     )
 
 
@@ -163,6 +165,8 @@ class Photographer(AbstractUserRole):
         'see_client_details',
         'see_client_children',
         'see_program_details',
+        'see_additionalservices',
+        'see_discounts',
     )
 
 

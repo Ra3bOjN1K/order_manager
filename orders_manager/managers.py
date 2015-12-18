@@ -169,11 +169,15 @@ class ClientChildrenManager(models.Manager):
 
     def update_or_create(self, defaults=None, **kwargs):
         try:
-            client_id = kwargs.get('client_id')
-            child = self.get(
-                Q(name=kwargs.get('name')) &
-                Q(client__id=client_id)
-            )
+            if kwargs.get('id') and kwargs.get('name'):
+                child = self.get(id=kwargs.get('id'))
+                child.name = kwargs.get('name')
+            else:
+                client_id = kwargs.get('client_id')
+                child = self.get(
+                    Q(name=kwargs.get('name')) &
+                    Q(client__id=client_id)
+                )
 
             if kwargs.get('birthday'):
                 child.birthday = kwargs.get('birthday')

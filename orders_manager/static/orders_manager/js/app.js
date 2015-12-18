@@ -22,7 +22,7 @@ angular.module('OrderManagerApp', [
 
         String.prototype.trimPhoneCountryCode = function () {
             var phoneNum = this.toString();
-            if (phoneNum.length >= 12 && (phoneNum.startsWith('375') || (phoneNum.startsWith('+375')))) {
+            if (phoneNum.length >= 12 && (phoneNum.startsWith('375') || phoneNum.startsWith('+375'))) {
                 phoneNum = phoneNum.replace(/^\+?375/, '')
             }
             return phoneNum;
@@ -31,7 +31,7 @@ angular.module('OrderManagerApp', [
         String.prototype.addPhoneCountryCode = function () {
             var phoneNum = this.toString();
             if (phoneNum.length === 9) {
-                phoneNum = '+375' + phoneNum
+                phoneNum = '375' + phoneNum
             }
             return phoneNum;
         }
@@ -595,6 +595,7 @@ angular.module('OrderManagerApp', [
                 saveRow: function (rowEntity) {
                     var childName = rowEntity.name.trim(),
                         childBirthday = rowEntity.birthday,
+                        childId = rowEntity.id,
                         parentId = vm.client.selectedClient.id;
 
                     var promise = $q.defer();
@@ -603,6 +604,7 @@ angular.module('OrderManagerApp', [
 
                     if (childName && childBirthday && parentId) {
                         ClientService.saveClientChildren({
+                            id: childId,
                             name: childName,
                             birthday: childBirthday,
                             client: parentId

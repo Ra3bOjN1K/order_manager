@@ -83,14 +83,13 @@ class ClientChildrenSerializer(DynamicFieldsModelSerializer):
 
         return '%d %s' % (obj.age(), _check_age_lbl(obj.age()))
 
+    def get_unique_together_validators(self):
+        return []
+
     def create(self, validated_data):
         validated_data.update({'client_id': validated_data.get('client').id})
         del validated_data['client']
-
-        if validated_data.get('id'):
-            instance = ClientChild.objects.update_or_create(**validated_data)
-        else:
-            instance = ClientChild.objects.create(**validated_data)
+        instance = ClientChild.objects.update_or_create(**validated_data)
 
         return instance
 

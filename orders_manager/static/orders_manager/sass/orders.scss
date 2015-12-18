@@ -291,8 +291,9 @@
     @include justify-content(space-between);
 
     .phone {
-      margin-right: 26px;
+      margin-right: 8px;
       text-decoration: underline;
+      width: 110px;
     }
   }
 
