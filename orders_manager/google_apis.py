@@ -14,8 +14,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCOPES = [
     'https://www.googleapis.com/auth/calendar',
     'https://www.googleapis.com/auth/userinfo.email']
-CLIENT_ID = '501382837218-cluipcqlmcqo24he2so0g8g1s5l7dlqn.apps.googleusercontent.com'
-CLIENT_SECRET = 'o3U6_5YhSpnFD8TF5QOrmqK5'
+CLIENT_ID = '501382837218-q18pfb3sgr7coatj96ka4asdpe40p664.apps.googleusercontent.com'
+CLIENT_SECRET = 'N2a3kZpSOU3VqFGo2Gxu4XHS'
 
 if settings.GOOGLE_AUTH_MODE == 'production':
     REDIRECT_URL = 'http://zakaz.tilibom.by/login/auth_code/'

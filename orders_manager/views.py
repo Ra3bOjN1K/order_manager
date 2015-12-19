@@ -93,6 +93,11 @@ class GoogleOauthView(TemplateView):
         return kwargs
 
 
+class GoogleOauthRedirectView(View):
+    def get(self, request, *args, **kwargs):
+        pass
+
+
 class LoginFormView(FormView):
     form_class = AuthenticationForm
     template_name = 'orders_manager/authorization/login.html'

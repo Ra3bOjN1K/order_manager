@@ -14,8 +14,8 @@ urlpatterns = [
     url(r'^logout/$', views.LogoutFormView.as_view(), name='logout'),
     url(r'^database/populate/$', views.PopulateDatabaseView.as_view()),
 
+    url(r'^login/auth_code/', views.GoogleOauthRedirectView.as_view()),
     url(r'^login/', views.GoogleOauthView.as_view()),
-    url(r'^login/auth_code/', views.GoogleOauthView.as_view()),
 
     url(r'^celery/test/', views.CeleryTestManipulationsView.as_view()),
 
