@@ -37,7 +37,7 @@ class PopulateDatabaseView(View):
         User.objects.create_superuser('admin', 'zakaz.tilibom@gmail.com',
                                       '12345')
         Discount.objects.create(name='Нет скидки', value=0)
-        populate_database()
+        # populate_database()
 
         return HttpResponse('Done')
 
@@ -52,33 +52,28 @@ def robots(request):
                               content_type="text/plain")
 
 
-class GoogleOauthView(TemplateView):
-    template_name = 'orders_manager/authorization/google_oauth.html'
-
-    def __init__(self, **kwargs):
-        super(GoogleOauthView, self).__init__(**kwargs)
+class OAuthLogin:
+    def __init__(self, template_name):
+        super(OAuthLogin, self).__init__()
         self.google_oauth = GoogleApiHandler()
+        self.template_name = template_name
 
-    def get(self, request, *args, **kwargs):
-        return super(GoogleOauthView, self).get(request, *args, **kwargs)
+    def login(self, code, request):
+        credential = self.google_oauth.exchange_auth_code(code)
 
-    def post(self, request, *args, **kwargs):
-        if request.POST.get('auth_code'):
-            credential = self.google_oauth.exchange_auth_code(
-                request.POST.get('auth_code'))
-
-            if self.is_google_user_valid(credential):
-                cred = self.google_oauth.update_user_credentials(credential)
-                if cred:
-                    user = User.objects.get(
-                        email=self.google_oauth.get_google_user_email(cred))
-                    user.backend = 'django.contrib.auth.backends.ModelBackend'
-                    login(request, user)
-                    return HttpResponseRedirect('/')
-            else:
-                return render(request, self.template_name, context={
-                    'error': 'Данный email не имеет доступа к приложению!'})
-        return self.render_to_response({})
+        if self.is_google_user_valid(credential):
+            cred = self.google_oauth.update_user_credentials(credential)
+            if cred:
+                user = User.objects.get(
+                    email=self.google_oauth.get_google_user_email(cred))
+                user.backend = 'django.contrib.auth.backends.ModelBackend'
+                login(request, user)
+                return HttpResponseRedirect('/')
+        else:
+            return render_to_response(
+                template_name=self.template_name,
+                context={'error': 'Данный email не имеет доступа к приложению!'}
+            )
 
     def is_google_user_valid(self, credentials):
         google_user_email = self.google_oauth.get_google_user_email(credentials)
@@ -88,14 +83,34 @@ class GoogleOauthView(TemplateView):
         user = UserProfile.objects.filter(user__email=email).first()
         return user is not None and user.user.is_active
 
+
+class GoogleOauthView(TemplateView):
+    template_name = 'orders_manager/authorization/google_oauth.html'
+
+    def __init__(self, **kwargs):
+        super(GoogleOauthView, self).__init__(**kwargs)
+        self.oauth_login = OAuthLogin(self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        code = request.POST.get('auth_code')
+        return self.oauth_login.login(code, request)
+
     def get_context_data(self, **kwargs):
-        kwargs.update({'auth_uri': self.google_oauth.get_auth_uri()})
+        kwargs.update(
+            {'auth_uri': self.oauth_login.google_oauth.get_auth_uri()})
         return kwargs
 
 
-class GoogleOauthRedirectView(View):
+class GoogleOauthRedirectView(TemplateView):
+    template_name = 'orders_manager/authorization/google_oauth.html'
+
+    def __init__(self, **kwargs):
+        super(GoogleOauthRedirectView, self).__init__(**kwargs)
+        self.google_oauth = OAuthLogin(self.template_name)
+
     def get(self, request, *args, **kwargs):
-        pass
+        code = request.GET.get('code')
+        return self.google_oauth.login(code, request)
 
 
 class LoginFormView(FormView):
