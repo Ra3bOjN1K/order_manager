@@ -11,9 +11,16 @@ angular.module('GoogleOauthModule', ['restangular'])
             auth_code: ''
         };
 
-        $scope.getUserToken = function () {
+        $scope.isProductionMode = function () {
+            return angular.equals($('#is-production-mode').text(), 'True');
+        };
+
+        $scope.getUserTokenInNewTab = function () {
             $scope.isGettingTokenMode = true;
-            var isProduction = $('#is-production-mode').text();
-            $window.open($('div.hidden').text(), isProduction === 'True' ? '_blank' : '');
+            $window.open($('#auth-uri').text(), '_blank');
+        };
+
+        $scope.getUserTokenInCurrentTab = function () {
+            $window.open($('#auth-uri').text(), '_self');
         };
     }]);

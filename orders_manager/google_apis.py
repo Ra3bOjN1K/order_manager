@@ -12,7 +12,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SCOPES = [
     'https://www.googleapis.com/auth/calendar',
-    'https://www.googleapis.com/auth/userinfo.email']
+    'https://www.googleapis.com/auth/userinfo.email'
+]
 CLIENT_ID = settings.OAUTH_CLIENT_ID
 CLIENT_SECRET = settings.OAUTH_CLIENT_SECRET
 REDIRECT_URL = settings.OAUTH_REDIRECT_URL
