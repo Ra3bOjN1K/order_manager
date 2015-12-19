@@ -59,6 +59,9 @@ class GoogleOauthView(TemplateView):
         super(GoogleOauthView, self).__init__(**kwargs)
         self.google_oauth = GoogleApiHandler()
 
+    def get(self, request, *args, **kwargs):
+        return super(GoogleOauthView, self).get(request, *args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         if request.POST.get('auth_code'):
             credential = self.google_oauth.exchange_auth_code(
@@ -346,7 +349,8 @@ class OrderView(RetrieveUpdateDestroyAPIView):
                 self._is_executors_demo_date(self.get_object())):
             kwargs.update({'required_fields': [
                 'id', 'celebrate_date', 'celebrate_time', 'program', 'duration',
-                'address', 'celebrate_place', 'executor_comment'
+                'address', 'celebrate_place', 'executor_comment',
+                'additional_services_executors'
             ]})
         return super(OrderView, self).get_serializer(*args, **kwargs)
 
@@ -416,9 +420,10 @@ class OrderListView(ListCreateAPIView):
 
     def get_serializer(self, *args, **kwargs):
         user_role = get_user_role(self.request.user)
-        if not user_role in ('manager', 'superuser'):
+        if user_role not in ('manager', 'superuser'):
             kwargs.update({'required_fields': [
-                'id', 'celebrate_date', 'celebrate_time', 'program', 'duration'
+                'id', 'celebrate_date', 'celebrate_time', 'program',
+                'duration', 'is_only_service_executor'
             ]})
         return super(OrderListView, self).get_serializer(*args, **kwargs)
 
@@ -504,7 +509,8 @@ class AdditionalServicesListView(ListCreateAPIView):
     serializer_class = AdditionalServiceSerializer
 
     def get(self, request, *args, **kwargs):
-        _raise_denied_if_has_no_perm(self.request.user, 'see_client')
+        _raise_denied_if_has_no_perm(self.request.user,
+                                     'see_additionalservices')
         return super(AdditionalServicesListView, self).get(request, *args,
                                                            **kwargs)
 
@@ -577,7 +583,7 @@ class DiscountListView(ListCreateAPIView):
     serializer_class = DiscountSerializer
 
     def get(self, request, *args, **kwargs):
-        _raise_denied_if_has_no_perm(self.request.user, 'see_client')
+        _raise_denied_if_has_no_perm(self.request.user, 'see_discounts')
         return super(DiscountListView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):

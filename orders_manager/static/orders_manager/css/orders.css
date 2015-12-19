@@ -177,6 +177,11 @@
   border: 1px solid #ce2e1c;
 }
 
+.only-service-executor {
+  background: #6cb168;
+  border: 1px solid #59a555;
+}
+
 .event-window-background {
   display: -moz-box;
   -moz-box-orient: vertical;
@@ -483,6 +488,9 @@
   color: #fff;
   margin-top: 4px;
   width: 120px;
+}
+.event-window-background .executor-comment textarea {
+  border: 2px solid #8AAD89;
 }
 .event-window-background .many-to-many-container {
   display: -moz-box;

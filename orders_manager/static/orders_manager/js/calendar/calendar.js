@@ -77,6 +77,7 @@ angular.module('CalendarApp', ['ui.calendar'])
                         modelItem.title = model.program.title;
                         modelItem.start = getStartDateTime();
                         modelItem.end = getEndDateTime();
+                        modelItem.userIsOnlyServiceExecutor = model.is_only_service_executor;
 
                         function getStartDateTime() {
                             return model.celebrate_date + ' ' + model.celebrate_time;
@@ -154,6 +155,10 @@ angular.module('CalendarApp', ['ui.calendar'])
 
                     if ($scope.calendar.isToday(event.start)) {
                         element.addClass('event-today');
+                    }
+
+                    if (event.userIsOnlyServiceExecutor) {
+                        element.addClass('only-service-executor');
                     }
                 }
             };

@@ -6,6 +6,8 @@ import simplejson
 from apiclient import discovery, errors
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.django_orm import Storage
+from django.core.urlresolvers import reverse
+from django.conf import settings
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -14,7 +16,11 @@ SCOPES = [
     'https://www.googleapis.com/auth/userinfo.email']
 CLIENT_ID = '501382837218-cluipcqlmcqo24he2so0g8g1s5l7dlqn.apps.googleusercontent.com'
 CLIENT_SECRET = 'o3U6_5YhSpnFD8TF5QOrmqK5'
-REDIRECT_URL = 'urn:ietf:wg:oauth:2.0:oob'
+
+if settings.GOOGLE_AUTH_MODE == 'production':
+    REDIRECT_URL = reverse('auth_code')
+else:
+    REDIRECT_URL = 'urn:ietf:wg:oauth:2.0:oob'
 
 
 class GoogleApiHandler:

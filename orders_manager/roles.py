@@ -181,6 +181,7 @@ def init_roles():
     for role in roles:
         role.init_role()
 
+
 def get_user_role(user):
     user = user if not hasattr(user, 'user') else user.user
     user_groups = user.groups.values_list('name',flat=True)

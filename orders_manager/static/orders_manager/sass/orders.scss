@@ -156,6 +156,11 @@
   border: 1px solid darken(#e55242, 12%);
 }
 
+.only-service-executor {
+  background: darken(#86bf83, 8%);
+  border: 1px solid darken(#86bf83, 14%);
+}
+
 .event-window-background {
   @include init-flex-position(column);
   @include justify-content(center);
@@ -381,6 +386,10 @@
     color: #fff;
     margin-top: 4px;
     width: 120px;
+  }
+
+  .executor-comment textarea {
+    border: 2px solid #8AAD89;
   }
 
   .many-to-many-container {

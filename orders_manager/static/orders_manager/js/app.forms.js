@@ -516,7 +516,7 @@ angular.module('OrderManagerApp')
                             label: 'Список дополнительных услуг'
                         },
                         hideExpression: function ($viewValue, $modelValue, scope) {
-                            return !scope.model.additional_services_executors;
+                            return scope.model.additional_services_executors === undefined || scope.model.additional_services_executors.length === 0;
                         },
                         controller: function ($scope) {
                             AdditionalServiceFactory.getAllAdditionalServices().then(function (services) {
@@ -599,7 +599,7 @@ angular.module('OrderManagerApp')
                             ]
                         },
                         hideExpression: function ($viewValue, $modelValue, scope) {
-                            return !scope.model.additional_services_executors;
+                            return scope.model.additional_services_executors === undefined || scope.model.additional_services_executors.length === 0;
                         }
                     },
                     {
@@ -619,6 +619,7 @@ angular.module('OrderManagerApp')
                         key: 'executor_comment',
                         id: 'executorCommentId',
                         defaultValue: '',
+                        className: 'executor-comment',
                         templateOptions: {
                             label: 'Комментарий исполнителя',
                             btnName: 'Сохранить'
