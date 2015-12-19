@@ -18,7 +18,7 @@ CLIENT_ID = '501382837218-cluipcqlmcqo24he2so0g8g1s5l7dlqn.apps.googleuserconten
 CLIENT_SECRET = 'o3U6_5YhSpnFD8TF5QOrmqK5'
 
 if settings.GOOGLE_AUTH_MODE == 'production':
-    REDIRECT_URL = 'http/zakaz.tilibom.by/login/auth_code/'
+    REDIRECT_URL = 'http://zakaz.tilibom.by/login/auth_code/'
 else:
     REDIRECT_URL = 'urn:ietf:wg:oauth:2.0:oob'
 
