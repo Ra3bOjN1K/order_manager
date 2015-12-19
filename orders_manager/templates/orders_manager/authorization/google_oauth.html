@@ -16,6 +16,7 @@
     <div class="oauth-container" ng-if="!isGettingTokenMode">
         {% autoescape off %}
             <div class="hidden">{{ auth_uri }}</div>
+            <div class="hidden" id="is-production-mode">{{ is_production_mode }}</div>
         {% endautoescape %}
 
         <button type="button" class="oauth-btn" ng-click="getUserToken()">Авторизация</button>

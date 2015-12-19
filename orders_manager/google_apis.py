@@ -6,7 +6,6 @@ import simplejson
 from apiclient import discovery, errors
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.django_orm import Storage
-from django.core.urlresolvers import reverse
 from django.conf import settings
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -14,13 +13,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCOPES = [
     'https://www.googleapis.com/auth/calendar',
     'https://www.googleapis.com/auth/userinfo.email']
-CLIENT_ID = '501382837218-q18pfb3sgr7coatj96ka4asdpe40p664.apps.googleusercontent.com'
-CLIENT_SECRET = 'N2a3kZpSOU3VqFGo2Gxu4XHS'
-
-if settings.GOOGLE_AUTH_MODE == 'production':
-    REDIRECT_URL = 'http://zakaz.tilibom.by/login/auth_code/'
-else:
-    REDIRECT_URL = 'urn:ietf:wg:oauth:2.0:oob'
+CLIENT_ID = settings.OAUTH_CLIENT_ID
+CLIENT_SECRET = settings.OAUTH_CLIENT_SECRET
+REDIRECT_URL = settings.OAUTH_REDIRECT_URL
 
 
 class GoogleApiHandler:

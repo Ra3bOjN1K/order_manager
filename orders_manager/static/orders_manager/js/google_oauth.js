@@ -13,6 +13,7 @@ angular.module('GoogleOauthModule', ['restangular'])
 
         $scope.getUserToken = function () {
             $scope.isGettingTokenMode = true;
-            $window.open($('div.hidden').text(), '_blank');
+            var isProduction = $('#is-production-mode').text();
+            $window.open($('div.hidden').text(), isProduction === 'True' ? '_blank' : '');
         };
     }]);

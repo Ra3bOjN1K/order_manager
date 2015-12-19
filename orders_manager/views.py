@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import json
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render_to_response
 from django.core.exceptions import PermissionDenied
 from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.http import (HttpResponseRedirect, Http404, HttpResponse,
-    JsonResponse)
+from django.http import (HttpResponseRedirect, Http404, HttpResponse)
 from django.views.generic import View, TemplateView
 from django.views.generic.edit import FormView
 from django.contrib.auth import login, logout
@@ -96,8 +94,12 @@ class GoogleOauthView(TemplateView):
         return self.oauth_login.login(code, request)
 
     def get_context_data(self, **kwargs):
-        kwargs.update(
-            {'auth_uri': self.oauth_login.google_oauth.get_auth_uri()})
+        from django.conf import settings
+
+        kwargs.update({
+            'auth_uri': self.oauth_login.google_oauth.get_auth_uri(),
+            'is_production_mode': settings.GOOGLE_AUTH_MODE == 'production'
+        })
         return kwargs
 
 
