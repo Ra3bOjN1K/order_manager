@@ -70,7 +70,7 @@ class OAuthLogin:
         else:
             return render_to_response(
                 template_name=self.template_name,
-                context={'error': 'Данный email не имеет доступа к приложению!'}
+                context={'error': 'Email не имеет доступа к приложению!'}
             )
 
     def is_google_user_valid(self, credentials):

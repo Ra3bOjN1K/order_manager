@@ -19,8 +19,10 @@
             <div class="hidden" id="is-production-mode">{{ is_production_mode }}</div>
         {% endautoescape %}
 
-        <button type="button" class="oauth-btn" ng-if="isProductionMode()" ng-click="getUserTokenInCurrentTab()">Авторизация</button>
-        <button type="button" class="oauth-btn" ng-if="!isProductionMode()" ng-click="getUserTokenInNewTab()">Авторизация</button>
+        {% if not error %}
+            <button type="button" class="oauth-btn" ng-if="isProductionMode()" ng-click="getUserTokenInCurrentTab()">Авторизация</button>
+            <button type="button" class="oauth-btn" ng-if="!isProductionMode()" ng-click="getUserTokenInNewTab()">Авторизация</button>
+        {% endif %}
 
         {% if error %}
             <span class="error-messages">{{ error }}</span>
