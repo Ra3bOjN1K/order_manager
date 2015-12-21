@@ -10,26 +10,22 @@ from django.conf import settings
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SCOPES = [
-    'https://www.googleapis.com/auth/calendar',
-    'https://www.googleapis.com/auth/userinfo.email'
-]
-CLIENT_ID = settings.OAUTH_CLIENT_ID
-CLIENT_SECRET = settings.OAUTH_CLIENT_SECRET
-REDIRECT_URL = settings.OAUTH_REDIRECT_URL
-
 
 class GoogleApiHandler:
     TILIBOM_CALENDAR_SUMMARY = 'Tilibom\'s calendar'
+    SCOPES = [
+        'https://www.googleapis.com/auth/calendar',
+        'https://www.googleapis.com/auth/userinfo.email'
+    ]
 
     oauth_flow = None
 
     def __init__(self):
         self.oauth_flow = OAuth2WebServerFlow(
-            client_id=CLIENT_ID,
-            client_secret=CLIENT_SECRET,
-            scope=SCOPES,
-            redirect_uri=REDIRECT_URL,
+            client_id=settings.OAUTH_CLIENT_ID,
+            client_secret=settings.OAUTH_CLIENT_SECRET,
+            scope=self.SCOPES,
+            redirect_uri=settings.OAUTH_REDIRECT_URL,
             access_type='offline'
         )
 

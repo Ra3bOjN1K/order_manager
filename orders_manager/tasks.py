@@ -29,6 +29,30 @@ def cyclically_update_orders_to_google_calendars():
     return '| '.join(result_msg)
 
 
+def _get_order_description(order, full_desc=False):
+    desc = 'Название программы: %s.\n' % (order.program.title or '-')
+    if full_desc:
+        desc += 'Заказчик: %s (тел. %s)\n' % (
+            order.client.name, order.client.phone)
+        desc += 'Ребенок(дети): %s\n' % ', '.join(
+            ['%s (%s)' % (ch.name, ch.verbose_age()) for ch in
+             order.client_children.all()]
+        )
+        desc += 'Место проведения: %s\n' % order.celebrate_place
+
+        a = json.loads(order.address)
+
+        desc += 'Адрес: %s, ул.%s, д.%s, кв.%s, доп.инф.: %s\n' % (
+            a['city'], a['street'], a['house'], a['apartment'], a['details']
+        )
+        desc += 'Цена: %s\n' % order.total_price_with_discounts
+    return desc
+
+
+def _get_order_title(order, full_desc=False):
+    pass
+
+
 @app.task
 def send_order_to_users(order_id, full_description=None):
     from orders_manager.models import Order
@@ -47,30 +71,11 @@ def send_order_to_users(order_id, full_description=None):
         dt_lim = today + datetime.timedelta(2)
         full_description = 0 < (dt_lim - dt).days <= 2
 
-    def gen_event_desc():
-        desc = 'Название программы: %s.\n' % (order.program.title or '-')
-        if full_description:
-            desc += 'Заказчик: %s (тел. %s)\n' % (
-                order.client.name, order.client.phone)
-            desc += 'Ребенок(дети): %s\n' % ', '.join(
-                ['%s (%s)' % (ch.name, ch.verbose_age()) for ch in
-                 order.client_children.all()]
-            )
-            desc += 'Место проведения: %s\n' % order.celebrate_place
-
-            a = json.loads(order.address)
-
-            desc += 'Адрес: %s, ул.%s, д.%s, кв.%s, доп.инф.: %s\n' % (
-                a['city'], a['street'], a['house'], a['apartment'], a['details']
-            )
-            desc += 'Цена: %s\n' % order.total_price_with_discounts
-        return desc
-
     date_str = '{0} {1}'.format(order.celebrate_date, order.celebrate_time)
     event_start = datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
     event_duration = int(order.duration)
     event_end = event_start + datetime.timedelta(0, event_duration * 60)
-    description = gen_event_desc()
+    description = _get_order_description(order, full_description)
     event_start = event_start.isoformat()
     event_end = event_end.isoformat()
 

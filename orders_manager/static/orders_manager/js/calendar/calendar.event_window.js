@@ -101,6 +101,7 @@ angular.module('CalendarApp')
 
                     vm.client.model.mode = 'quick_create';
                     vm.client.model.celebrate_date = vm.model.celebrate_date;
+                    vm.client.model.phone = vm.client.model.phone.toString().addPhoneCountryCode();
 
                     ClientService.saveClient(vm.client.model).then(function(result) {
                         angular.forEach(vm.fields, function(field) {

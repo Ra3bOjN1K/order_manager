@@ -35,7 +35,7 @@ class PopulateDatabaseView(View):
         User.objects.create_superuser('admin', 'zakaz.tilibom@gmail.com',
                                       '12345')
         Discount.objects.create(name='Нет скидки', value=0)
-        # populate_database()
+        populate_database()
 
         return HttpResponse('Done')
 

@@ -673,9 +673,9 @@ angular.module('OrderManagerApp', [
                     vm.loadingEvent = false;
                 }, 500);
 
-                $interval(function () {
+                $timeout(function () {
                     vm.gridApi.selection.selectRow(vm.gridOptions.data[0]);
-                }, 0, 1);
+                }, 200);
             })
         }])
     .controller('ProgramsHandbookCtrl', [
@@ -1034,8 +1034,11 @@ angular.module('OrderManagerApp', [
             })
         }])
     .controller('AdditionalServicesHandbookCtrl', [
-        '$q', '$scope', '$timeout', '$interval', 'ConfirmationDialog', 'UserService', 'AdditionalServiceFactory', 'AdditionalServiceForm', 'uiGridConstants',
-        function ($q, $scope, $timeout, $interval, ConfirmationDialog, UserService, AdditionalService, AdditionalServiceForm, uiGridConstants) {
+        '$q', '$scope', '$timeout', '$interval', 'ConfirmationDialog', 'UserService', 'AdditionalServiceFactory',
+        'AdditionalServiceForm', 'uiGridConstants',
+
+        function ($q, $scope, $timeout, $interval, ConfirmationDialog, UserService, AdditionalService,
+                  AdditionalServiceForm, uiGridConstants) {
 
             var vm = this;
 

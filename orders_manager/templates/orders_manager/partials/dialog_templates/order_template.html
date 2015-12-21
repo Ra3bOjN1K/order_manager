@@ -7,7 +7,7 @@
                     <img src="/static/orders_manager/img/del.png">
                 </a>
             </div>
-            <div class="event-window__body panel-body">
+            <div class="event-window__body panel-body" id="order-event-form">
                 <div class="loading-content" ng-show="vm.loadingEvent">
                     <span>Загрузка...</span>
                     <img class="loading-content__preloader" src="/static/orders_manager/img/preloader.gif">
@@ -30,6 +30,7 @@
                     <formly-form model="vm.model" form="vm.form" fields="vm.fields" options="vm.options"
                                  fields-separator></formly-form>
                 </div>
+                <!-- <div class="consents-panel"></div> -->
             </div>
             <div class="event-window__footer panel-footer" ng-show="!vm.loadingEvent">
                 <button type="button" ng-show="vm.model.id" class="btn btn-danger submit-button"
