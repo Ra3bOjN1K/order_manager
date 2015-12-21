@@ -98,7 +98,7 @@ angular.module('OrderManagerApp')
         }
     ])
     .factory('UserService', [
-        'Restangular', function (Restangular) {
+        'Restangular', function (Restangular, $timeout) {
             var restAngular = Restangular.withConfig(function (RestangularConfigurer) {
                 RestangularConfigurer.setBaseUrl('/api/v1/');
                 RestangularConfigurer.setRequestSuffix('/');

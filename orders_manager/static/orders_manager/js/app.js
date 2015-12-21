@@ -753,7 +753,9 @@ angular.module('OrderManagerApp', [
                             vm.originalFormFields = angular.copy(vm.formFields);
 
                             vm.program.isNewProgram = !row.entity.id;
-                        });
+
+                        }, 100);
+
                     });
                 });
             };
@@ -1024,11 +1026,11 @@ angular.module('OrderManagerApp', [
 
                 $timeout(function () {
                     vm.loadingEvent = false;
-                });
+                }, 100);
 
-                $interval(function () {
+                $timeout(function () {
                     vm.gridApi.selection.selectRow(vm.gridOptions.data[0]);
-                }, 0, 1);
+                }, 200);
             })
         }])
     .controller('AdditionalServicesHandbookCtrl', [
