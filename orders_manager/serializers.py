@@ -117,6 +117,7 @@ class ProgramSerializer(DynamicFieldsModelSerializer):
 
 class ProgramPriceSerializer(DynamicFieldsModelSerializer):
     id = serializers.CharField(required=False)
+    characters = serializers.CharField(required=False)
 
     class Meta:
         model = ProgramPrice
@@ -172,7 +173,7 @@ class OrderSerializer(DynamicFieldsModelSerializer):
                                                many=True)
     program = ProgramSerializer(required_fields=['id', 'title'])
     program_executors = UserProfileSerializer(
-        required_fields=['id'], many=True, required=False)
+        required_fields=['id', 'full_name'], many=True, required=False)
     additional_services_executors = serializers.SerializerMethodField()
     discount = DiscountSerializer(required_fields=['id'])
     is_only_service_executor = serializers.SerializerMethodField(read_only=True)

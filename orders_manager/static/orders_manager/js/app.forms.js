@@ -275,6 +275,31 @@ angular.module('OrderManagerApp')
             }
         };
     }])
+    .directive('dtTimeLimit', [function () {
+        return {
+            link: function (scope, elem, attrs, ctrl) {
+
+                var hoursInput = null;
+
+                scope.$watch(function () {
+                    hoursInput = $('input[ng-model="hours"]');
+                    if (hoursInput.length > 0) {
+                        return hoursInput.val();
+                    }
+                    return false;
+                }, function (newVal, oldVal) {
+                    if (!angular.equals(newVal, oldVal)) {
+                        var hours = parseInt(newVal);
+                        hours = hours >= 8 ? hours : 8;
+                        hours = hours <= 23 ? hours : 23;
+                        hours = hours < 10 ? '0' + hours : hours.toString();
+                        //var hoursScope = hoursInput.scope();
+                        //hoursScope.hours = hours;
+                    }
+                });
+            }
+        }
+    }])
     .factory('DataFormatters', [function () {
         var formatters = {};
 
@@ -970,16 +995,26 @@ angular.module('OrderManagerApp')
                                 showMeridian: false
                             };
 
+                            $scope.model.celebrate_datetime = moment().toDate();
+
+                            $scope.$watch('model.celebrate_datetime', function (newVal, oldVal) {
+                                if (newVal instanceof Date) {
+                                    var hour = moment(newVal).hours();
+                                    if (hour < 8 || hour > 23) {
+                                        hour = hour >= 8 ? hour : 8;
+                                        hour = hour <= 23 ? hour : 23;
+                                        $scope.model.celebrate_datetime = moment(newVal).hours(hour).toDate();
+                                    }
+                                    $scope.model.celebrate_date = moment(newVal).format('YYYY-MM-DD');
+                                    $scope.model.celebrate_time = moment(newVal).format('HH:mm');
+                                }
+                            });
+
                             var time = moment($scope.model.celebrate_time, 'HH:mm');
                             $scope.model.celebrate_datetime = moment($scope.model.celebrate_date).set({
                                 hour: time.hours(),
                                 minute: time.minutes()
                             }).toDate();
-
-                            $scope.$watch('model.celebrate_datetime', function (newVal) {
-                                $scope.model.celebrate_date = moment(newVal).format('YYYY-MM-DD');
-                                $scope.model.celebrate_time = moment(newVal).format('HH:mm');
-                            })
                         }
                     },
                     //{
@@ -2090,8 +2125,8 @@ angular.module('OrderManagerApp')
                         label: 'Герои программы',
                         disabled: !isEditMode
                     },
-                    validators: {
-                        required: Validators.required
+                    hideExpression: function ($viewValue, $modelValue, scope) {
+                        return true
                     }
                 },
                 {

@@ -186,7 +186,7 @@ class AdditionalService(models.Model):
 
 class Program(models.Model):
     title = models.CharField(max_length=200)
-    characters = models.CharField(max_length=250)
+    characters = models.CharField(max_length=250, null=True, blank=True)
     num_executors = models.PositiveSmallIntegerField(default=1)
     possible_executors = models.ManyToManyField(UserProfile,
                                                 related_name='programs')

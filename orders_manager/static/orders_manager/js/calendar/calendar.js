@@ -74,10 +74,21 @@ angular.module('CalendarApp', ['ui.calendar'])
 
                     if (model.lbl === 'order') {
                         modelItem.id = model.id;
-                        modelItem.title = model.program.title;
+                        modelItem.title = getEventTitle();
                         modelItem.start = getStartDateTime();
                         modelItem.end = getEndDateTime();
                         modelItem.userIsOnlyServiceExecutor = model.is_only_service_executor;
+
+                        function getEventTitle() {
+                            var title = model.program.title;
+                            if (model.program_executors && model.program_executors.length > 0) {
+                                title += ' - ';
+                                angular.forEach(model.program_executors, function (executor) {
+                                    title += executor.full_name + ', ';
+                                })
+                            }
+                            return title.trimRight(', ');
+                        }
 
                         function getStartDateTime() {
                             return model.celebrate_date + ' ' + model.celebrate_time;

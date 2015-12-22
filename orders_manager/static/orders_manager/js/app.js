@@ -20,6 +20,14 @@ angular.module('OrderManagerApp', [
             };
         }
 
+        String.prototype.trimRight = function(charlist) {
+            if (charlist === undefined) {
+                charlist = "\s";
+            }
+
+            return this.replace(new RegExp("[" + charlist + "]+$"), "");
+        };
+
         String.prototype.trimPhoneCountryCode = function () {
             var phoneNum = this.toString();
             if (phoneNum.length >= 12 && (phoneNum.startsWith('375') || phoneNum.startsWith('+375'))) {
