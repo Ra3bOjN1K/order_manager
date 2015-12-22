@@ -76,7 +76,7 @@ class DayOff(models.Model):
     date = models.DateField()
     time_start = models.TimeField(default='00:00:00')
     time_end = models.TimeField(default='23:59:59')
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
 
     objects = DayOffManager()
 
