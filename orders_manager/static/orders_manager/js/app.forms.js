@@ -1694,6 +1694,22 @@ angular.module('OrderManagerApp')
                             minute: time.minutes()
                         }).toDate();
                     }
+                },
+                {
+                    type: 'input',
+                    key: 'created',
+                    defaultValue: null,
+                    className: 'created-date',
+                    templateOptions: {
+                        label: 'Создан',
+                        disabled: true
+                    },
+                    controller: function ($scope) {
+                        $scope.model.created = moment($scope.model.created).format('DD.MM.YYYY HH:mm');
+                    },
+                    hideExpression: function ($viewValue, $modelValue, scope) {
+                        return !scope.model.created;
+                    }
                 }
             ]
         };

@@ -101,6 +101,12 @@
 .dayoff-content .control-label {
   width: 60px;
 }
+.dayoff-content .created-date .control-label {
+  width: 80px;
+}
+.dayoff-content .created-date .form-control {
+  margin-right: 7px;
+}
 .dayoff-content .time-container, .dayoff-content .date-container {
   display: -moz-box;
   -moz-box-orient: horizontal;

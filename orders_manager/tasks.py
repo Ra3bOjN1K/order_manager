@@ -43,7 +43,8 @@ def _get_order_description(order, full_desc=False):
         a = json.loads(order.address)
 
         desc += 'Адрес: %s, ул.%s, д.%s, кв.%s, доп.инф.: %s\n' % (
-            a['city'], a['street'], a['house'], a['apartment'], a['details']
+            a.get('city', '-'), a.get('street', '-'), a.get('house', '-'),
+            a.get('apartment', '-'), a.get('details', '-')
         )
         desc += 'Цена: %s\n' % order.total_price_with_discounts
     return desc
@@ -65,13 +66,13 @@ def _get_order_summary(order, full_desc=False):
                     item.additional_service.title)
                 srv_list.append(item.additional_service.id)
 
-        srv_info_str = ', стоимость доп.услуг:%s' % srv_info_str
+        srv_info_str = '. Стоимость доп.услуг:%s' % srv_info_str
 
     data = {
         'cl_name': order.client.name,
         'cl_phone': order.client.phone,
         'ch_info': (', '.join(
-            ['{0}({1}{2})'.format(ch.name, ch.age(), ch.verbose_age())
+            ['{0}({1})'.format(ch.name, ch.verbose_age())
              for ch in order.client_children.all()])),
         'ch_num': order.children_num,
         'place': order.celebrate_place,
@@ -96,14 +97,17 @@ def _get_order_summary(order, full_desc=False):
                 addr.get('city'), addr.get('street'), addr.get('house'))
         })
 
-    summary = '({title}) {cl_name} {cl_phone} {ch_info} {ch_num} {place} ' \
-              '{address}'.format(title='{title}',
-                                 cl_name=data.get('cl_name'),
-                                 cl_phone=data.get('cl_phone'),
-                                 ch_info=data.get('ch_info'),
-                                 ch_num=data.get('ch_num'),
-                                 place=data.get('place'),
-                                 address=data.get('address'))
+    summary = '({title}) '
+
+    if data.get('cl_name'):
+        summary += 'Клиент: {cl_name} {cl_phone}, '.format(
+            cl_name=data.get('cl_name'), cl_phone=data.get('cl_phone'))
+
+    summary += 'Ребенок: {ch_info}, {ch_num} детей. {place}, {address}'.format(
+        ch_info=data.get('ch_info'),
+        ch_num=data.get('ch_num'),
+        place=data.get('place'),
+        address=data.get('address'))
 
     summary += ', %s' % data.get('details') if data.get('details') else ''
     summary += '. Стоимость программы: %s' % data.get('program_price')
@@ -168,11 +172,7 @@ def send_order_to_users(order_id, is_full_description=None):
             google_api_handler.send_event_to_user_calendar(
                 executor, order.hex_id(), event_start, event_end,
                 summary, description)
-        except ValueError as ex:
-            msg_txt = ex.args[0]
-            if 'has no credentials' not in msg_txt:
-                raise
-            else:
-                logger.warning(msg_txt)
+        except Exception as ex:
+            logger.error(ex.args[0])
 
     return '{0} was updated.'.format(order.program.title)

@@ -247,6 +247,10 @@ class UserListView(ListCreateAPIView):
 
                 user_role = user_data.get('role')
 
+                if len(UserProfile.objects.filter(
+                        user__email=user_data.get('email')).all()) > 0:
+                    raise ValueError('User with same email already exists..')
+
                 if user_role == 'manager':
                     instance = UserProfile.objects.create_manager(**user_data)
                 elif user_role == 'animator':

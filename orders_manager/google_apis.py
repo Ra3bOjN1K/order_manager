@@ -48,16 +48,24 @@ class GoogleApiHandler:
         from orders_manager.models import CredentialsModel
 
         user = user if not hasattr(user, 'user') else user.user
-        storage = Storage(CredentialsModel, 'id', user, 'credential')
-        credential = storage.get()
+
+        try:
+            storage = Storage(CredentialsModel, 'id', user, 'credential')
+            credential = storage.get()
+        except:
+            raise ValueError('Credentials for user \'%s\' was not found!' %
+                             user.get_full_name())
 
         if not credential:
             raise ValueError('User \'%s\' has no credentials' %
                              user.get_full_name())
 
-        if credential.access_token_expired:
-            http = credential.authorize(httplib2.Http())
-            credential.refresh(http)
+        try:
+            if credential.access_token_expired:
+                http = credential.authorize(httplib2.Http())
+                credential.refresh(http)
+        except:
+            raise ValueError('Bad user credentials!')
 
         if credential.access_token_expired or credential.invalid:
             raise ValueError('Bad user credentials!')

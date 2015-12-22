@@ -236,6 +236,7 @@ class DayOffSerializer(DynamicFieldsModelSerializer):
     date = serializers.CharField()
     time_start = serializers.CharField()
     time_end = serializers.CharField()
+    created = serializers.CharField(read_only=True)
 
     class Meta:
         model = DayOff

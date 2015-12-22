@@ -48,6 +48,16 @@
     width: 60px;
   }
 
+  .created-date {
+    .control-label {
+      width: 80px;
+    }
+
+    .form-control {
+      margin-right: 7px;
+    }
+  }
+
   .time-container, .date-container {
     @include init-flex-position(row);
     position: relative;
