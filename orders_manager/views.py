@@ -370,6 +370,10 @@ class OrderView(RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
+    def delete(self, request, *args, **kwargs):
+        super(OrderView, self).delete(request, *args, **kwargs)
+        delete_order_from_users_google_calendar.delay(order_id=kwargs.get('pk'))
+
     def get_serializer(self, *args, **kwargs):
         user_role = get_user_role(self.request.user)
         if (user_role not in ('manager', 'superuser') and
@@ -422,7 +426,10 @@ class OrderListView(ListCreateAPIView):
 
         latest_executors = set()
 
+        is_new_order = False
+
         if request.data.get('id'):
+            is_new_order = True
             latest_executors.update(
                 self._get_all_executors_from_order(request.data['id']))
 
@@ -433,7 +440,7 @@ class OrderListView(ListCreateAPIView):
                 response.data['id']))
             diff_executors = list(latest_executors - new_executors)
             send_order_to_users_google_calendar.delay(
-                order_id=response.data['id'])
+                order_id=response.data['id'], is_new_order=is_new_order)
             delete_order_from_users_google_calendar.delay(
                 order_id=response.data['id'], target_users=diff_executors)
         return response

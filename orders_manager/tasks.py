@@ -3,6 +3,7 @@
 import datetime
 import json
 from django.db.models import Q
+from django.core.mail import send_mail
 from app.celery import app
 from celery.utils.log import get_task_logger
 
@@ -121,7 +122,8 @@ def _get_order_summary(order, full_desc=False):
 
 
 @app.task
-def send_order_to_users_google_calendar(order_id, is_full_description=None):
+def send_order_to_users_google_calendar(order_id, is_full_description=None,
+                                        is_new_order=False):
     from orders_manager.models import Order, UserProfile
     from orders_manager.google_apis import GoogleApiHandler
 
@@ -170,8 +172,10 @@ def send_order_to_users_google_calendar(order_id, is_full_description=None):
             summary = _get_order_summary(order, is_full_description)
             summary = summary.format(title=title)
             google_api_handler.send_event_to_user_calendar(
-                executor, order.hex_id(), event_start, event_end,
-                summary, description)
+                executor, order.hex_id(), event_start, event_end, summary,
+                description)
+            send_order_notice_to_email(order, executor,
+                                       'create' if is_new_order else 'update')
         except Exception as ex:
             logger.error(ex.args[0])
 
@@ -202,8 +206,38 @@ def delete_order_from_users_google_calendar(order_id, target_users=None):
             res = google_api_handler.delete_event_from_user_calendar(
                 user, order.hex_id())
             results.update({user.get_full_name(): res})
+            send_order_notice_to_email(order, user, action_type='delete')
     except Exception as ex:
         logger.error(ex.args[0])
         return ex.args[0]
 
     return results
+
+
+def send_order_notice_to_email(order, user, action_type):
+    from django.conf import settings
+
+    user = user if not hasattr(user, 'user') else user.user
+
+    if action_type == 'update':
+        subject = 'Изменен заказ'
+    elif action_type == 'create':
+        subject = 'Создан заказ'
+    elif action_type == 'delete':
+        subject = 'Удален/Отменен заказ'
+    else:
+        raise AttributeError('Invalid \'%s\' action_type!' % action_type)
+
+    date_str = '{0} {1}'.format(order.celebrate_date, order.celebrate_time)
+    celebrate_date = datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+
+    body = '{subject} ({order_name}) на {date} в {time}. Подробнее см. в ' \
+           'своем аккаунте http://zakaz.tilibom.by/ или Google-календаре.' \
+        .format(subject=subject, order_name=order.program.title,
+                date=celebrate_date.strftime('%d/%m/%Y'),
+                time=celebrate_date.strftime('%H-%M'))
+
+    from_email = settings.EMAIL_HOST_USER
+    recipient_list = [user.email]
+
+    send_mail(subject, body, from_email, recipient_list)
