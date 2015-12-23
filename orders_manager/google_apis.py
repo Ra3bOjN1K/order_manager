@@ -160,4 +160,6 @@ class GoogleApiHandler:
             error = simplejson.loads(ex.content).get('error', {})
             if not error.get('code') == 404:
                 raise
+            else:
+                return 'Event with id=%s was not found!' % event_id
 
