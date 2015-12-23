@@ -180,15 +180,16 @@ def send_order_to_users_google_calendar(order_id, is_full_description=None):
 
 @app.task
 def delete_order_from_users_google_calendar(order_id, target_users=None):
-    from orders_manager.models import Order
+    from orders_manager.models import User
     from orders_manager.google_apis import GoogleApiHandler
 
     logger = get_task_logger(__name__)
 
     google_api_handler = GoogleApiHandler()
-    order = Order.objects.get(id=order_id)
 
     try:
-        pass
+        for user_id in target_users:
+            user = User.objects.get(id=user_id)
+            google_api_handler.delete_event_from_user_calendar(user, order_id)
     except Exception as ex:
         logger.error(ex.args[0])

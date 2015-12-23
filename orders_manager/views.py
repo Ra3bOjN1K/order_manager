@@ -23,7 +23,8 @@ from orders_manager.serializers import (UserProfileSerializer, ClientSerializer,
     DayOffSerializer)
 from orders_manager.roles import get_user_role
 from orders_manager.google_apis import GoogleApiHandler
-from orders_manager.tasks import send_order_to_users_google_calendar, delete_order_from_users_google_calendar
+from orders_manager.tasks import send_order_to_users_google_calendar, \
+    delete_order_from_users_google_calendar
 
 
 class PopulateDatabaseView(View):
@@ -431,9 +432,10 @@ class OrderListView(ListCreateAPIView):
             new_executors = set(self._get_all_executors_from_order(
                 response.data['id']))
             diff_executors = list(latest_executors - new_executors)
-            send_order_to_users_google_calendar.delay(order_id=response.data['id'])
-            delete_order_from_users_google_calendar.delay(order_id=response.data['id'],
-                                                          target_users=diff_executors)
+            send_order_to_users_google_calendar.delay(
+                order_id=response.data['id'])
+            delete_order_from_users_google_calendar.delay(
+                order_id=response.data['id'], target_users=diff_executors)
         return response
 
     def _get_all_executors_from_order(self, order_id):
