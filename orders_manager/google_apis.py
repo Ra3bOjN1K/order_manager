@@ -146,3 +146,18 @@ class GoogleApiHandler:
                 raise
 
         return event
+
+    def delete_event_from_user_calendar(self, user, event_id):
+
+        credentials = self._get_user_credentials(user)
+        service = self._get_calendar_service(credentials)
+
+        calendar_id = self._create_calendar_if_required(credentials)
+
+        try:
+            service.events().delete(calendarId=calendar_id, eventId=event_id)
+        except errors.HttpError as ex:
+            error = simplejson.loads(ex.content).get('error', {})
+            if not error.get('code') == 404:
+                raise
+

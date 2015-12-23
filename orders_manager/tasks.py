@@ -23,7 +23,7 @@ def cyclically_update_orders_to_google_calendars():
     result_msg = []
 
     for order in orders:
-        r = send_order_to_users.apply(args=[order.id])
+        r = send_order_to_users_google_calendar.apply(args=[order.id])
         result_msg.append(r.get())
 
     return '| '.join(result_msg)
@@ -121,7 +121,7 @@ def _get_order_summary(order, full_desc=False):
 
 
 @app.task
-def send_order_to_users(order_id, is_full_description=None):
+def send_order_to_users_google_calendar(order_id, is_full_description=None):
     from orders_manager.models import Order, UserProfile
     from orders_manager.google_apis import GoogleApiHandler
 
@@ -176,3 +176,19 @@ def send_order_to_users(order_id, is_full_description=None):
             logger.error(ex.args[0])
 
     return '{0} was updated.'.format(order.program.title)
+
+
+@app.task
+def delete_order_from_users_google_calendar(order_id, target_users=None):
+    from orders_manager.models import Order
+    from orders_manager.google_apis import GoogleApiHandler
+
+    logger = get_task_logger(__name__)
+
+    google_api_handler = GoogleApiHandler()
+    order = Order.objects.get(id=order_id)
+
+    try:
+        pass
+    except Exception as ex:
+        logger.error(ex.args[0])

@@ -23,7 +23,7 @@ from orders_manager.serializers import (UserProfileSerializer, ClientSerializer,
     DayOffSerializer)
 from orders_manager.roles import get_user_role
 from orders_manager.google_apis import GoogleApiHandler
-from orders_manager.tasks import send_order_to_users
+from orders_manager.tasks import send_order_to_users_google_calendar, delete_order_from_users_google_calendar
 
 
 class PopulateDatabaseView(View):
@@ -418,10 +418,34 @@ class OrderListView(ListCreateAPIView):
                    request.user.id)
         request.data.update(
             {'author': {'id': user_id, 'full_name': ''}})
+
+        latest_executors = set()
+
+        if request.data.get('id'):
+            latest_executors.update(
+                self._get_all_executors_from_order(request.data['id']))
+
         response = super(OrderListView, self).post(request, *args, **kwargs)
+
         if response:
-            send_order_to_users.delay(order_id=request.data.get('id'))
+            new_executors = set(self._get_all_executors_from_order(
+                response.data['id']))
+            diff_executors = list(latest_executors - new_executors)
+            send_order_to_users_google_calendar.delay(order_id=response.data['id'])
+            delete_order_from_users_google_calendar.delay(order_id=response.data['id'],
+                                                          target_users=diff_executors)
         return response
+
+    def _get_all_executors_from_order(self, order_id):
+
+        latest_order = Order.objects.get(id=order_id)
+        latest_order_executors = set([i.user_id for i in
+                                      latest_order.program_executors.all()])
+        latest_order_executors.update(
+            [i.executor.user_id for i in
+             latest_order.additional_services_executors.all()]
+        )
+        return list(latest_order_executors)
 
     def get_queryset(self):
         import datetime
