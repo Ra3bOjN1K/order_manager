@@ -426,10 +426,10 @@ class OrderListView(ListCreateAPIView):
 
         latest_executors = set()
 
-        is_new_order = False
+        is_new_order = True
 
         if request.data.get('id'):
-            is_new_order = True
+            is_new_order = False
             latest_executors.update(
                 self._get_all_executors_from_order(request.data['id']))
 
