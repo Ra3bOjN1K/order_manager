@@ -196,3 +196,6 @@ def delete_order_from_users_google_calendar(order_id, target_users=None):
                                                                order.hex_id())
     except Exception as ex:
         logger.error(ex.args[0])
+        return ex.args[0]
+
+    return 'Success'

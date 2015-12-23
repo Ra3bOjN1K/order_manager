@@ -163,3 +163,5 @@ class GoogleApiHandler:
             else:
                 return 'Event with id=%s was not found!' % event_id
 
+        return 'Success'
+
