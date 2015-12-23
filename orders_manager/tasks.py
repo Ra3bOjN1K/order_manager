@@ -189,13 +189,16 @@ def delete_order_from_users_google_calendar(order_id, target_users=None):
 
     order = Order.objects.get(id=order_id)
 
+    results = {}
+
     try:
         for user_id in target_users:
             user = User.objects.get(id=user_id)
-            google_api_handler.delete_event_from_user_calendar(user,
-                                                               order.hex_id())
+            res = google_api_handler.delete_event_from_user_calendar(
+                user, order.hex_id())
+            results.update({user.get_full_name(): res})
     except Exception as ex:
         logger.error(ex.args[0])
         return ex.args[0]
 
-    return 'Success'
+    return results
