@@ -155,7 +155,8 @@ class GoogleApiHandler:
         calendar_id = self._create_calendar_if_required(credentials)
 
         try:
-            service.events().delete(calendarId=calendar_id, eventId=event_id)
+            service.events().delete(
+                calendarId=calendar_id, eventId=event_id).execute()
         except errors.HttpError as ex:
             error = simplejson.loads(ex.content).get('error', {})
             if not error.get('code') == 404:
