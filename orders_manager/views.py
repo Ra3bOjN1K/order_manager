@@ -443,6 +443,7 @@ class OrderListView(ListCreateAPIView):
                 order_id=response.data['id'], is_new_order=is_new_order)
             delete_order_from_users_google_calendar.delay(
                 order_id=response.data['id'], target_users=diff_executors)
+
         return response
 
     def _get_all_executors_from_order(self, order_id):
