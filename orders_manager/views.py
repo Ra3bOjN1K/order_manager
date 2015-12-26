@@ -371,8 +371,8 @@ class OrderView(RetrieveUpdateDestroyAPIView):
     serializer_class = OrderSerializer
 
     def delete(self, request, *args, **kwargs):
-        super(OrderView, self).delete(request, *args, **kwargs)
         delete_order_from_users_google_calendar.delay(order_id=kwargs.get('pk'))
+        super(OrderView, self).delete(request, *args, **kwargs)
 
     def get_serializer(self, *args, **kwargs):
         user_role = get_user_role(self.request.user)
