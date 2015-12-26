@@ -191,7 +191,7 @@ def delete_order_from_users_google_calendar(order_id, target_users=None):
     google_api_handler = GoogleApiHandler()
     order = Order.objects.get(id=order_id)
 
-    if not target_users:
+    if target_users is None:
         target_users = set([i.user_id for i in order.program_executors.all()])
         target_users.update(
             [i.executor.user_id for i in
