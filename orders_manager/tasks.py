@@ -220,11 +220,11 @@ def send_order_notice_to_email(order, user, action_type):
     user = user if not hasattr(user, 'user') else user.user
 
     if action_type == 'update':
-        subject = 'Изменен заказ'
+        subject = 'Изменен заказ №%s' % order.code
     elif action_type == 'create':
-        subject = 'Создан заказ'
+        subject = 'Создан заказ №%s' % order.code
     elif action_type == 'delete':
-        subject = 'Удален/Отменен заказ'
+        subject = 'Удален/Отменен заказ №%s' % order.code
     else:
         raise AttributeError('Invalid \'%s\' action_type!' % action_type)
 
