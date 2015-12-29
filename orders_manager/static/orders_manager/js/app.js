@@ -1271,9 +1271,9 @@ angular.module('OrderManagerApp', [
                     vm.loadingEvent = false;
                 });
 
-                $interval(function () {
+                $timeout(function () {
                     vm.gridApi.selection.selectRow(vm.gridOptions.data[0]);
-                }, 0, 1);
+                }, 200);
             })
         }])
     .controller('UsersManagerCtrl', [
