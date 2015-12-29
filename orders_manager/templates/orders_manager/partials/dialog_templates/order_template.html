@@ -2,7 +2,7 @@
     <form class="order-form" name="vm.form" novalidate ng-submit="vm.onOrderSubmit()">
         <div class="event-window panel panel-default">
             <div class="event-window__header panel-heading">
-                <div class="header__title" ng-bind="eventWindow.getWindowTitle()"></div>
+                <div class="header__title" ng-bind="vm.windowTitle"></div>
                 <a class="header__close-btn" ng-click="closeThisDialog()">
                     <img src="/static/orders_manager/img/del.png">
                 </a>

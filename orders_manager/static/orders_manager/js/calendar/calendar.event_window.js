@@ -13,6 +13,10 @@ angular.module('CalendarApp')
                 }, 1000);
             });
 
+            if ($scope.$parent.eventWindow.checkedDate) {
+                vm.windowTitle = moment($scope.$parent.eventWindow.checkedDate).format("DD MMMM YYYY");
+            }
+
             OrderService.loadOrders().then(function() {
                 vm.readOnly = !(Auth.hasPermission('add_order') && Auth.hasPermission('change_order'));
                 vm.canSaveOrder = Auth.hasPermission('add_order') || Auth.hasPermission('change_order');
@@ -25,6 +29,10 @@ angular.module('CalendarApp')
                     OrderService.getOrder($scope.$parent.eventWindow.checkedOrderId).then(function(order) {
                         vm.model = angular.copy(order);
                         vm.model.celebrate_date = $scope.$parent.eventWindow.checkedDate;
+                        if (!!order.code) {
+                            vm.windowTitle = moment($scope.$parent.eventWindow.checkedDate).format("DD MMMM YYYY");
+                            vm.windowTitle += " | Код заказа: {0}".format(order.code);
+                        }
 
                         vm.options = {
                             formState: {
