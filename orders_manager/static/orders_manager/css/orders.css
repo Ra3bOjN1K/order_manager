@@ -296,6 +296,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   padding: 0;
+  position: relative;
 }
 .event-window-background .event-window__body hr {
   color: #888;
