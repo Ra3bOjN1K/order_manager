@@ -24,7 +24,8 @@ def cyclically_update_orders_to_google_calendars():
     result_msg = []
 
     for order in orders:
-        r = send_order_to_users_google_calendar.apply(args=[order.id])
+        r = send_order_to_users_google_calendar.apply(
+            args=[order.id], kwargs={'send_email': False})
         result_msg.append(r.get())
 
     return '| '.join(result_msg)
@@ -98,7 +99,8 @@ def _get_order_summary(order, full_desc=False):
                 addr.get('city'), addr.get('street'), addr.get('house'))
         })
 
-    summary = '({title}) '
+    summary = '({title} {duration} мин.) '
+    summary = summary.format(duration=order.duration)
 
     if data.get('cl_name'):
         summary += 'Клиент: {cl_name} {cl_phone}, '.format(
@@ -122,8 +124,10 @@ def _get_order_summary(order, full_desc=False):
 
 
 @app.task
-def send_order_to_users_google_calendar(order_id, is_full_description=None,
-                                        is_new_order=False):
+def send_order_to_users_google_calendar(
+        order_id, send_email=True, is_full_description=None,
+        is_new_order=False):
+
     from orders_manager.models import Order, UserProfile
     from orders_manager.google_apis import GoogleApiHandler
 
@@ -174,8 +178,9 @@ def send_order_to_users_google_calendar(order_id, is_full_description=None,
             google_api_handler.send_event_to_user_calendar(
                 executor, order.hex_id(), event_start, event_end, summary,
                 description)
-            send_order_notice_to_email(order, executor,
-                                       'create' if is_new_order else 'update')
+            if send_email is True:
+                send_order_notice_to_email(order, executor,
+                                           'create' if is_new_order else 'update')
         except Exception as ex:
             logger.error(ex.args[0])
 
