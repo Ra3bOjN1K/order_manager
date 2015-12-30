@@ -100,7 +100,7 @@ def _get_order_summary(order, full_desc=False):
         })
 
     summary = '({title} {duration} мин.) '
-    summary = summary.format(duration=order.duration)
+    summary = summary.format(title='{title}', duration=order.duration)
 
     if data.get('cl_name'):
         summary += 'Клиент: {cl_name} {cl_phone}, '.format(
