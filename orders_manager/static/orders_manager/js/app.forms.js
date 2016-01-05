@@ -1264,7 +1264,22 @@ angular.module('OrderManagerApp')
                             options: [],
                             multiple: true
                         },
-                        controller: function ($scope) {
+                        link: function(scope, el, attrs, ctrl) {
+                            scope.$watch('to.options', function (value) {
+                                var aOpt = $(el).find('ul.dropdown-menu').find('li.nya-bs-option').find('a');
+                                aOpt.on('click', function () {
+                                    var servName = $(this).text().trim();
+
+                                    for (var i = 0; i < scope.model.additional_services_executors.length; i++) {
+                                        if (angular.equals(scope.model.additional_services_executors[i].name, servName)) {
+                                            scope.model.additional_services_executors[i].executors = [];
+                                        }
+                                    }
+                                })
+                            })
+                        },
+                        controller: function ($rootScope, $scope) {
+
                             AdditionalServiceFactory.getAllAdditionalServices().then(function (services) {
 
                                 $scope.formState.additionalServices = services;
@@ -1295,7 +1310,37 @@ angular.module('OrderManagerApp')
                                 }).then(function () {
                                     $scope.model.additional_services_executors = additionalServ;
                                 })
-                            })
+                            });
+
+                            $scope.$watch('model.additional_services_executors', function (servToExec) {
+                                console.log($scope.model.additional_services_executors);
+                                //$rootScope.$broadcast('additional_services_executors:model:changed', newVal);
+                                //refreshData();
+                                //if (servToExec !== undefined && servToExec.length > 0) {
+                                //    var resultArr = [];
+                                //    var tempArrIds = {};
+                                //
+                                //    $timeout(function () {
+                                //        angular.forEach(servToExec, function (servToExecItem) {
+                                //            if (tempArrIds[servToExecItem.value] === undefined) {
+                                //                tempArrIds[servToExecItem.value] = 1;
+                                //            }
+                                //            else {
+                                //                tempArrIds[servToExecItem.value] += 1;
+                                //            }
+                                //        });
+                                //    }).then(function () {
+                                //        angular.forEach(servToExec, function (servToExecItem) {
+                                //            if (tempArrIds[servToExecItem.value] === 1) {
+                                //                resultArr.push(servToExecItem)
+                                //            }
+                                //        })
+                                //    }).then(function () {
+                                //        $scope.model.additional_services_executors = resultArr;
+                                //        console.log(resultArr);
+                                //    })
+                                //}
+                            }, true);
                         }
                     },
                     {
@@ -1319,6 +1364,10 @@ angular.module('OrderManagerApp')
                                         var executor_items = [],
                                             opts = [],
                                             checked_executors = angular.copy($scope.model.executors);
+
+                                        //$rootScope.$on('additional_services_executors:model:changed', function (event, data) {
+                                        //    console.log(data);
+                                        //});
 
                                         $timeout(function () {
                                             angular.forEach($scope.formState.additionalServices, function (serv) {
@@ -1470,16 +1519,19 @@ angular.module('OrderManagerApp')
                             disabled: true
                         },
                         controller: function ($scope) {
-                            $scope.$watchGroup(['model.price', 'model.additional_services', 'model.cost_of_the_way'],
+                            $scope.$watchGroup(['model.price', 'model.additional_services_executors', 'model.cost_of_the_way'],
                                 function (newValues) {
 
                                     var programPrice = newValues[0];
                                     var costOfTheWay = newValues[2];
                                     var sumServicesPrices = 0;
+                                    var handledServices = [];
+
                                     angular.forEach($scope.formState.additionalServices, function (origService) {
-                                        angular.forEach($scope.model.additional_services, function (modelService) {
-                                            if (origService.id === modelService.value) {
+                                        angular.forEach($scope.model.additional_services_executors, function (modelService) {
+                                            if (origService.id === modelService.value && handledServices.indexOf(modelService.value) === -1) {
                                                 sumServicesPrices += origService.price;
+                                                handledServices.push(modelService.value);
                                             }
                                         })
                                     });
@@ -1498,12 +1550,13 @@ angular.module('OrderManagerApp')
                         },
                         controller: function ($scope) {
                             $scope.$watchGroup([
-                                    'model.price', 'model.additional_services', 'model.discount', 'model.cost_of_the_way'],
+                                    'model.price', 'model.additional_services_executors', 'model.discount', 'model.cost_of_the_way'],
                                 function (newValues) {
                                     var programPrice = newValues[0];
                                     var discountPercent = 0;
                                     var sumServicesPrices = 0;
                                     var costOfTheWay = newValues[3];
+                                    var handledServices = [];
 
                                     if ($scope.model.discount !== undefined) {
                                         angular.forEach($scope.formState.discounts, function (origDiscount) {
@@ -1514,9 +1567,10 @@ angular.module('OrderManagerApp')
                                     }
 
                                     angular.forEach($scope.formState.additionalServices, function (origService) {
-                                        angular.forEach($scope.model.additional_services, function (modelService) {
-                                            if (origService.id === modelService.value) {
+                                        angular.forEach($scope.model.additional_services_executors, function (modelService) {
+                                            if (origService.id === modelService.value && handledServices.indexOf(modelService.value) === -1) {
                                                 sumServicesPrices += origService.price;
+                                                handledServices.push(modelService.value);
                                             }
                                         })
                                     });
