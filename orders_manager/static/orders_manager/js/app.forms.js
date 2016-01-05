@@ -1536,7 +1536,7 @@ angular.module('OrderManagerApp')
                                         })
                                     });
 
-                                    programPrice = parseInt(programPrice);
+                                    programPrice = !!programPrice ? parseInt(programPrice) : 0;
 
                                     var price = programPrice + sumServicesPrices + costOfTheWay;
                                     $scope.model.total_price = Math.round(price / 100) * 100;
@@ -1578,7 +1578,7 @@ angular.module('OrderManagerApp')
                                         })
                                     });
 
-                                    programPrice = parseInt(programPrice);
+                                    programPrice = !!programPrice ? parseInt(programPrice) : 0;
 
                                     var programPriceWithDiscount = programPrice - (programPrice * (discountPercent / 100));
                                     var price = programPriceWithDiscount + sumServicesPrices + costOfTheWay;
