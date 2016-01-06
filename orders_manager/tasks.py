@@ -63,12 +63,13 @@ def _get_order_summary(order, full_desc=False):
     if len(order.additional_services_executors.all()) > 0:
         for item in order.additional_services_executors.all():
             if item.additional_service.id not in srv_list:
-                srv_info_str += ' {0} {1}'.format(
+                srv_info_str += ' {1} {0},'.format(
                     item.additional_service.price,
                     item.additional_service.title)
                 srv_list.append(item.additional_service.id)
 
-        srv_info_str = '. Стоимость доп.услуг:%s' % srv_info_str
+        srv_info_str = ', %s' % srv_info_str
+        srv_info_str = srv_info_str.rstrip(',')
 
     data = {
         'cl_name': order.client.name,
@@ -113,7 +114,7 @@ def _get_order_summary(order, full_desc=False):
         address=data.get('address'))
 
     summary += ', %s' % data.get('details') if data.get('details') else ''
-    summary += '. Стоимость программы: %s' % data.get('program_price')
+    summary += '. Стоимость: программа %s' % data.get('program_price')
     summary += data.get('additional_srv_info')
     summary += '. Итого за заказ: {0}.'.format(data.get('total_price'))
 
