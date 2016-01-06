@@ -38,6 +38,8 @@ angular.module('CalendarApp')
                             formState: {
                                 programPrices: {
                                     list: [],
+                                    oldPrice: {},
+                                    newPrice: {},
                                     checkedPrice: {}
                                 },
                                 additionalServices: [],

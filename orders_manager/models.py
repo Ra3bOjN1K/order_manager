@@ -276,7 +276,8 @@ class Order(models.Model):
         verbose_name='Виновник(-и) торжества'
     )
 
-    children_num = models.SmallIntegerField(verbose_name='Количество детей')
+    children_num = models.CharField(max_length=60,
+                                    verbose_name='Количество детей')
     celebrate_date = models.DateField(verbose_name='Дата торжества')
     celebrate_time = models.TimeField(verbose_name='Время торжества')
     celebrate_place = models.CharField(

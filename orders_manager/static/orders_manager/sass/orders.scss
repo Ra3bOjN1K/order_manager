@@ -274,6 +274,29 @@
     z-index: 5;
   }
 
+  span.field-select-data-wrapper {
+    @include init-flex-position(row);
+    @include justify-content(space-between);
+    @include align-items(center);
+    @include flex(1 1);
+    margin-right: 2px;
+  }
+
+  //span.field-client-phones-wrapper {
+  //  @include init-flex-position(column);
+  //  font-size: 9pt;
+  //  text-decoration: none;
+  //}
+
+  #client-children .pull-left {
+    @include init-flex-position(row);
+  }
+
+  //span.child-to-age-wrapper {
+  //  @include init-flex-position(row);
+  //  @include justify-content(flex-start);
+  //}
+
   .create-client-form__body {
     background: transparent;
     height: 220px;
@@ -310,9 +333,8 @@
     @include justify-content(space-between);
 
     .phone {
-      margin-right: 8px;
+      margin-right: 10px;
       text-decoration: underline;
-      width: 110px;
     }
   }
 

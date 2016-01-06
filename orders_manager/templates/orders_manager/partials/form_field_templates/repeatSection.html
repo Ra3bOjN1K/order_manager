@@ -3,7 +3,7 @@
     <label for="model[options.id || index]" class="control-label"
            ng-if="options.templateOptions.label">{{ options.templateOptions.label }}</label>
     <div class="services-executors-block">
-        <div class="repeatsection" ng-repeat="element in model[options.key]" ng-init="fields = copyFields(to.fields)">
+        <div class="repeatsection" ng-repeat="element in model[options.key]" ng-init="fields=copyFields(to.fields)">
             <formly-form fields="fields" model="element" form="form" options="formOptions"></formly-form>
         </div>
     </div>

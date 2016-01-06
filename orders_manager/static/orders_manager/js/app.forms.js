@@ -47,12 +47,35 @@ angular.module('OrderManagerApp')
         });
 
         formlyConfig.setType({
+            name: 'additionalServicesSelect',
+            templateUrl: '/static/form_field_templates/single_select_template.html',
+            link: function (scope, element, attrs) {
+                if (scope.options.templateOptions.multiple) {
+                    element.find('ul.dropdown-menu').addClass('multiple-mode');
+                }
+                else {
+                    element.find('ul.dropdown-menu').addClass('single-item-mode');
+                }
+            },
+            controller: function ($scope) {
+                $scope.$watch('fields', function (newVal) {
+                    //console.log(newVal);
+                }, true)
+            }
+        });
+
+        formlyConfig.setType({
             name: 'repeatSection',
             templateUrl: '/static/form_field_templates/repeatSection.html',
-            controller: function ($scope) {
+            controller: function ($scope, $timeout) {
                 $scope.formOptions = {formState: $scope.formState};
-                $scope.addNew = addNew;
+                //$scope.addNew = addNew;
                 $scope.copyFields = copyFields;
+                //$scope.init = init;
+                //
+                //function init() {
+                //    $scope.fields = copyFields($scope.to.fields)
+                //}
 
                 function copyFields(fields) {
                     fields = angular.copy(fields);
@@ -60,16 +83,16 @@ angular.module('OrderManagerApp')
                     return fields;
                 }
 
-                function addNew() {
-                    $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
-                    var repeatSection = $scope.model[$scope.options.key];
-                    var lastSection = repeatSection[repeatSection.length - 1];
-                    var newSection = {};
-                    if (lastSection) {
-                        newSection = angular.copy(lastSection);
-                    }
-                    repeatSection.push(newSection);
-                }
+                //function addNew() {
+                //    $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
+                //    var repeatSection = $scope.model[$scope.options.key];
+                //    var lastSection = repeatSection[repeatSection.length - 1];
+                //    var newSection = {};
+                //    if (lastSection) {
+                //        newSection = angular.copy(lastSection);
+                //    }
+                //    repeatSection.push(newSection);
+                //}
 
                 var unique = 1;
 
@@ -117,7 +140,7 @@ angular.module('OrderManagerApp')
 
         formlyConfig.setType({
             name: 'clientChildrenSelect',
-            templateUrl: '/static/form_field_templates/single_select_template.html',
+            templateUrl: '/static/form_field_templates/client_children_select_template.html',
             link: function (scope, element, attrs) {
                 if (scope.options.templateOptions.multiple) {
                     element.find('ul.dropdown-menu').addClass('multiple-mode');
@@ -820,7 +843,7 @@ angular.module('OrderManagerApp')
                                 message: '"Выберите вариант из списка!"'
                             }
                         },
-                        controller: function ($scope) {
+                        controller: function ($scope, $sce) {
                             ClientService.loadClients().then(function () {
 
                                 var clients = ClientService.getClients();
@@ -927,7 +950,8 @@ angular.module('OrderManagerApp')
                                             angular.forEach(children, function (child) {
                                                 var item = {
                                                     name: child.name,
-                                                    value: child.id
+                                                    value: child.id,
+                                                    age: child.age
                                                 };
 
                                                 if (client_children !== undefined) {
@@ -967,7 +991,6 @@ angular.module('OrderManagerApp')
                         templateOptions: {
                             id: 'childrenNumId',
                             label: 'Количество детей',
-                            type: 'number',
                             min: 1
                         }
                     },
@@ -1017,26 +1040,6 @@ angular.module('OrderManagerApp')
                             }).toDate();
                         }
                     },
-                    //{
-                    //    type: 'timePicker',
-                    //    key: 'celebrate_time',
-                    //    templateOptions: {
-                    //        label: 'Время начала',
-                    //        hstep: 1,
-                    //        mstep: 10
-                    //    },
-                    //    controller: function ($scope) {
-                    //        $scope.$watch('model.celebrate_time', function (newVal, oldVal) {
-                    //            if (angular.isString(newVal)) {
-                    //                var date = new Date();
-                    //                var splitedDate = newVal.split(':');
-                    //                date.setHours(splitedDate[0]);
-                    //                date.setMinutes(splitedDate[1]);
-                    //                $scope.model.celebrate_time = date;
-                    //            }
-                    //        })
-                    //    }
-                    //},
                     {
                         type: 'simpleSelect',
                         key: 'celebrate_place',
@@ -1050,9 +1053,10 @@ angular.module('OrderManagerApp')
                             var items = [
                                 {'name': 'Квартира', 'value': 1},
                                 {'name': 'Детский сад', 'value': 2},
-                                {'name': 'Кафе', 'value': 3},
-                                {'name': 'Детский центр', 'value': 4},
-                                {'name': 'Другое', 'value': 5}
+                                {'name': 'Школа', 'value': 3},
+                                {'name': 'Кафе', 'value': 4},
+                                {'name': 'Детский центр', 'value': 5},
+                                {'name': 'Другое', 'value': 6}
                             ];
 
                             angular.forEach(items, function (item) {
@@ -1072,7 +1076,7 @@ angular.module('OrderManagerApp')
                         },
                         controller: function ($scope) {
                             if (!$scope.model.address) {
-                                $scope.model.address = {}
+                                $scope.model.address = {city: 'Минск'}
                             }
                             else if (angular.isString($scope.model.address)) {
                                 $scope.model.address = angular.fromJson($scope.model.address);
@@ -1105,10 +1109,7 @@ angular.module('OrderManagerApp')
                             ProgramService.getPrograms().then(function (programs) {
                                 var initial_program = $scope.model.program === undefined
                                     ? {}
-                                    : {
-                                    name: $scope.model.program.title,
-                                    value: $scope.model.program.id
-                                };
+                                    : { name: $scope.model.program.title, value: $scope.model.program.id };
 
                                 $timeout(function () {
                                     var opts = [{name: '---', value: 0}];
@@ -1139,6 +1140,16 @@ angular.module('OrderManagerApp')
 
                             var origDurationName = angular.copy($scope.model.duration),
                                 origDuration = {};
+
+                            var programId = !!$scope.model.program
+                                ? $scope.model.program.value || $scope.model.program.id
+                                : null;
+
+                            $scope.formState.programPrices.oldPrice = {
+                                'programId': programId,
+                                'duration': $scope.model.duration,
+                                'price': $scope.model.price
+                            };
 
                             $scope.$watch('model.program', function (newVal) {
                                 $scope.model.duration = '';
@@ -1185,16 +1196,31 @@ angular.module('OrderManagerApp')
                             $scope.$watch('model.duration', function (newVal) {
                                 if (!!newVal && !!newVal.value) {
                                     $scope.formState.programPrices.list.some(function (item) {
+                                        var durationMatch = newVal.name.match(/[\d]+/);
                                         if (item.id === newVal.value) {
-                                            $scope.model.price = item.price;
-                                            return true;
+                                            $scope.formState.programPrices.newPrice = {
+                                                'programId': $scope.model.program.value || $scope.model.program.id,
+                                                'duration': !!durationMatch ? parseInt(durationMatch[0]) : 0,
+                                                'price': item.price
+                                            }
                                         }
                                     });
+
+                                    $scope.model.price = programPriceHasBeenChangedUnderOrderUpdateMode()
+                                        ? $scope.formState.programPrices.oldPrice.price
+                                        : $scope.formState.programPrices.newPrice.price
                                 }
                                 else {
-                                    $scope.model.price = '';
+                                    $scope.model.price = 0;
                                 }
                             });
+
+                            function programPriceHasBeenChangedUnderOrderUpdateMode() {
+                                var isSameProgram = $scope.formState.programPrices.oldPrice.programId === $scope.formState.programPrices.newPrice.programId;
+                                var isSameDuration = $scope.formState.programPrices.oldPrice.duration === $scope.formState.programPrices.newPrice.duration;
+                                var isEqualsPrices = $scope.formState.programPrices.oldPrice.price === $scope.formState.programPrices.newPrice.price;
+                                return !!$scope.model.id && isSameProgram && isSameDuration && !isEqualsPrices;
+                            }
                         }
                     },
                     {
@@ -1255,7 +1281,7 @@ angular.module('OrderManagerApp')
                         }
                     },
                     {
-                        type: 'vSelect',
+                        type: 'additionalServicesSelect',
                         key: 'additional_services_executors',
                         templateOptions: {
                             id: 'additionalServicesIds',
@@ -1269,12 +1295,7 @@ angular.module('OrderManagerApp')
                                 var aOpt = $(el).find('ul.dropdown-menu').find('li.nya-bs-option').find('a');
                                 aOpt.on('click', function () {
                                     var servName = $(this).text().trim();
-
-                                    for (var i = 0; i < scope.model.additional_services_executors.length; i++) {
-                                        if (angular.equals(scope.model.additional_services_executors[i].name, servName)) {
-                                            scope.model.additional_services_executors[i].executors = [];
-                                        }
-                                    }
+                                    scope.$emit('onClickedAdditionalServiceItem:' + servName);
                                 })
                             })
                         },
@@ -1290,7 +1311,7 @@ angular.module('OrderManagerApp')
                                     var opts = [];
                                     angular.forEach(services, function (service) {
                                         var item = {
-                                            name: service.title,
+                                            name: service.title + ' (' + service.price + ' руб.)',
                                             value: service.id,
                                             executors: []
                                         };
@@ -1311,36 +1332,6 @@ angular.module('OrderManagerApp')
                                     $scope.model.additional_services_executors = additionalServ;
                                 })
                             });
-
-                            $scope.$watch('model.additional_services_executors', function (servToExec) {
-                                console.log($scope.model.additional_services_executors);
-                                //$rootScope.$broadcast('additional_services_executors:model:changed', newVal);
-                                //refreshData();
-                                //if (servToExec !== undefined && servToExec.length > 0) {
-                                //    var resultArr = [];
-                                //    var tempArrIds = {};
-                                //
-                                //    $timeout(function () {
-                                //        angular.forEach(servToExec, function (servToExecItem) {
-                                //            if (tempArrIds[servToExecItem.value] === undefined) {
-                                //                tempArrIds[servToExecItem.value] = 1;
-                                //            }
-                                //            else {
-                                //                tempArrIds[servToExecItem.value] += 1;
-                                //            }
-                                //        });
-                                //    }).then(function () {
-                                //        angular.forEach(servToExec, function (servToExecItem) {
-                                //            if (tempArrIds[servToExecItem.value] === 1) {
-                                //                resultArr.push(servToExecItem)
-                                //            }
-                                //        })
-                                //    }).then(function () {
-                                //        $scope.model.additional_services_executors = resultArr;
-                                //        console.log(resultArr);
-                                //    })
-                                //}
-                            }, true);
                         }
                     },
                     {
@@ -1360,14 +1351,15 @@ angular.module('OrderManagerApp')
                                         options: [],
                                         multiple: true
                                     },
-                                    controller: function ($scope) {
+                                    controller: function ($scope, $rootScope) {
                                         var executor_items = [],
                                             opts = [],
                                             checked_executors = angular.copy($scope.model.executors);
 
-                                        //$rootScope.$on('additional_services_executors:model:changed', function (event, data) {
-                                        //    console.log(data);
-                                        //});
+                                        $rootScope.$on('onClickedAdditionalServiceItem:' + $scope.model.name, function () {
+                                            $scope.model.executors = [];
+                                        });
+
 
                                         $timeout(function () {
                                             angular.forEach($scope.formState.additionalServices, function (serv) {
@@ -1404,7 +1396,7 @@ angular.module('OrderManagerApp')
                                         }).then(function () {
                                             $timeout(function () {
                                                 $scope.model.executors = executor_items;
-                                            }, 1000)
+                                            })
                                         });
                                     }
                                 }
