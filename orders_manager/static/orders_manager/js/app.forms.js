@@ -895,7 +895,7 @@ angular.module('OrderManagerApp')
                             });
 
                             $scope.onButtonClick = function () {
-                                $scope.$emit('onCreateClientClick');
+                                $scope.$emit('onCreateClientClick', $scope.model.client);
                             }
                         }
                     },
@@ -1783,7 +1783,7 @@ angular.module('OrderManagerApp')
     .factory('ClientForm', [function () {
         var clientForm = {};
 
-        clientForm.getFieldsOptions = function () {
+        clientForm.getFieldsOptions = function (currentClient) {
             return [
                 {
                     type: 'input',
@@ -1792,6 +1792,11 @@ angular.module('OrderManagerApp')
                         id: 'clientNameId',
                         label: 'Имя клиента',
                         required: true
+                    },
+                    controller: function ($scope) {
+                        if (currentClient !== undefined && !!currentClient) {
+                            $scope.model.name = currentClient.name;
+                        }
                     }
                 },
                 {
@@ -1805,9 +1810,37 @@ angular.module('OrderManagerApp')
                     },
                     controller: function ($scope) {
                         $scope.model.phone = parseInt($('.order-client-select').find('input').val());
+
+                        if (currentClient !== undefined && currentClient.phone !== undefined) {
+                            $scope.model.phone = currentClient.phone.trimPhoneCountryCode();
+                        }
+
                         $scope.$watch('model.phone', function (newVal) {
                             if (newVal !== undefined) {
                                 $scope.model.phone = parseInt($scope.model.phone);
+                            }
+                        })
+                    }
+                },
+                {
+                    type: 'phoneInputType',
+                    key: 'phone_2',
+                    className: 'order-client-popup-phone',
+                    templateOptions: {
+                        id: 'clientPhoneId',
+                        label: 'Доп. телефон',
+                        required: false
+                    },
+                    controller: function ($scope) {
+                        $scope.model.phone_2 = '';
+
+                        if (currentClient !== undefined && currentClient.phone2 !== undefined && !!currentClient.phone2) {
+                            $scope.model.phone_2 = currentClient.phone2.trimPhoneCountryCode();
+                        }
+
+                        $scope.$watch('model.phone_2', function (newVal) {
+                            if (newVal !== undefined) {
+                                $scope.model.phone_2 = parseInt($scope.model.phone_2);
                             }
                         })
                     }

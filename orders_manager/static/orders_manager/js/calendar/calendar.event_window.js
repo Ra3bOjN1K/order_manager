@@ -95,9 +95,9 @@ angular.module('CalendarApp')
                 }
             });
 
-            $scope.$on('onCreateClientClick', function() {
+            $scope.$on('onCreateClientClick', function(event, currentClient) {
                 vm.client.expandClientForm = true;
-                vm.client.fields = ClientForm.getFieldsOptions();
+                vm.client.fields = ClientForm.getFieldsOptions(currentClient);
             });
 
             function onCloseClientForm() {
@@ -112,13 +112,18 @@ angular.module('CalendarApp')
                     vm.client.model.mode = 'quick_create';
                     vm.client.model.celebrate_date = vm.model.celebrate_date;
                     vm.client.model.phone = vm.client.model.phone.toString().addPhoneCountryCode();
+                    if (vm.client.model.phone_2 !== undefined) {
+                        vm.client.model.phone_2 = vm.client.model.phone_2.toString().addPhoneCountryCode();
+                    }
 
                     ClientService.saveClient(vm.client.model).then(function(result) {
                         angular.forEach(vm.fields, function(field) {
                             if (field.key === 'client') {
                                 var client = {
                                     name: result.name,
-                                    value: result.id
+                                    value: result.id,
+                                    phone: result.phone,
+                                    phone2: result.phone_2
                                 };
                                 ClientService.reloadClients().then(function() {
                                     var clients = ClientService.getClients();
@@ -126,7 +131,9 @@ angular.module('CalendarApp')
                                     angular.forEach(clients, function(cl) {
                                         opts.push({
                                             name: cl.name,
-                                            value: cl.id
+                                            value: cl.id,
+                                            phone: cl.phone,
+                                            phone2: cl.phone_2
                                         })
                                     });
                                     field.templateOptions.options = opts;

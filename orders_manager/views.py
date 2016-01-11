@@ -280,7 +280,8 @@ class ClientListView(ListCreateAPIView):
 
             client = Client.objects.update_or_create(**{
                 'name': request.data.get('name'),
-                'phone': request.data.get('phone')
+                'phone': request.data.get('phone'),
+                'phone_2': request.data.get('phone_2')
             })
             ClientChild.objects.update_or_create(**{
                 'client_id': client.id,

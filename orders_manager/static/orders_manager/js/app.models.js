@@ -190,8 +190,8 @@ angular.module('OrderManagerApp')
 
                 saveClient: function (client) {
                     client.phone = client.phone.toString();
-                    if (client.phone_2 !== undefined) {
-                        client.phone_2 = client.phone_2.addPhoneCountryCode()
+                    if (client.phone_2 !== undefined && !!client.phone_2) {
+                        client.phone_2 = client.phone_2.toString().addPhoneCountryCode()
                     }
                     return _clientService.post(client)
                 },
