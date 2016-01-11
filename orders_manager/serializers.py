@@ -166,7 +166,7 @@ class OrderSerializer(DynamicFieldsModelSerializer):
     id = serializers.CharField(required=False)
 
     code = serializers.CharField(required=False, read_only=True)
-    author = UserProfileSerializer(required_fields=['id', 'full_name'],
+    author = UserProfileSerializer(required_fields=['id', 'full_name', 'role'],
                                    required=False)
     client = ClientSerializer(required_fields=['id'])
     client_children = ClientChildrenSerializer(required_fields=['id'],

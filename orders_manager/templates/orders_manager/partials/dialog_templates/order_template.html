@@ -35,7 +35,18 @@
             <div class="event-window__footer panel-footer" ng-show="!vm.loadingEvent">
                 <button type="button" ng-show="vm.model.id" class="btn btn-danger submit-button"
                         ng-click="vm.onOrderDelete()" ng-if="vm.canDeleteOrder">Удалить</button>
-                <div class="spacer"></div>
+                <div class="spacer">
+                    <div class="order-info" ng-show="!!vm.model.id">
+                        <div class="order-info__line">
+                            <span class="order-info__line__lbl">Автор:</span>
+                            <span class="order-info__line__val">{{ vm.order.author | limitTo : 28 }}</span>
+                        </div>
+                        <div class="order-info__line">
+                            <span class="order-info__line__lbl">Дата создания:</span>
+                            <span class="order-info__line__val">{{ vm.order.createdDate }}</span>
+                        </div>
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary submit-button"
                         ng-disabled="vm.form.$invalid" ng-if="vm.canSaveOrder">Сохранить</button>
             </div>

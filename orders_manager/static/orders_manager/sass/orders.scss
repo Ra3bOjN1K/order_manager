@@ -494,7 +494,22 @@
     }
 
     .spacer {
+      @include init-flex-position(column);
+      @include justify-content(center);
+      @include align-items(center);
+      @include align-content(center);
       @include flex(1 1);
+
+      color: #888;
+      font-size: 10pt;
+      padding: 4px 0;
+    }
+
+    .order-info__line__val {
+      color: #444;
+      font-size: 10.5pt;
+      margin-left: 4px;
+      text-decoration: underline;
     }
   }
 }

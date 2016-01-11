@@ -7,6 +7,11 @@ angular.module('CalendarApp')
 
             vm.loadingEvent = true;
 
+            vm.order = {
+                author: "",
+                createdDate: ""
+            };
+
             $rootScope.$on('OrderForm.rendered', function () {
                 $timeout(function () {
                     vm.loadingEvent = false;
@@ -29,6 +34,10 @@ angular.module('CalendarApp')
                     OrderService.getOrder($scope.$parent.eventWindow.checkedOrderId).then(function(order) {
                         vm.model = angular.copy(order);
                         vm.model.celebrate_date = $scope.$parent.eventWindow.checkedDate;
+
+                        vm.order.author = getOrderAuthor();
+                        vm.order.createdDate = getOrderCreatedDate();
+
                         if (!!order.code) {
                             vm.windowTitle = moment($scope.$parent.eventWindow.checkedDate).format("DD MMMM YYYY");
                             vm.windowTitle += " | Код заказа: {0}".format(order.code);
@@ -64,6 +73,18 @@ angular.module('CalendarApp')
                     });
                 }
             });
+
+            function getOrderAuthor() {
+                if (vm.model.author !== undefined) {
+                    return angular.equals(vm.model.author.role, "Администратор") ? "Администратор" : vm.model.author.full_name;
+                }
+                return "Unknown";
+            }
+
+            function getOrderCreatedDate() {
+                return moment(vm.model.created).format("DD.MM.YYYY");
+            }
+
 
             function onOrderSubmit() {
                 if (vm.form.$valid) {
