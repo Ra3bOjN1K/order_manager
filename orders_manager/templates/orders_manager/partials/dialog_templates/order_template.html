@@ -36,7 +36,7 @@
                 <button type="button" ng-show="vm.model.id" class="btn btn-danger submit-button"
                         ng-click="vm.onOrderDelete()" ng-if="vm.canDeleteOrder">Удалить</button>
                 <div class="spacer">
-                    <div class="order-info" ng-show="!!vm.model.id">
+                    <div class="order-info" ng-show="vm.order.canShowInfo">
                         <div class="order-info__line">
                             <span class="order-info__line__lbl">Автор:</span>
                             <span class="order-info__line__val">{{ vm.order.author | limitTo : 28 }}</span>

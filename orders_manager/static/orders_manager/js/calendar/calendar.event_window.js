@@ -9,7 +9,8 @@ angular.module('CalendarApp')
 
             vm.order = {
                 author: "",
-                createdDate: ""
+                createdDate: "",
+                canShowInfo: false
             };
 
             $rootScope.$on('OrderForm.rendered', function () {
@@ -37,6 +38,7 @@ angular.module('CalendarApp')
 
                         vm.order.author = getOrderAuthor();
                         vm.order.createdDate = getOrderCreatedDate();
+                        vm.order.canShowInfo = vm.model.author !== undefined && vm.model.created !== undefined;
 
                         if (!!order.code) {
                             vm.windowTitle = moment($scope.$parent.eventWindow.checkedDate).format("DD MMMM YYYY");
