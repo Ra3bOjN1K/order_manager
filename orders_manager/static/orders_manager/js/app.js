@@ -20,7 +20,7 @@ angular.module('OrderManagerApp', [
             };
         }
 
-        String.prototype.trimRight = function(charlist) {
+        String.prototype.trimRight = function (charlist) {
             if (charlist === undefined) {
                 charlist = "\s";
             }
@@ -58,6 +58,12 @@ angular.module('OrderManagerApp', [
             }
         }
     }])
+    .filter('debug', function () {
+        return function (input) {
+            if (input === '') return 'empty string';
+            return input ? input : ('' + input);
+        };
+    })
     .directive('contentLoader', ['$rootScope', '$timeout', function ($rootScope, $timeout) {
         return {
             link: function (scope, element, attrs) {

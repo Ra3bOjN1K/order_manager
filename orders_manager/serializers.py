@@ -199,14 +199,16 @@ class OrderSerializer(DynamicFieldsModelSerializer):
     def get_is_only_service_executor(self, obj):
         from orders_manager.roles import get_user_role
 
-        user = self.context.get('request').user
-        role = get_user_role(user)
-        if role in ['superuser', 'manager']:
-            return False
-        if user.id not in [i.user.id for i in obj.program_executors.all()]:
-            for service_to_executor in obj.additional_services_executors.all():
-                if service_to_executor.executor.user.id == user.id:
-                    return True
+        request = self.context.get('request')
+        if request:
+            user = request.user
+            role = get_user_role(user)
+            if role in ['superuser', 'manager']:
+                return False
+            if user.id not in [i.user.id for i in obj.program_executors.all()]:
+                for service_to_executor in obj.additional_services_executors.all():
+                    if service_to_executor.executor.user.id == user.id:
+                        return True
         return False
 
     def create(self, validated_data):

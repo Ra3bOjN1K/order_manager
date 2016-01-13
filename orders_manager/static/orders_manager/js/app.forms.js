@@ -48,7 +48,7 @@ angular.module('OrderManagerApp')
 
         formlyConfig.setType({
             name: 'additionalServicesSelect',
-            templateUrl: '/static/form_field_templates/single_select_template.html',
+            templateUrl: '/static/form_field_templates/addit_serv_single_select_template.html',
             link: function (scope, element, attrs) {
                 if (scope.options.templateOptions.multiple) {
                     element.find('ul.dropdown-menu').addClass('multiple-mode');
@@ -370,10 +370,10 @@ angular.module('OrderManagerApp')
 
     .factory('OrderForm', [
         '$rootScope', '$q', '$timeout', 'Validators', 'ClientService', 'UserService', 'AdditionalServiceFactory',
-        'ProgramService', 'DiscountService', 'DataFormatters',
+        'ProgramService', 'DiscountService', 'DataFormatters', '$document',
 
         function ($rootScope, $q, $timeout, Validators, ClientService, UserService, AdditionalServiceFactory,
-                  ProgramService, DiscountService, DataFormatters) {
+                  ProgramService, DiscountService, DataFormatters, $document) {
 
             var orderForm = {};
 
@@ -902,6 +902,7 @@ angular.module('OrderManagerApp')
                     {
                         type: 'clientChildrenSelect',
                         key: 'client_children',
+                        className: 'order-client-children-select',
                         templateOptions: {
                             id: 'clientChildrenId',
                             label: 'Именинник(-и)',
@@ -988,6 +989,7 @@ angular.module('OrderManagerApp')
                         type: 'input',
                         key: 'children_num',
                         defaultValue: 1,
+                        className: 'children-num-input',
                         templateOptions: {
                             id: 'childrenNumId',
                             label: 'Количество детей',
@@ -997,6 +999,7 @@ angular.module('OrderManagerApp')
                     {
                         type: 'dateTimePicker',
                         key: 'celebrate_datetime',
+                        className: 'celebrate-datetime-select',
                         templateOptions: {
                             label: 'Дата празника',
                             required: true
@@ -1044,6 +1047,7 @@ angular.module('OrderManagerApp')
                         type: 'simpleSelect',
                         key: 'celebrate_place',
                         defaultValue: 'Квартира',
+                        className: 'celebrate-place-select',
                         templateOptions: {
                             label: 'Место проведения',
                             options: [],
@@ -1072,7 +1076,7 @@ angular.module('OrderManagerApp')
                         key: 'address',
                         id: 'address',
                         templateOptions: {
-                            label: 'Адрес проведения'
+                            label: 'Адрес'
                         },
                         controller: function ($scope) {
                             if (!$scope.model.address) {
@@ -1086,6 +1090,7 @@ angular.module('OrderManagerApp')
                     {
                         type: 'vSelect',
                         key: 'program',
+                        className: 'order-program-select',
                         templateOptions: {
                             id: 'programId',
                             label: 'Программа',
@@ -1129,9 +1134,10 @@ angular.module('OrderManagerApp')
                     {
                         type: 'vSelect',
                         key: 'duration',
+                        className: 'order-program-duration-input',
                         templateOptions: {
                             id: 'programDurationId',
-                            label: 'Продолжительность программы',
+                            label: 'Длит.',
                             size: 6,
                             options: [],
                             required: true
@@ -1187,9 +1193,10 @@ angular.module('OrderManagerApp')
                     {
                         type: 'currencyInputType',
                         key: 'price',
+                        className: 'order-program-price-input',
                         templateOptions: {
                             id: 'programPriceId',
-                            label: 'Стоимость программы',
+                            label: 'Стоимость',
                             disabled: true
                         },
                         controller: function ($scope) {
@@ -1226,12 +1233,20 @@ angular.module('OrderManagerApp')
                     {
                         type: 'groupedSelect',
                         key: 'program_executors',
+                        className: 'order-program-executors-select',
                         templateOptions: {
                             id: 'programPossibleExecutorsIds',
-                            label: 'Исполнители программы',
+                            label: 'Исполнители',
                             size: 6,
                             options: [],
                             multiple: true
+                        },
+                        link: function(scope, el, attrs, ctrl) {
+                            scope.$watch('to.options', function (value) {
+                                var wrapper = $(el).find('.dropdown-menu.open');
+                                //$(wrapper).removeClass('pull-left');
+                                $(wrapper).addClass('pull-right');
+                            })
                         },
                         controller: function ($scope) {
 
@@ -1283,6 +1298,7 @@ angular.module('OrderManagerApp')
                     {
                         type: 'additionalServicesSelect',
                         key: 'additional_services_executors',
+                        className: 'order-additional-services-select',
                         templateOptions: {
                             id: 'additionalServicesIds',
                             label: 'Список дополнительных услуг',
@@ -1296,6 +1312,14 @@ angular.module('OrderManagerApp')
                                 aOpt.on('click', function () {
                                     var servName = $(this).text().trim();
                                     scope.$emit('onClickedAdditionalServiceItem:' + servName);
+                                    $timeout(function () {
+                                        var executorsElems = $($document).find('.service-executor').find('div.dropdown-menu.open');
+                                        angular.forEach(executorsElems, function (item, idx) {
+                                            if ((idx + 1) % 3 === 0) {
+                                                $(item).addClass('pull-right');
+                                            }
+                                        })
+                                    })
                                 })
                             })
                         },
@@ -1337,6 +1361,7 @@ angular.module('OrderManagerApp')
                     {
                         type: 'repeatSection',
                         key: 'additional_services_executors',
+                        className: 'order-additional-services-executors-select',
                         templateOptions: {
                             label: 'Исполнители дополнительных услуг',
                             fields: [
@@ -1389,7 +1414,7 @@ angular.module('OrderManagerApp')
                                                         opts.push(item);
                                                     });
                                                 }
-                                            });
+                                            }, 300);
 
                                             $scope.to.options = opts;
 
@@ -1409,6 +1434,7 @@ angular.module('OrderManagerApp')
                     {
                         type: 'textarea',
                         key: 'details',
+                        className: 'order-details-textarea',
                         templateOptions: {
                             id: 'orderDetailsId',
                             label: 'Дополнительная информация'
@@ -1417,6 +1443,7 @@ angular.module('OrderManagerApp')
                     {
                         type: 'textarea',
                         key: 'executor_comment',
+                        className: 'order-executor-comment-textarea',
                         templateOptions: {
                             id: 'executorCommentId',
                             label: 'Комментарий исполнителя'
@@ -1425,11 +1452,20 @@ angular.module('OrderManagerApp')
                     {
                         type: 'simpleSelect',
                         key: 'where_was_found',
+                        className: 'order-how-did-you-know-select',
                         defaultValue: 'Не задано',
                         templateOptions: {
                             label: 'Откуда о нас узнали?',
                             options: [],
                             size: 5
+                        },
+                        link: function(scope, el, attrs, ctrl) {
+                            scope.$watch('to.options', function (value) {
+                                var aOpt = $(el).find('div.dropdown-menu');
+                                //if (aOpt.length > 0) {
+                                //    aOpt.css('bottom: 100% !important; top: auto !important;');
+                                //}
+                            })
                         },
                         controller: function ($scope) {
                             var items = [
@@ -1458,6 +1494,7 @@ angular.module('OrderManagerApp')
                         type: 'vSelect',
                         key: 'discount',
                         defaultValue: {id: '1'},
+                        className: 'order-discount-select',
                         templateOptions: {
                             id: 'discountId',
                             label: 'Скидка',
@@ -1495,6 +1532,7 @@ angular.module('OrderManagerApp')
                     {
                         type: 'input',
                         key: 'cost_of_the_way',
+                        className: 'order-cost-of-the-way-input',
                         defaultValue: 0,
                         templateOptions: {
                             id: 'costWayId',
@@ -1505,6 +1543,7 @@ angular.module('OrderManagerApp')
                     {
                         type: 'currencyInputType',
                         key: 'total_price',
+                        className: 'order-total-price-input',
                         templateOptions: {
                             id: 'totalPriceId',
                             label: 'Стоимость заказа',
@@ -1538,6 +1577,7 @@ angular.module('OrderManagerApp')
                     {
                         type: 'currencyInputType',
                         key: 'total_price_with_discounts',
+                        className: 'order-total-price-input-with-discount',
                         templateOptions: {
                             id: 'totalPriceWithDiscountId',
                             label: 'Стоимость заказа с учетом скидки',

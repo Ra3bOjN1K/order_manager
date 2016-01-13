@@ -1,5 +1,7 @@
-<div class="event-window-background" ng-controller="CalendarEventCtrl as vm" ng-cloak="true">
-    <form class="order-form" name="vm.form" novalidate ng-submit="vm.onOrderSubmit()">
+<div class="event-window-background"
+     ng-controller="CalendarEventCtrl as vm" ng-cloak="true">
+    <form ng-class="vm.readOnly ? 'readonly' : ''" class="order-form" name="vm.form"
+          novalidate ng-submit="vm.onOrderSubmit()">
         <div class="event-window panel panel-default">
             <div class="event-window__header panel-heading">
                 <div class="header__title" ng-bind="vm.windowTitle"></div>
@@ -7,7 +9,7 @@
                     <img src="/static/orders_manager/img/del.png">
                 </a>
             </div>
-            <div class="event-window__body panel-body">
+            <div class="panel-body event-window__body">
                 <div class="loading-content" ng-show="vm.loadingEvent">
                     <span>Загрузка...</span>
                     <img class="loading-content__preloader" src="/static/orders_manager/img/preloader.gif">
@@ -28,11 +30,11 @@
                         </form>
                     </div>
                     <formly-form model="vm.model" form="vm.form" fields="vm.fields" options="vm.options"
-                                 fields-separator></formly-form>
+                                 class="order-formly-form"></formly-form>
                 </div>
                 <!-- <div class="consents-panel"></div> -->
             </div>
-            <div class="event-window__footer panel-footer" ng-show="!vm.loadingEvent">
+            <div class="event-window__footer panel-footer" ng-show="!vm.loadingEvent && !vm.readOnly">
                 <button type="button" ng-show="vm.model.id" class="btn btn-danger submit-button"
                         ng-click="vm.onOrderDelete()" ng-if="vm.canDeleteOrder">Удалить</button>
                 <div class="spacer">

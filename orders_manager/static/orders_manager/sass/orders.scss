@@ -185,20 +185,30 @@
 
   .panel.event-window {
     @include init-flex-position(column);
-    @include single-box-shadow(2px, 2px, 8px, .6px, #555);
+    @include single-box-shadow(1px, 1px, 12px, .2px, #444);
     border: 1px solid #666;
     border-radius: 1px;
-    height: 600px;
     margin: auto;
+    max-height: 700px;
+    min-height: 600px;
     width: 600px;
+  }
+
+  .order-form.readonly .event-window {
+    height: 600px;
   }
 
   .event-window__header {
     @include init-flex-position(row);
     @include justify-content(flex-end);
-    @include single-box-shadow(0, .5px, 6px, .05px, #aaa);
+    @include single-box-shadow(0, .5px, 10px, .05px, #222);
     border-bottom: 1px solid #aaa;
     z-index: 20;
+
+    &.panel-heading {
+      padding-bottom: 4px !important;
+      padding-top: 4px !important;
+    }
 
     .header__title {
       @include single-text-shadow(.8px, .8px, 2px, .1px, #aaa);
@@ -231,8 +241,6 @@
   .event-window__body {
     @include init-flex-position(column);
     @include flex(1 1);
-    overflow-x: hidden;
-    overflow-y: auto;
     padding: 0;
     position: relative;
 
@@ -241,6 +249,11 @@
       margin: 16px 0 4px;
       padding: 0;
     }
+  }
+
+  .order-form.readonly .event-window__body {
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .consents-panel {
@@ -257,8 +270,8 @@
   }
 
   .create-client-wrapper {
-    margin-bottom: 24px;
-    padding: 0 24px;
+    margin-bottom: 12px;
+    padding: 0 16px;
   }
 
   .create-client {
@@ -280,6 +293,11 @@
     @include align-items(center);
     @include flex(1 1);
     margin-right: 2px;
+    width: 260px;
+  }
+
+  .pull-left .field-select-data-wrapper {
+    width: 220px;
   }
 
   //span.field-client-phones-wrapper {
@@ -328,6 +346,78 @@
     }
   }
 
+  .order-formly-form {
+    @include init-flex-position(row);
+    @include align-items(center);
+    @include justify-content(space-between);
+    @include flex-wrap(wrap);
+
+    .formly-field {
+      margin: 2px;
+    }
+
+    .control-label {
+      font-size: 9pt;
+      margin: 0;
+    }
+
+    input, button, textarea {
+      font-size: 10.5pt;
+      padding-bottom: 1px;
+      padding-top: 1px;
+    }
+
+    input {
+      height: 32px;
+    }
+
+    .nya-bs-select {
+      height: 32px;
+    }
+
+    .nya-bs-select > button {
+      height: 32px;
+    }
+
+    .field-container {
+      @include init-flex-position(row);
+      height: 32px;
+    }
+  }
+
+  .order-form.readonly .order-formly-form {
+    @include init-flex-position(column);
+    @include align-items(stretch);
+  }
+
+  .order-client-select {
+    width: 350px;
+    margin-top: 4px;
+
+    .btn-custom {
+      margin-left: 4px;
+    }
+  }
+
+  .order-client-children-select {
+    @include flex(1 1);
+    margin-top: 4px;
+    max-width: 180px;
+    min-width: 160px;
+  }
+
+  .children-num-input {
+    width: 196px;
+  }
+
+  .celebrate-datetime-select {
+    width: 142px;
+  }
+
+  .celebrate-place-select {
+    @include flex(1 1);
+  }
+
   .client-option {
     @include init-flex-position(row);
     @include justify-content(space-between);
@@ -348,42 +438,221 @@
     }
   }
 
-  .formly-field:first-child {
-    margin-top: 15px;
+  .formly-field-address > div > div {
+    @include init-flex-position(row);
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    margin-top: 4px;
+    padding: 8px;
+
+    & > label {
+      border-right: 2px solid #ddd;
+      margin-right: 4px;
+      padding-right: 4px;
+    }
   }
 
-  //.time-picker {
-  //  td {
-  //    height: 10px;
-  //    line-height: 0;
-  //
-  //    a {
-  //      line-height: 0;
-  //      margin: 0;
-  //      padding: 0;
-  //    }
-  //  }
-  //}
-
   .address-block {
-    margin: 0 24px;
+    @include flex(1 1);
+
+    #address {
+      @include init-flex-position(row);
+      @include flex-wrap(wrap);
+    }
 
     .address-field {
       @include init-flex-position(row);
-      margin-bottom: 3px;
+      @include align-items(flex-end);
+      margin-left: 8px;
     }
 
-    .address-field:first-child {
+    .address-field label {
+      margin-right: 2px;
+    }
+
+    .address-city {
+      width: 156px;
+    }
+
+    .address-street {
+      @include flex(1 1);
+      width: 180px;
+    }
+
+    .address-house {
+      width: 60px;
+    }
+
+    .address-apartment {
+      width: 60px;
+    }
+
+    .address-additional-info {
+      @include align-items(flex-start);
+      @include flex(1 1);
       margin-top: 4px;
+      min-width: 300px;
     }
 
-    .address-field:last-child {
-      margin-bottom: 2px;
+    .address-additional-info > textarea {
+      height: 24px;
+    }
+  }
+
+  .order-form.readonly .address-block {
+
+    #addressId {
+      @include init-flex-position(column);
     }
 
     label {
-      width: 150px;
+      margin-left: 4px;
+      width: 60px;
     }
+
+    .address-city,
+    .address-street,
+    .address-house,
+    .address-apartment,
+    .address-additional-info {
+      margin: 2px;
+      width: auto;
+    }
+  }
+
+  .order-program-select {
+    width: 150px;
+
+    .dropdown-menu.open {
+      width: 280px;
+    }
+  }
+
+  .order-program-duration-input {
+    width: 96px;
+
+    .dropdown-menu.open {
+      width: 120px;
+    }
+  }
+
+  .order-program-price-input {
+    width: 96px;
+  }
+
+  .order-program-executors-select {
+    max-width: 184px;
+    min-width: 160px;
+
+    .dropdown-menu.open {
+      width: 280px;
+    }
+  }
+
+  .order-additional-services-select {
+    @include flex(1 1);
+    min-width: 400px;
+    margin-bottom: 4px !important;
+    margin-top: 4px !important;
+
+    & > div > div {
+      @include init-flex-position(row);
+    }
+
+    label {
+      @include align-self(center);
+      line-height: 1;
+      margin-right: 8px;
+      width: 180px;
+    }
+  }
+
+  .order-additional-services-executors-select {
+    @include flex(1 1);
+    min-width: 400px;
+
+    & > div {
+      @include init-flex-position(column);
+      @include justify-content(center);
+    }
+
+    & > div > label {
+      line-height: 1;
+    }
+  }
+
+  .services-executors-block {
+    @include init-flex-position(row);
+    @include flex-wrap(wrap);
+    padding-left: 4px;
+    //@include justify-content(space-between);
+
+    .service-executor {
+      @include flex(1 1);
+      margin: 0 2px;
+      width: 172px;
+    }
+
+    .dropdown-menu.open {
+      width: 260px;
+    }
+
+    label {
+      font-size: 11pt;
+      font-weight: normal;
+      margin-bottom: 2px;
+      text-decoration: underline;
+    }
+  }
+
+  .order-details-textarea {
+    @include flex(1 1);
+    min-width: 260px;
+
+    textarea {
+      height: 44px;
+    }
+  }
+
+  .order-executor-comment-textarea {
+    @include flex(1 1);
+    min-width: 260px;
+
+    textarea {
+      height: 44px;
+    }
+  }
+
+  .order-how-did-you-know-select {
+    margin: 0 2px !important;
+    width: 190px;
+
+    .dropdown-menu.open {
+      bottom: 100% !important;
+      top: auto !important;
+    }
+  }
+
+  .order-discount-select {
+    margin: 0 2px !important;
+    width: 190px;
+
+    .dropdown-menu.open {
+      bottom: 100% !important;
+      top: auto !important;
+    }
+  }
+
+  .order-cost-of-the-way-input {
+    margin: 0 2px !important;
+    width: 120px;
+  }
+
+  .order-total-price-input,
+  .order-total-price-input-with-discount {
+    @include flex(1 1);
+    margin: 0 2px !important;
+    min-width: 240px;
   }
 
   .form-group {
@@ -397,10 +666,6 @@
       @include flex(1 1);
       //width: 550px;
     }
-  }
-
-  .field-container {
-    @include init-flex-position(row);
   }
 
   .datetime-container {
@@ -442,11 +707,6 @@
     }
   }
 
-  .btn-custom {
-    @include single-box-shadow(1px, 1px, 3px, .2px, #eee);
-    background: #fafafa;
-  }
-
   .form-control[disabled],
   .many-to-many-container {
     @include noselect();
@@ -463,6 +723,12 @@
 
   .field-container > button {
     margin-left: 12px;
+  }
+
+  .btn-custom {
+    @include single-box-shadow(1px, 1px, 3px, .2px, #eee);
+    background: #fafafa;
+    margin-left: 4px;
   }
 
   textarea {
@@ -484,10 +750,15 @@
   .event-window__footer {
     @include init-flex-position(row);
     @include justify-content(flex-end);
-    @include single-box-shadow(0, -.5px, 6px, .05px, #aaa);
-    border-top: 1px solid #bbb;
-    height: 60px;
+    @include single-box-shadow(0, 0, 10px, .05px, #444);
+    border-top: 1px solid #888;
+    height: 48px;
     z-index: 20;
+
+    &.panel-footer {
+      padding-bottom: 4px !important;
+      padding-top: 4px !important;
+    }
 
     .btn {
       @include single-box-shadow(1px, 1px, 3px, .2px, #bbb);
@@ -572,24 +843,5 @@
   li.selected > a:hover,
   li.active.selected > a:hover {
     background: darken(#CFE2E8, 6%);
-  }
-}
-
-.services-executors-block {
-  padding-left: 12px;
-
-  .repeatsection {
-    margin-bottom: 4px;
-  }
-
-  .formly-field:first-child {
-    margin-top: 0;
-  }
-
-  label {
-    font-size: 11pt;
-    font-weight: normal;
-    margin-bottom: 2px;
-    text-decoration: underline;
   }
 }
