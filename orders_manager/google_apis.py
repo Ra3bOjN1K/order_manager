@@ -28,6 +28,7 @@ class GoogleApiHandler:
             redirect_uri=settings.OAUTH_REDIRECT_URL,
             access_type='offline'
         )
+        self.oauth_flow.params['include_granted_scopes'] = True
 
     def get_auth_uri(self):
         return self.oauth_flow.step1_get_authorize_url()
