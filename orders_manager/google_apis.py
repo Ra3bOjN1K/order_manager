@@ -64,8 +64,8 @@ class GoogleApiHandler:
             if credential.access_token_expired:
                 http = credential.authorize(httplib2.Http())
                 credential.refresh(http)
-        except:
-            raise ValueError('Bad user credentials!')
+        except Exception as ex:
+            raise ValueError('Bad user credentials! ' + ex.args[0])
 
         if credential.access_token_expired or credential.invalid:
             raise ValueError('Bad user credentials!')
