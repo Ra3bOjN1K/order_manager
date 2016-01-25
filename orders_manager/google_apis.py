@@ -61,15 +61,17 @@ class GoogleApiHandler:
             raise ValueError('User \'%s\' has no credentials' %
                              user.get_full_name())
 
+        if credential.invalid:
+            raise ValueError(
+                'Credentials are invalid for user \'{user_name}\'!'.format(
+                    user.get_full_name()))
+
         try:
             if credential.access_token_expired:
                 http = credential.authorize(httplib2.Http())
                 credential.refresh(http)
         except Exception as ex:
             raise ValueError('Bad user credentials! ' + ex.args[0])
-
-        if credential.access_token_expired or credential.invalid:
-            raise ValueError('Bad user credentials!')
 
         return credential
 
@@ -166,4 +168,3 @@ class GoogleApiHandler:
                 return 'Event with id=%s was not found!' % event_id
 
         return 'Success'
-
