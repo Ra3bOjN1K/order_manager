@@ -55,13 +55,14 @@ class GoogleApiHandler:
             credential = storage.get()
         except:
             raise ValueError('Credentials for user \'%s\' was not found!' %
-                             user.get_full_name())
+                             user.profile.get_full_name())
 
         if not credential:
             raise ValueError('User \'%s\' has no credentials' %
-                             user.get_full_name())
+                             user.profile.get_full_name())
 
         if credential.invalid:
+            credential = self.exchange_auth_code(self.get_auth_uri())
             raise ValueError(
                 'Credentials are invalid for user \'{user_name}\'!'.format(
                     user.get_full_name()))
