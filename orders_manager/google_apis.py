@@ -63,9 +63,8 @@ class GoogleApiHandler:
                              user.profile.get_full_name())
 
         if credential.invalid:
-            raise ValueError(
-                'Credentials are invalid for user \'{user_name}\'!'.format(
-                    user.profile.get_full_name()))
+            raise ValueError('Credentials are invalid for user \'%s\'!' %
+                             user.profile.get_full_name())
 
         try:
             if credential.access_token_expired:
