@@ -20,16 +20,21 @@ class GoogleApiHandler:
 
     oauth_flow = None
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.oauth_flow = OAuth2WebServerFlow(
             client_id=settings.OAUTH_CLIENT_ID,
             client_secret=settings.OAUTH_CLIENT_SECRET,
             scope=self.SCOPES,
             redirect_uri=settings.OAUTH_REDIRECT_URL,
-            access_type='offline',
-            grant_type='refresh_token',
             approval_prompt='force'
         )
+        if kwargs.get("grant_type", None) == "online":
+            self.oauth_flow.params['access_type'] = 'online',
+            self.oauth_flow.params['grant_type'] = 'access_type',
+        else:
+            self.oauth_flow.params['access_type'] = 'offline',
+            self.oauth_flow.params['grant_type'] = 'refresh_token',
+
         self.oauth_flow.params['include_granted_scopes'] = 'true'
 
     def get_auth_uri(self):

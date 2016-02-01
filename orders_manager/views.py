@@ -54,7 +54,7 @@ def robots(request):
 class OAuthLogin:
     def __init__(self, template_name):
         super(OAuthLogin, self).__init__()
-        self.google_oauth = GoogleApiHandler()
+        self.google_oauth = GoogleApiHandler(grant_type='online')
         self.template_name = template_name
 
     def login(self, code, request):
