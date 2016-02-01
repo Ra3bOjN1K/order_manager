@@ -26,7 +26,8 @@ class GoogleApiHandler:
             client_secret=settings.OAUTH_CLIENT_SECRET,
             scope=self.SCOPES,
             redirect_uri=settings.OAUTH_REDIRECT_URL,
-            access_type='offline'
+            access_type='offline',
+            grant_type='refresh_token'
         )
         self.oauth_flow.params['include_granted_scopes'] = 'true'
 
@@ -62,10 +63,9 @@ class GoogleApiHandler:
                              user.profile.get_full_name())
 
         if credential.invalid:
-            credential = self.exchange_auth_code(self.get_auth_uri())
             raise ValueError(
                 'Credentials are invalid for user \'{user_name}\'!'.format(
-                    user.get_full_name()))
+                    user.profile.get_full_name()))
 
         try:
             if credential.access_token_expired:
