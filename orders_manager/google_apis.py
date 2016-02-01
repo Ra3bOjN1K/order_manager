@@ -28,11 +28,11 @@ class GoogleApiHandler:
             redirect_uri=settings.OAUTH_REDIRECT_URL,
         )
         if kwargs.get("grant_type", None) == "online":
-            self.oauth_flow.params['grant_type'] = 'access_type',
+            # self.oauth_flow.params['grant_type'] = 'access_type',
             self.oauth_flow.params['approval_prompt'] = 'force'
         else:
-            self.oauth_flow.params['access_type'] = 'offline',
             self.oauth_flow.params['grant_type'] = 'refresh_token',
+            self.oauth_flow.params['access_type'] = 'offline',
 
         self.oauth_flow.params['include_granted_scopes'] = 'true'
 
