@@ -27,7 +27,8 @@ class GoogleApiHandler:
             scope=self.SCOPES,
             redirect_uri=settings.OAUTH_REDIRECT_URL,
             access_type='offline',
-            grant_type='refresh_token'
+            grant_type='refresh_token',
+            approval_prompt='force'
         )
         self.oauth_flow.params['include_granted_scopes'] = 'true'
 
