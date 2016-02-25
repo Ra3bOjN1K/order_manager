@@ -54,10 +54,9 @@ angular.module('OrderManagerApp')
                 }
             },
 
-            //isSuperuserOrManager: function() {
-            //    var hasPriv = !!_user && (_user.role === 'Менеджер' || _user.role === 'Администратор');
-            //    return hasPriv
-            //},
+            isSuperuserOrManager: function() {
+                return !!_user && (_user.role === 'Менеджер' || _user.role === 'Администратор');
+            },
 
             getUser: function() {
                 return !!_user ? _user : {}

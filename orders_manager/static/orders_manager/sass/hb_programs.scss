@@ -79,6 +79,7 @@
     @include init-flex-position(column);
     @include flex(1 1);
     margin: 4px;
+    width: 360px;
   }
 
   .program-form {
@@ -210,6 +211,10 @@
       margin: 0 1px;
       padding: 0;
       width: 28px;
+    }
+
+    .header-style {
+      font-size: 9pt;
     }
   }
 }

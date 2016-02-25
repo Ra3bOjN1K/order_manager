@@ -249,3 +249,33 @@ def send_order_notice_to_email(order, user, action_type):
     subject += ' №%s' % order.code
 
     send_mail(subject, body, from_email, recipient_list)
+
+
+@app.task
+def set_debtors():
+    import datetime
+    from orders_manager.models import Order
+
+    today_min = datetime.datetime.combine(
+        datetime.date.today(), datetime.time.min)
+    today_max = datetime.datetime.combine(
+        datetime.date.today(), datetime.time.max)
+    today_now = datetime.datetime.now()
+
+    today_orders = Order.objects.filter(
+        celebrate_date__range=(today_min, today_max)).all()
+
+    for order in today_orders:
+        d_str = '{0} {1}'.format(order.celebrate_date, order.celebrate_time)
+        celebrate_date = datetime.datetime.strptime(d_str, '%Y-%m-%d %H:%M:%S')
+        if celebrate_date < today_now and not len(order.animator_debts.all()):
+            create_debt_for_order(order)
+
+
+def create_debt_for_order(order):
+    from orders_manager.models import AnimatorDebt
+    AnimatorDebt(
+        order=order,
+        executor=order.program_executors.first(),
+        debt=order.total_price_with_discounts - order.cost_of_the_way
+    ).save()

@@ -16,15 +16,16 @@ from rest_framework.generics import (ListAPIView, RetrieveUpdateDestroyAPIView,
 from rest_framework.response import Response
 from guardian.mixins import PermissionRequiredMixin
 from orders_manager.models import (UserProfile, Client, Order, ClientChild,
-    Program, ProgramPrice, AdditionalService, Discount, User, DayOff)
+    Program, ProgramPrice, AdditionalService, Discount, User, DayOff,
+    AnimatorDebt)
 from orders_manager.serializers import (UserProfileSerializer, ClientSerializer,
     OrderSerializer, ClientChildrenSerializer, ProgramSerializer,
     ProgramPriceSerializer, AdditionalServiceSerializer, DiscountSerializer,
-    DayOffSerializer)
+    DayOffSerializer, AnimatorDebtSerializer)
 from orders_manager.roles import get_user_role
 from orders_manager.google_apis import GoogleApiHandler
-from orders_manager.tasks import send_order_to_users_google_calendar, \
-    delete_order_from_users_google_calendar
+from orders_manager.tasks import (send_order_to_users_google_calendar,
+    delete_order_from_users_google_calendar)
 
 
 class PopulateDatabaseView(View):
@@ -697,6 +698,36 @@ class ShowAllOrdersListView(PermissionRequiredMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super(ShowAllOrdersListView, self).dispatch(request, *args,
                                                            **kwargs)
+
+
+class AnimatorDebtListView(ListCreateAPIView):
+    serializer_class = AnimatorDebtSerializer
+
+    def get(self, request, *args, **kwargs):
+        return super(AnimatorDebtListView, self).get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        from django.db.models import Q
+        filter_param = self.request.query_params.get('filter')
+        if filter_param == 'my_only':
+            _raise_denied_if_has_no_perm(self.request.user, 'see_program_details')
+            return AnimatorDebt.objects.filter(
+                Q(paid=False) &
+                Q(executor=self.request.user.profile)
+            ).all()
+        _raise_denied_if_has_no_perm(self.request.user, 'delete_programprice')
+        return AnimatorDebt.objects.filter(paid=False).all()
+
+    def post(self, request, *args, **kwargs):
+        if request.data:
+            action = request.data.get('action')
+            if action == 'pay_debt':
+                _raise_denied_if_has_no_perm(self.request.user, 'delete_program')
+                debt = AnimatorDebt.objects.get(id=request.data.get('debt_id'))
+                debt.paid = not debt.paid
+                debt.save()
+                return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 def _raise_denied_if_has_no_perm(user, short_perm):

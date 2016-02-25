@@ -2381,6 +2381,18 @@ angular.module('OrderManagerApp')
                 },
                 {
                     type: 'input',
+                    key: 'executor_rate',
+                    id: 'additionalServiceExecutorRate',
+                    templateOptions: {
+                        label: 'Ставка исполнителя',
+                        disabled: !isEditMode
+                    },
+                    validators: {
+                        required: Validators.required
+                    }
+                },
+                {
+                    type: 'input',
                     key: 'num_executors',
                     id: 'numExecutorsId',
                     templateOptions: {
@@ -2439,6 +2451,7 @@ angular.module('OrderManagerApp')
             modelData.id = data.id;
             modelData.title = data.title;
             modelData.price = data.price;
+            modelData.executor_rate = data.executor_rate;
             modelData.num_executors = data.num_executors;
 
             var possibleExecutorsIds = [];

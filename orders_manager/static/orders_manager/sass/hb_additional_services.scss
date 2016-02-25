@@ -79,6 +79,7 @@
     @include init-flex-position(column);
     @include flex(1 1);
     margin: 4px;
+    width: 360px;
   }
 
   .additional-service-form {

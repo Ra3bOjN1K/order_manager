@@ -1,0 +1,110 @@
+.panel-sms-delivery {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  height: 580px;
+  padding: 8px 0 0;
+  width: 1000px;
+}
+.panel-sms-delivery .nav-tabs li a {
+  border-radius: 0;
+}
+.panel-sms-delivery .nav-tabs li.active a {
+  background: #fcfcfc;
+  border-bottom-color: #fcfcfc !important;
+}
+.panel-sms-delivery .tab-pane.active {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  background: #fcfcfc;
+  height: 526px;
+}
+.panel-sms-delivery .manual-mode-wrapper {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  -webkit-align-items: center;
+  align-items: center;
+}
+.panel-sms-delivery .manual-mode-wrapper .btn {
+  margin: 18px 0 48px;
+}
+.panel-sms-delivery .manual-mode-wrapper .filters {
+  -webkit-align-self: stretch;
+  align-self: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-justify-content: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  height: 56px;
+  margin-top: 4px;
+}
+.panel-sms-delivery .msg-body {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+.panel-sms-delivery .msg-body textarea {
+  border-radius: 2px;
+  font-size: 11pt;
+  height: 150px;
+  padding: 4px;
+  resize: none;
+  width: 450px;
+}
+.panel-sms-delivery .msg-body .msg-tips {
+  color: #888;
+  font-size: 10pt;
+  margin-top: 4px;
+}
+.panel-sms-delivery .msg-body .tip-title {
+  color: #333;
+}

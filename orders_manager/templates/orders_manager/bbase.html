@@ -17,8 +17,11 @@
     <link rel="stylesheet" href="{% static "orders_manager/css/hb_discounts.css" %}"/>
     <link rel="stylesheet" href="{% static "orders_manager/css/users_manager.css" %}"/>
     <link rel="stylesheet" href="{% static "orders_manager/css/day_off_dlg_style.css" %}"/>
+    <link rel="stylesheet" href="{% static "orders_manager/css/sms_delivery.css" %}"/>
+    <link rel="stylesheet" href="{% static "orders_manager/css/animator_debts.css" %}"/>
     <link rel="shortcut icon" href="{% static 'orders_manager/img/favicon.png' %}" type="image/png"/>
-    <link href='https://fonts.googleapis.com/css?family=Lora:400,400italic,700&subset=cyrillic,latin,latin-ext' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,400italic,700&subset=cyrillic,latin,latin-ext'
+          rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/fonts/FontAwesome.otf">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/fonts/fontawesome-webfont.eot">
@@ -44,8 +47,8 @@
     <div class="top-panel">
         <div class="logo"></div>
         {% if user.is_authenticated %}
-            {% if request.user|user_is:"superuser" or request.user|user_is:"manager" %}
-                <div class="top-nav-menu" ng-cloak>
+            <div class="top-nav-menu" ng-cloak>
+                {% if request.user|user_is:"superuser" or request.user|user_is:"manager" %}
                     {% if request.user|can:"see_client" %}
                         <a class="menu-item" ng-click="dlgManager.clients.showDlg()"><b class="fa
                             fa-money"></b><span>Заказчики</span></a>
@@ -72,8 +75,23 @@
                         <a class="menu-item" ng-click="dlgManager.usersManager.showDlg()"><b class="fa fa-users"></b>
                             <span>Пользователи</span></a>
                     {% endif %}
-                </div>
-            {% endif %}
+
+                    <a class="menu-item"
+                       ng-click="dlgManager.animatorDebt.showDlg()"><b class="fa fa-suitcase"></b>
+                        <span>Финансы</span></a>
+
+                    <a class="menu-item" ng-click="dlgManager.smsDelivery.showDlg()"><b class="fa fa-envelope-o"></b>
+                        <span>СМС-рассылка</span></a>
+
+                    <a class="menu-item" ng-click=""><b class="fa fa-line-chart"></b>
+                        <span>Статистика</span></a>
+                {% endif %}
+                {% if not request.user|user_is:"superuser" and not request.user|user_is:"manager" %}
+                    <a class="menu-item"
+                       ng-click="dlgManager.animatorDebt.showDlg()"><b class="fa fa-suitcase"></b>
+                        <span>Финансы</span></a>
+                {% endif %}
+            </div>
 
             <div class="user-profile-panel">
                 <div class="dropdown">
@@ -143,7 +161,8 @@
     <a class="btn btn-default ctrl-btn children-client-btn"
        ng-click="grid.appScope.vm.client.deleteClient(row)"><i class="fa fa-lg fa-trash-o"></i></a>
 </script>
-<script type="text/ng-template" id="children-row-ctrl-btns-template.html" ng-if="grid.appScope.vm.clientChildrenMode.isEditChildren">
+<script type="text/ng-template" id="children-row-ctrl-btns-template.html"
+        ng-if="grid.appScope.vm.clientChildrenMode.isEditChildren">
     <a class="btn btn-default ctrl-btn"
        ng-click="grid.appScope.vm.clientChildrenMode.deleteClientChild(row)"><i class="fa fa-lg fa-trash-o"></i></a>
 </script>
@@ -202,6 +221,12 @@
 </script>
 <script type="text/ng-template" id="users_manager_template.html">
     <div ng-include="'/static/dialog_templates/users_manager_template.html'"></div>
+</script>
+<script type="text/ng-template" id="sms_delivery_template.html">
+    <div ng-include="'/static/dialog_templates/sms_delivery_template.html'"></div>
+</script>
+<script type="text/ng-template" id="animator_debts_template.html">
+    <div ng-include="'/static/dialog_templates/animator_debts_template.html'"></div>
 </script>
 <script type="text/ng-template" id="dayoff_template.html">
     <div ng-include="'/static/dialog_templates/dayoff_template.html'"></div>

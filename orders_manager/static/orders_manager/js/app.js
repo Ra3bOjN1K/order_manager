@@ -246,6 +246,24 @@ angular.module('OrderManagerApp', [
                         closeByDocument: false
                     })
                 }
+            },
+            smsDelivery: {
+                showDlg: function () {
+                    ngDialog.open({
+                        template: 'sms_delivery_template.html',
+                        showClose: false,
+                        closeByDocument: false
+                    })
+                }
+            },
+            animatorDebt: {
+                showDlg: function () {
+                    ngDialog.open({
+                        template: 'animator_debts_template.html',
+                        showClose: false,
+                        closeByDocument: false
+                    })
+                }
             }
         }
     }])
@@ -923,14 +941,24 @@ angular.module('OrderManagerApp', [
                             {
                                 name: 'duration',
                                 displayName: 'Продолж. (мин)',
-                                width: 160,
+                                headerCellClass: 'header-style',
+                                width: 120,
                                 enableCellEdit: true
                             },
                             {
                                 name: 'price',
                                 displayName: 'Стоимость (руб.)',
+                                headerCellClass: 'header-style',
                                 enableSorting: false,
-                                width: 197,
+                                width: 120,
+                                enableCellEdit: true
+                            },
+                            {
+                                name: 'executor_rate',
+                                displayName: 'Ставка исполнителя (руб.)',
+                                headerCellClass: 'header-style',
+                                enableSorting: false,
+                                width: 117,
                                 enableCellEdit: true
                             },
                             {
@@ -973,10 +1001,12 @@ angular.module('OrderManagerApp', [
                     $scope.gridApi.rowEdit.setSavePromise(rowEntity, promise.promise);
 
                     if (duration && price && programId) {
+                        var executorRate = !!rowEntity.executor_rate ? rowEntity.executor_rate : 0;
                         ProgramService.saveProgramPrice({
                             duration: duration,
                             price: price,
-                            program: programId
+                            program: programId,
+                            executor_rate: executorRate
                         }).then(function success() {
                             promise.resolve()
                         }, function error(data) {
@@ -1079,12 +1109,17 @@ angular.module('OrderManagerApp', [
                     {
                         name: 'title',
                         displayName: 'Название',
-                        width: 314
+                        width: 274
                     },
                     {
                         name: 'price',
                         displayName: 'Цена',
-                        width: 150
+                        width: 100
+                    },
+                    {
+                        name: 'executor_rate',
+                        displayName: 'Ставка',
+                        width: 100
                     },
                     {
                         name: 'row-control',
@@ -1755,5 +1790,100 @@ angular.module('OrderManagerApp', [
                     if (vm.gridOptions.data.length > 0) vm.gridApi.selection.selectRow(vm.gridOptions.data[0]);
                 }, 0, 1);
             })
+        }])
+    .controller('SmsDeliveryCtrl', [function () {
+        var vm = this;
+    }])
+    .controller('AnimatorDebtsCtrl', [
+        '$rootScope', 'AnimatorDebtService', 'Auth', function ($rootScope, AnimatorDebtService, Auth) {
+            var vm = this;
+            vm.debtors = {};
+            vm.currentDebtor = {
+                name: '',
+                debts: [],
+                sumAllDebts: 0,
+                sumAllOrdersPrices: 0,
+                sumAllSalary: 0,
+                monthOrdersNum: 0,
+                monthSalary: 0
+            };
+            vm.onCheckDebtor = onCheckDebtor;
+            vm.onPayDebt = onPayDebt;
+            vm.debtorListIsNotEmpty = debtorListIsNotEmpty;
+            vm.isManagerMode = isManagerMode;
+            vm.debtorsIsLoaded = false;
+
+            $rootScope.$watch(function () {
+                return vm.currentDebtor;
+            }, function () {
+                var debtSum = 0;
+                var orderPriceSum = 0;
+                var allSalary = 0;
+
+                angular.forEach(vm.currentDebtor.debts, function (d) {
+                    debtSum += d.debt;
+                    orderPriceSum += d.program_price;
+                    allSalary += d.animator_salary;
+                    vm.currentDebtor.monthOrdersNum = d.animator_month_salary_info.celebrations_num;
+                    vm.currentDebtor.monthSalary = d.animator_month_salary_info.salary;
+                });
+                vm.currentDebtor.sumAllDebts = debtSum;
+                vm.currentDebtor.sumAllOrdersPrices = orderPriceSum;
+                vm.currentDebtor.sumAllSalary = allSalary;
+            }, true);
+
+            function onCheckDebtor(debtorName) {
+                vm.currentDebtor.name = debtorName;
+                vm.currentDebtor.debts = vm.debtors[debtorName];
+            }
+
+            function onPayDebt(debt) {
+                AnimatorDebtService.payDebt(debt.id);
+            }
+
+            function debtorListIsNotEmpty() {
+                return Object.keys(vm.debtors).length > 0;
+            }
+
+            function isManagerMode() {
+                return Auth.isSuperuserOrManager();
+            }
+
+            function loadDebtors() {
+                vm.debtors = {};
+
+                var debtsPromise = Auth.isSuperuserOrManager()
+                    ? AnimatorDebtService.getAllDebts()
+                    : AnimatorDebtService.getMyDebts();
+
+                debtsPromise.then(function (data) {
+                    angular.forEach(data, function (debt) {
+                        if (vm.debtors[debt.executor.full_name] === undefined) {
+                            vm.debtors[debt.executor.full_name] = [];
+                        }
+                        var services = '';
+                        angular.forEach(debt.order.additional_services_executors, function (item) {
+                            services += (' + ' + item.service_name);
+                        });
+                        vm.debtors[debt.executor.full_name].push({
+                            'id': debt.id,
+                            'date': moment(debt.order.celebrate_date + ' ' + debt.order.celebrate_time).format('DD-MM-YYYY HH:mm'),
+                            'program': debt.order.program.title + services,
+                            'program_price': debt.order.total_price_with_discounts,
+                            'debt': debt.debt,
+                            'animator_salary': debt.animator_salary,
+                            'animator_month_salary_info': debt.animator_month_salary_info,
+                            'paid': debt.paid
+                        });
+                    });
+                    if (debtorListIsNotEmpty()) {
+                        var debtorName = Object.keys(vm.debtors)[0];
+                        vm.onCheckDebtor(debtorName);
+                    }
+                    vm.debtorsIsLoaded = true;
+                });
+            }
+
+            loadDebtors();
         }]);
 

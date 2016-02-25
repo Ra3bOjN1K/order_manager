@@ -221,7 +221,8 @@
     }
   }
 
-  .header__close-btn {
+  .header__close-btn,
+  .header__paid-order-btn {
     @include single-box-shadow(.8px, .8px, 5px, .2px, #ccc);
     background: #fff;
     border: 1px solid #ccc;
@@ -235,6 +236,25 @@
     img {
       height: 1.2em;
       width: auto;
+    }
+  }
+
+  .header__paid-order-btn {
+    @include init-flex-position(column);
+    @include justify-content(center);
+    @include align-items(center);
+    color: #3c763d;
+    font-size: 14pt;
+    height: 29px;
+    margin-right: 4px;
+    text-decoration: none;
+    width: 29px;
+
+    &.pressed {
+      @include single-box-shadow(0, 0, 0, 0);
+      background: #ddd;
+      border: 1px solid #bbb;
+      color: #aaa;
     }
   }
 
@@ -551,9 +571,9 @@
 
   .order-additional-services-select {
     @include flex(1 1);
-    min-width: 400px;
     margin-bottom: 4px !important;
     margin-top: 4px !important;
+    min-width: 400px;
 
     & > div > div {
       @include init-flex-position(row);
@@ -562,8 +582,12 @@
     label {
       @include align-self(center);
       line-height: 1;
-      margin-right: 8px;
-      width: 180px;
+      margin-right: 16px;
+      width: 160px;
+    }
+
+    ol {
+      width: 320px;
     }
   }
 

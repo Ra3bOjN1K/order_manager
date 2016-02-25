@@ -271,7 +271,8 @@
   text-align: start;
   text-decoration: underline;
 }
-.event-window-background .header__close-btn {
+.event-window-background .header__close-btn,
+.event-window-background .header__paid-order-btn {
   -moz-box-shadow: 0.8px 0.8px 5px 0.2px #ccc;
   -webkit-box-shadow: 0.8px 0.8px 5px 0.2px #ccc;
   box-shadow: 0.8px 0.8px 5px 0.2px #ccc;
@@ -284,9 +285,40 @@
   line-height: 0;
   padding: 4px;
 }
-.event-window-background .header__close-btn img {
+.event-window-background .header__close-btn img,
+.event-window-background .header__paid-order-btn img {
   height: 1.2em;
   width: auto;
+}
+.event-window-background .header__paid-order-btn {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+  color: #3c763d;
+  font-size: 14pt;
+  height: 29px;
+  margin-right: 4px;
+  text-decoration: none;
+  width: 29px;
+}
+.event-window-background .header__paid-order-btn.pressed {
+  -moz-box-shadow: 0 0 0 0 #333333;
+  -webkit-box-shadow: 0 0 0 0 #333333;
+  box-shadow: 0 0 0 0 #333333;
+  background: #ddd;
+  border: 1px solid #bbb;
+  color: #aaa;
 }
 .event-window-background .event-window__body {
   display: -moz-box;
@@ -678,9 +710,9 @@
 .event-window-background .order-additional-services-select {
   -webkit-flex: 1 1;
   flex: 1 1;
-  min-width: 400px;
   margin-bottom: 4px !important;
   margin-top: 4px !important;
+  min-width: 400px;
 }
 .event-window-background .order-additional-services-select > div > div {
   display: -moz-box;
@@ -698,8 +730,11 @@
   -webkit-align-self: center;
   align-self: center;
   line-height: 1;
-  margin-right: 8px;
-  width: 180px;
+  margin-right: 16px;
+  width: 160px;
+}
+.event-window-background .order-additional-services-select ol {
+  width: 320px;
 }
 .event-window-background .order-additional-services-executors-select {
   -webkit-flex: 1 1;

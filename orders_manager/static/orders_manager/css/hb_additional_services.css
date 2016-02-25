@@ -131,6 +131,7 @@
   -webkit-flex: 1 1;
   flex: 1 1;
   margin: 4px;
+  width: 360px;
 }
 .additional-services-content .additional-service-form {
   display: -moz-box;

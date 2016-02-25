@@ -1,0 +1,89 @@
+@import 'settings';
+
+.empty-debtor-list-msg {
+  @include align-self(center);
+  @include flex(1 1);
+  box-sizing: border-box;
+  color: #888;
+  font-size: 14pt;
+  text-align: center;
+}
+
+.panel-animators-debt {
+  @include init-flex-position(row);
+  @include justify-content(center);
+  @include flex(1 1);
+  height: 460px;
+  min-width: 760px;
+  padding: 24px;
+
+  .debtor-list {
+    border-right: 1px solid #ccc;
+    margin-right: 16px;
+    padding: 4px 12px 4px 4px;
+    width: 220px;
+  }
+
+  .debtors-header {
+    color: #444;
+    font-size: 11pt;
+    font-weight: bolder;
+    margin-bottom: 4px;
+    padding-left: 24px;
+    text-decoration: underline;
+  }
+
+  .debtor-item {
+    border: 1px solid transparent;
+    cursor: hand;
+    cursor: pointer;
+    font-size: 11pt;
+    padding: 0 8px;
+
+    &.checked {
+      background: #fcfcfc;
+      border: 1px solid #ddd;
+      border-radius: 2px;
+    }
+  }
+
+  .debt-list-wrapper {
+    @include init-flex-position(column);
+  }
+
+  .debt-list {
+    font-size: 11pt;
+    padding: 4px;
+    width: 880px;
+
+    .program-name {
+      width: 320px;
+    }
+  }
+
+  .debts-header {
+    border-bottom: 1px solid #ccc;
+    color: #444;
+    font-size: 11pt;
+    margin-bottom: 12px;
+  }
+
+  .gave-debt {
+    padding: 2px 5px;
+    text-align: center;
+
+    input {
+      height: 16px;
+      width: 16px;
+    }
+  }
+
+  .month-animator-info-block {
+    width: 300px;
+
+    .borderless th,
+    .borderless td {
+      border-color: transparent !important;
+    }
+  }
+}

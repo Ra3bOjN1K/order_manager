@@ -131,6 +131,7 @@
   -webkit-flex: 1 1;
   flex: 1 1;
   margin: 4px;
+  width: 360px;
 }
 .programs-content .program-form {
   display: -moz-box;
@@ -345,4 +346,7 @@
   margin: 0 1px;
   padding: 0;
   width: 28px;
+}
+.programs-content .program-prices .header-style {
+  font-size: 9pt;
 }

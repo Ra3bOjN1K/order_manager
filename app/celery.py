@@ -33,6 +33,11 @@ app.conf.update(
             'schedule': crontab(minute=5, hour='*/12'),
             'args': (),
         },
+        'set-debtors': {
+            'task': 'orders_manager.tasks.set_debtors',
+            'schedule': crontab(minute='*/30', hour='6-23'),
+            'args': (),
+        }
     }
 )
 

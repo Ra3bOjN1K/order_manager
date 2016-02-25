@@ -1,0 +1,71 @@
+@import 'settings';
+
+.panel-sms-delivery {
+  @include init-flex-position(column);
+  height: 580px;
+  padding: 8px 0 0;
+  width: 1000px;
+
+  .nav-tabs li a {
+    border-radius: 0;
+  }
+
+  .nav-tabs li.active a {
+    background: #fcfcfc;
+    border-bottom-color: #fcfcfc !important;
+  }
+
+  .tab-pane.active {
+    @include init-flex-position(column);
+    background: #fcfcfc;
+    height: 526px;
+  }
+
+  .manual-mode-wrapper {
+    @include init-flex-position(column);
+    @include flex(1 1);
+    @include align-items(center);
+
+    .btn {
+      margin: 18px 0 48px;
+    }
+
+    .filters {
+      @include align-self(stretch);
+      @include init-flex-position(row);
+      @include justify-content(center);
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      height: 56px;
+      margin-top: 4px;
+    }
+  }
+
+  .msg-body {
+    @include init-flex-position(column);
+    @include flex(1 1);
+    @include justify-content(center);
+    @include align-items(center);
+
+    textarea {
+      border-radius: 2px;
+      font-size: 11pt;
+      height: 150px;
+      padding: 4px;
+      resize: none;
+      width: 450px;
+    }
+
+    .msg-tips {
+      color: #888;
+      font-size: 10pt;
+      margin-top: 4px;
+    }
+
+    .tip-title {
+      color: #333;
+    }
+  }
+
+}

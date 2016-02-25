@@ -1,0 +1,76 @@
+<div class="animator-debts-content" ng-controller="AnimatorDebtsCtrl as vm">
+    <div class="panel panel-default dialog-wrapper">
+        <div class="panel-heading dialog-header">
+            <div class="title">Финансы</div>
+            <div class="ngdialog-close"></div>
+        </div>
+        <div class="panel-body panel-animators-debt">
+            <!--
+            <div class="empty-debtor-list-msg" ng-if="!vm.debtorListIsNotEmpty() && vm.debtorsIsLoaded">
+                Долги не найдены..
+            </div>
+            <div class="debtor-list" ng-if="vm.isManagerMode() && vm.debtorListIsNotEmpty() && vm.debtorsIsLoaded">
+            -->
+            <div class="debtor-list" ng-if="vm.isManagerMode() && vm.debtorsIsLoaded">
+                <div class="debtors-header">Аниматор:</div>
+                <div class="debtor-item" ng-repeat="(key, value) in vm.debtors"
+                     ng-click="vm.onCheckDebtor(key)" ng-class="{'checked': vm.currentDebtor.name === key}">
+                    {{ $index + 1 }}. {{ key }}
+                </div>
+            </div>
+            <div class="debt-list-wrapper">
+                <!--<div class="debt-list" ng-if="vm.debtorListIsNotEmpty() && vm.debtorsIsLoaded">-->
+                <div class="debt-list" ng-if="vm.debtorsIsLoaded">
+                    <table class="table table-hover table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Дата праздника</th>
+                            <th>Название программы</th>
+                            <th class="text-center">Цена заказа</th>
+                            <th class="text-center">Долг</th>
+                            <th class="text-center">Зарплата</th>
+                            <th ng-if="vm.isManagerMode()">Отдал</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="debt in vm.currentDebtor.debts">
+                            <td>{{ debt.date }}</td>
+                            <td class="program-name">{{ debt.program }}</td>
+                            <td class="text-right">{{ debt.program_price }} руб.</td>
+                            <td class="text-right">{{ debt.debt }} руб.</td>
+                            <td class="text-right">{{ debt.animator_salary }} руб.</td>
+                            <td class="gave-debt" ng-if="vm.isManagerMode()">
+                                <input type="checkbox" ng-model="debt.paid" ng-change="vm.onPayDebt(debt)">
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr ng-show="vm.currentDebtor.debts.length > 0">
+                            <td></td>
+                            <th class="text-right">Итого:</th>
+                            <td class="text-right">{{ vm.currentDebtor.sumAllOrdersPrices}} руб.</td>
+                            <td class="text-right">{{ vm.currentDebtor.sumAllDebts }} руб.</td>
+                            <td class="text-right">{{ vm.currentDebtor.sumAllSalary }} руб.</td>
+                            <td ng-if="vm.isManagerMode()"></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="month-animator-info-block" ng-if="!vm.isManagerMode() && vm.debtorsIsLoaded">
+                    <table class="table table-condensed borderless">
+                        <tbody>
+                        <tr>
+                            <th class="text-left">Заказов за месяц:</th>
+                            <td class="text-center">{{ vm.currentDebtor.monthOrdersNum }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-left">Зарплата за месяц:</th>
+                            <td class="text-center">{{ vm.currentDebtor.monthSalary }} руб.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

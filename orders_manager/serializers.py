@@ -3,7 +3,8 @@
 from django.contrib.auth.models import Permission
 from rest_framework import serializers
 from orders_manager.models import (UserProfile, Client, Order, Program,
-    AdditionalService, ClientChild, ProgramPrice, Discount, DayOff)
+    AdditionalService, ClientChild, ProgramPrice, Discount, DayOff,
+    AnimatorDebt)
 
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -177,6 +178,7 @@ class OrderSerializer(DynamicFieldsModelSerializer):
     additional_services_executors = serializers.SerializerMethodField()
     discount = DiscountSerializer(required_fields=['id'])
     is_only_service_executor = serializers.SerializerMethodField(read_only=True)
+    debt = serializers.SerializerMethodField(required=False)
 
     class Meta:
         model = Order
@@ -187,7 +189,11 @@ class OrderSerializer(DynamicFieldsModelSerializer):
         for item in obj.additional_services_executors.all():
             serv_id = str(item.additional_service.id)
             if serv_id not in [x.get('id') for x in data]:
-                data.append({'id': str(serv_id), 'executors': []})
+                data.append({
+                    'id': str(serv_id),
+                    'service_name': item.additional_service.title,
+                    'executors': []
+                })
             for data_serv in data:
                 if data_serv.get('id') == str(serv_id) and item.executor:
                     data_serv['executors'].append({
@@ -210,6 +216,13 @@ class OrderSerializer(DynamicFieldsModelSerializer):
                     if service_to_executor.executor.user.id == user.id:
                         return True
         return False
+
+    def get_debt(self, obj):
+        debt = obj.animator_debts.first()
+        return {
+            'id': debt.id if debt else -1,
+            'paid': debt.paid if debt else False
+        }
 
     def create(self, validated_data):
         client_children = [x.get('id') for x in validated_data.get(
@@ -245,3 +258,27 @@ class DayOffSerializer(DynamicFieldsModelSerializer):
 
     def get_user_full_name(self, obj):
         return obj.user_profile.get_full_name()
+
+
+class AnimatorDebtSerializer(DynamicFieldsModelSerializer):
+    executor = UserProfileSerializer(required_fields=['id', 'full_name'])
+    order = OrderSerializer(
+        required_fields=['id', 'program', 'celebrate_date', 'celebrate_time',
+                         'additional_services_executors',
+                         'total_price_with_discounts'])
+    animator_salary = serializers.SerializerMethodField()
+    animator_month_salary_info = serializers.SerializerMethodField()
+
+    class Meta:
+        model = AnimatorDebt
+
+    def get_animator_salary(self, obj):
+        salary = obj.order.get_executor_salary(obj.executor)
+        return salary
+
+    def get_animator_month_salary_info(self, obj):
+        month_num, salary = obj.executor.get_month_salary_info()
+        return {
+            'celebrations_num': month_num,
+            'salary': salary
+        }

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from datetime import date
 import hashlib
 from django.db import models
 from django.db.models import Q
@@ -69,6 +69,16 @@ class UserProfile(models.Model):
     def deactivate(self):
         self.user.is_active = False
         self.user.save()
+
+    def get_month_salary_info(self):
+        today = date.today()
+        first_day = today.replace(day=1)
+        orders = self.orders.filter(
+            celebrate_date__range=[first_day, today]).all()
+        salary = 0
+        for order in orders:
+            salary += order.get_executor_salary(self)
+        return len(orders), salary
 
 
 class DayOff(models.Model):
@@ -160,6 +170,7 @@ class ClientChild(models.Model):
 class AdditionalService(models.Model):
     title = models.CharField(max_length=200, null=False, blank=False)
     price = models.IntegerField(null=False, blank=False)
+    executor_rate = models.IntegerField(default=0)
     num_executors = models.PositiveSmallIntegerField(default=1)
     possible_executors = models.ManyToManyField(UserProfile,
                                                 related_name='services')
@@ -217,6 +228,14 @@ class Program(models.Model):
             raise AttributeError('Duration for this program has not been set..')
         return price.price
 
+    def get_rate(self, duration):
+        price = ProgramPrice.objects.filter(
+            Q(program__id=self.id) & Q(duration=duration)
+        ).first()
+        if not price:
+            raise AttributeError('Duration for this program has not been set..')
+        return price.executor_rate
+
     def activate(self):
         self.is_active = True
         self.save()
@@ -230,6 +249,7 @@ class ProgramPrice(models.Model):
     program = models.ForeignKey(Program, related_name='prices')
     duration = models.IntegerField(null=False, blank=False)
     price = models.IntegerField(null=False, blank=False)
+    executor_rate = models.IntegerField(default=0)
 
     objects = ProgramPriceManager()
 
@@ -294,7 +314,8 @@ class Order(models.Model):
 
     duration = models.IntegerField(verbose_name='Продолжительность')
     price = models.IntegerField(verbose_name='Стоимость')
-    additional_services_executors = models.ManyToManyField(OrderServiceExecutors)
+    additional_services_executors = models.ManyToManyField(
+        OrderServiceExecutors)
     details = models.TextField(
         verbose_name='Подробности', blank=True, null=True)
     executor_comment = models.TextField(
@@ -326,6 +347,21 @@ class Order(models.Model):
         hex_data = hashlib.sha224(
             (self.code + str(self.id)).encode('ascii', 'ignore')).hexdigest()
         return hex_data[:10]
+
+    def get_executor_salary(self, user):
+        user = user.user if isinstance(user, UserProfile) else user
+        salary = self.program.get_rate(self.duration)
+        for s in self.additional_services_executors.all():
+            if s.executor.user.id == user.id:
+                salary += s.additional_service.executor_rate
+        return salary
+
+
+class AnimatorDebt(models.Model):
+    order = models.ForeignKey(Order, related_name='animator_debts')
+    executor = models.ForeignKey(UserProfile, related_name='debts')
+    debt = models.IntegerField()
+    paid = models.BooleanField(default=False)
 
 
 def set_superuser_permissions(sender, instance, created, **kwargs):

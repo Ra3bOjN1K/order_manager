@@ -1,7 +1,9 @@
 angular.module('CalendarApp')
     .controller('CalendarEventCtrl', [
         '$rootScope', '$scope', '$timeout', 'Auth', 'OrderService', 'ClientService', 'OrderForm', 'ClientForm',
-        function ($rootScope, $scope, $timeout, Auth, OrderService, ClientService, OrderForm, ClientForm) {
+        'AnimatorDebtService',
+        function ($rootScope, $scope, $timeout, Auth, OrderService, ClientService, OrderForm, ClientForm,
+                  AnimatorDebtService) {
 
             var vm = this;
 
@@ -10,7 +12,10 @@ angular.module('CalendarApp')
             vm.order = {
                 author: "",
                 createdDate: "",
-                canShowInfo: false
+                canShowInfo: false,
+                hasDebt: false,
+                paidDebt: false,
+                onPayDebt: onPayDebt
             };
 
             $rootScope.$on('OrderForm.rendered', function () {
@@ -18,6 +23,14 @@ angular.module('CalendarApp')
                     vm.loadingEvent = false;
                 }, 1000);
             });
+
+            function onPayDebt() {
+                if (vm.model.debt.id > -1) {
+                    AnimatorDebtService.payDebt(vm.model.debt.id).then(function () {
+                        vm.order.paidDebt = !vm.order.paidDebt;
+                    })
+                }
+            }
 
             if ($scope.$parent.eventWindow.checkedDate) {
                 vm.windowTitle = moment($scope.$parent.eventWindow.checkedDate).format("DD MMMM YYYY");
@@ -35,6 +48,8 @@ angular.module('CalendarApp')
                     OrderService.getOrder($scope.$parent.eventWindow.checkedOrderId).then(function(order) {
                         vm.model = angular.copy(order);
                         vm.model.celebrate_date = $scope.$parent.eventWindow.checkedDate;
+                        vm.order.hasDebt = vm.model.debt.id > -1;
+                        vm.order.paidDebt = vm.model.debt.paid;
 
                         vm.order.author = getOrderAuthor();
                         vm.order.createdDate = getOrderCreatedDate();

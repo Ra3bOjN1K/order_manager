@@ -210,6 +210,9 @@ body:after {
 .top-nav-menu .menu-item span:focus {
   text-decoration: underline;
 }
+.top-nav-menu .menu-item.animator-debt {
+  width: 200px;
+}
 .top-nav-menu .collapsed-menu-item {
   display: -moz-box;
   -moz-box-orient: vertical;

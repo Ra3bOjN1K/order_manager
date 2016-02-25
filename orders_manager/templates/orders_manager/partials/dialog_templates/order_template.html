@@ -5,6 +5,10 @@
         <div class="event-window panel panel-default">
             <div class="event-window__header panel-heading">
                 <div class="header__title" ng-bind="vm.windowTitle"></div>
+                <a class="header__paid-order-btn" ng-click="vm.order.onPayDebt()"
+                   ng-class="{'pressed': vm.order.paidDebt}" ng-if="vm.order.hasDebt">
+                    <i class="fa fa-money"></i>
+                </a>
                 <a class="header__close-btn" ng-click="closeThisDialog()">
                     <img src="/static/orders_manager/img/del.png">
                 </a>

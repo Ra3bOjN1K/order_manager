@@ -269,6 +269,7 @@ class ProgramPriceManager(models.Manager):
         program_price.program_id = kwargs.get('program_id')
         program_price.duration = kwargs.get('duration')
         program_price.price = kwargs.get('price')
+        program_price.executor_rate = kwargs.get('executor_rate')
         program_price.save()
 
         return program_price
@@ -280,6 +281,7 @@ class ProgramPriceManager(models.Manager):
                 Q(duration=kwargs.get('duration'))
             )
             program_price.price = kwargs.get('price')
+            program_price.executor_rate = kwargs.get('executor_rate')
             program_price.save()
         except self.model.DoesNotExist:
             program_price = self.create(**kwargs)
@@ -291,7 +293,7 @@ class AdditionalServiceManager(models.Manager):
         from orders_manager.models import AdditionalService, UserProfile
 
         service = AdditionalService()
-        for attr_name in ('title', 'num_executors', 'price'):
+        for attr_name in ('title', 'num_executors', 'price', 'executor_rate'):
             setattr(service, attr_name, kwargs.get(attr_name))
 
         service.save()
@@ -312,7 +314,7 @@ class AdditionalServiceManager(models.Manager):
         try:
             service = self.get(id=kwargs.get('id'))
 
-            for attr_name in ('num_executors', 'price', 'title'):
+            for attr_name in ('num_executors', 'price', 'title', 'executor_rate'):
                 setattr(service, attr_name, kwargs.get(attr_name))
 
             service.possible_executors = UserProfile.objects.none()
