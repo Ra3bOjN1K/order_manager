@@ -18,6 +18,10 @@ angular.module('CalendarApp')
                 onPayDebt: onPayDebt
             };
 
+            vm.isManagerMode = function () {
+                return Auth.isSuperuserOrManager();
+            };
+
             $rootScope.$on('OrderForm.rendered', function () {
                 $timeout(function () {
                     vm.loadingEvent = false;
@@ -48,8 +52,11 @@ angular.module('CalendarApp')
                     OrderService.getOrder($scope.$parent.eventWindow.checkedOrderId).then(function(order) {
                         vm.model = angular.copy(order);
                         vm.model.celebrate_date = $scope.$parent.eventWindow.checkedDate;
-                        vm.order.hasDebt = vm.model.debt.id > -1;
-                        vm.order.paidDebt = vm.model.debt.paid;
+
+                        if (vm.model.debt !== undefined) {
+                            vm.order.hasDebt = vm.model.debt.id > -1;
+                            vm.order.paidDebt = vm.model.debt.paid;
+                        }
 
                         vm.order.author = getOrderAuthor();
                         vm.order.createdDate = getOrderCreatedDate();
