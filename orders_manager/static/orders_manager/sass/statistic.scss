@@ -55,6 +55,41 @@
     }
   }
 
+  .custom-date-range {
+    @include init-flex-position(row);
+    @include align-items(center);
+    border-left: 1px solid #888;
+    margin-left: 18px;
+    padding-left: 18px;
+    position: relative;
+    width: 400px;
+
+    input {
+      color: #777;
+      cursor: hand;
+      cursor: pointer;
+      font-size: 9pt;
+      height: 28px;
+      margin: 0 4px;
+      text-align: center;
+      width: 80px;
+    }
+
+    .btn.pull-left,
+    .btn.pull-right {
+      min-width: 30px;
+    }
+
+    .datetime-picker-dropdown .btn-group.pull-left,
+    .datetime-picker-dropdown .btn-group.pull-right {
+      display: none;
+    }
+
+    .custom-period-btn {
+      margin-left: 8px;
+    }
+  }
+
   .stats-content {
     @include init-flex-position(row);
     @include flex(1 1);
@@ -158,7 +193,55 @@
     thead th:nth-child(3),
     tbody td:nth-child(3),
     tfoot td:nth-child(3) {
-      width: 130px;
+      width: 140px;
+    }
+  }
+
+  .source-stats-wrapper {
+    @include init-flex-position(column);
+    @include align-items(center);
+    margin: 8px;
+    padding: 12px;
+
+    .table-title {
+      font-weight: bolder;
+    }
+
+    table {
+      font-size: 10pt;
+      margin-top: 12px;
+    }
+
+    thead th {
+      color: #444;
+      font-size: 10pt;
+      font-style: italic;
+    }
+
+    .month-name {
+      color: #444;
+      font-style: italic;
+      font-weight: bolder;
+      text-decoration: underline;
+    }
+
+    .cell-content {
+      @include init-flex-position(row);
+      @include justify-content(center);
+      @include align-items(center);
+    }
+
+    .diff-percent-wrapper {
+      font-size: 7pt;
+      margin-left: 4px;
+    }
+
+    .up {
+      color: #18BD9B;
+    }
+
+    .down {
+      color: #a94442;
     }
   }
 }

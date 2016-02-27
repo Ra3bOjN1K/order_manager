@@ -1,4 +1,4 @@
-<div class="sms-delivery-content" ng-controller="StatisticPanelCtrl as vm" xmlns="http://www.w3.org/1999/html">
+<div class="sms-delivery-content" ng-controller="StatisticPanelCtrl as vm">
     <div class="panel panel-default dialog-wrapper">
         <div class="panel-heading dialog-header">
             <div class="title">Статистика</div>
@@ -6,7 +6,7 @@
         </div>
         <div class="panel-body statistic-panel">
             <div class="statistic-body">
-                <uib-tabset justified="true">
+                <uib-tabset justified="true" ng-if="vm.isStatisticLoaded">
                     <uib-tab heading="Заказы" active="true">
                         <hr class="divider">
                         <div class="periods-menu">
@@ -14,21 +14,40 @@
                                     ng-class="{'checked': vm.currentPeriod.name === vm.CURRENT_MONTH}">Этот месяц
                             </button>
                             <button ng-click="vm.setPeriodRange(vm.LAST_MONTH)"
-                                    ng-class="{'checked': vm.currentPeriod.name === vm.LAST_MONTH}">Последний месяц</button>
+                                    ng-class="{'checked': vm.currentPeriod.name === vm.LAST_MONTH}">Последний месяц
+                            </button>
                             <button ng-click="vm.setPeriodRange(vm.PREV_MONTH)"
-                                    ng-class="{'checked': vm.currentPeriod.name === vm.PREV_MONTH}">Прошлый месяц</button>
+                                    ng-class="{'checked': vm.currentPeriod.name === vm.PREV_MONTH}">Прошлый месяц
+                            </button>
                             <button ng-click="vm.setPeriodRange(vm.CURRENT_YEAR)"
-                                    ng-class="{'checked': vm.currentPeriod.name === vm.CURRENT_YEAR}">Этот год</button>
-                            <button ng-click="vm.setPeriodRange(vm.CUSTOM_PERIOD)"
-                                    ng-class="{'checked': vm.currentPeriod.name === vm.CUSTOM_PERIOD}">Задать период</button>
+                                    ng-class="{'checked': vm.currentPeriod.name === vm.CURRENT_YEAR}">Этот год
+                            </button>
+                            <div class="custom-date-range">
+                                <input type="text" datetime-picker="dd.MM.yyyy" class="custom-date-start"
+                                       ng-model="vm.customRange.dateStart.val" close-text="OK"
+                                       date-text="Дата" enable-time="false" readonly
+                                       ng-click="vm.customRange.dateStart.onDateClick()"
+                                       is-open="vm.customRange.dateStart.isOpen"/> -
+                                <input type="text" datetime-picker="dd.MM.yyyy" class="custom-date-end"
+                                       ng-model="vm.customRange.dateEnd.val" close-text="OK"
+                                       date-text="Дата" enable-time="false" readonly
+                                       ng-click="vm.customRange.dateEnd.onDateClick()"
+                                       is-open="vm.customRange.dateEnd.isOpen"/>
+                                <button on-custom-period-range="vm.setCustomPeriodRange(range)"
+                                        class="custom-period-btn"
+                                        ng-class="{'checked': vm.currentPeriod.name === vm.CUSTOM_PERIOD}">Задать период
+                                </button>
+                            </div>
                         </div>
                         <hr class="divider">
                         <div class="common-stats-wrapper">
                             <div class="line-info">
-                                <span class="l-title">Оборот за период:</span> {{ vm.statistic.finance_stats.total }}руб.
+                                <span class="l-title">Оборот за период:</span>
+                                {{ vm.statistic.finance_stats.total | formatPrice }} руб.
                             </div>
                             <div class="line-info">
-                                <span class="l-title">Доход за период:</span> {{ vm.statistic.finance_stats.income }}руб.
+                                <span class="l-title">Доход за период:</span>
+                                {{ vm.statistic.finance_stats.income | formatPrice }} руб.
                             </div>
                         </div>
                         <div class="stats-content">
@@ -77,8 +96,23 @@
                         </div>
                     </uib-tab>
                     <uib-tab heading="Источники" select="vm.selectOrderSourceTab()">
-                        <div class="source-stats-wrapper">
-
+                        <div class="source-stats-wrapper" ng-if="!!vm.orderSourcesStatictic">
+                            <span class="table-title">Статистика по источникам</span>
+                            <table class="table table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th class="text-center"></th>
+                                    <th class="text-center" ng-repeat="s in vm.orderSourceList">{{ s }}</th>
+                                </tr>
+                                </thead>
+                                <tbody  draw-source-dif-percent>
+                                <tr ng-repeat="p in vm.orderSourcesStatictic">
+                                    <td class="text-center month-name">{{ p.month }}</td>
+                                    <td class="text-center source-num"
+                                        ng-repeat="s in vm.orderSourceList">{{ vm.getOrderStatByName(p, s) }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </uib-tab>
                 </uib-tabset>

@@ -36,9 +36,9 @@
                         <tr ng-repeat="debt in vm.currentDebtor.debts">
                             <td>{{ debt.date }}</td>
                             <td class="program-name">{{ debt.program }}</td>
-                            <td class="text-right">{{ debt.program_price }} руб.</td>
-                            <td class="text-right">{{ debt.debt }} руб.</td>
-                            <td class="text-right">{{ debt.animator_salary }} руб.</td>
+                            <td class="text-right">{{ debt.program_price | formatPrice }} руб.</td>
+                            <td class="text-right">{{ debt.debt | formatPrice }} руб.</td>
+                            <td class="text-right">{{ debt.animator_salary | formatPrice }} руб.</td>
                             <td class="gave-debt" ng-if="vm.isManagerMode()">
                                 <input type="checkbox" ng-model="debt.paid" ng-change="vm.onPayDebt(debt)">
                             </td>
@@ -48,9 +48,9 @@
                         <tr ng-show="vm.currentDebtor.debts.length > 0">
                             <td></td>
                             <th class="text-right">Итого:</th>
-                            <td class="text-right">{{ vm.currentDebtor.sumAllOrdersPrices}} руб.</td>
-                            <td class="text-right">{{ vm.currentDebtor.sumAllDebts }} руб.</td>
-                            <td class="text-right">{{ vm.currentDebtor.sumAllSalary }} руб.</td>
+                            <td class="text-right">{{ vm.currentDebtor.sumAllOrdersPrices | formatPrice }} руб.</td>
+                            <td class="text-right">{{ vm.currentDebtor.sumAllDebts | formatPrice }} руб.</td>
+                            <td class="text-right">{{ vm.currentDebtor.sumAllSalary | formatPrice }} руб.</td>
                             <td ng-if="vm.isManagerMode()"></td>
                         </tr>
                         </tfoot>

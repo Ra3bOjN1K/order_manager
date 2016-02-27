@@ -547,7 +547,7 @@ class OrdersManager(models.Manager):
         total_prices = self.filter(
             celebrate_date__range=[start, end]
         ).aggregate(tp=Sum('total_price_with_discounts'))
-        return total_prices.get('tp')
+        return total_prices.get('tp') or 0
 
     def sources_statistic_for_last_months(self, num_month=6):
         month_names = ('Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',

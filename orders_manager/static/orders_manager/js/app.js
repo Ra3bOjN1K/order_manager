@@ -148,10 +148,90 @@ angular.module('OrderManagerApp', [
             restrict: 'A'
         }
     })
-    .filter('formatPrice', function() {
-        return function(input) {
-            var n = new NumberFormat(input, {prefix: '', centSeparator: ',', thousandsSeparator: '.', allowNegative: true});
-            return n;
+    .directive('onCustomPeriodRange', ['$document', '$timeout', function ($document, $timeout) {
+        return {
+            scope: {
+                setRange: '&onCustomPeriodRange'
+            },
+            link: function (scope, element, attrs) {
+                $timeout(function () {
+                    var dateStartEl = $document.find('.custom-date-start');
+                    var dateEndEl = $document.find('.custom-date-end');
+                    element.on('click', function () {
+                        var start = dateStartEl.val();
+                        var end = dateEndEl.val();
+                        if (!!start && !!end) {
+                            scope.setRange({
+                                'range': {
+                                    'start': moment(start, 'DD.MM.YYYY').format('YYYY-MM-DD HH:mm'),
+                                    'end': moment(end, 'DD.MM.YYYY').format('YYYY-MM-DD HH:mm')
+                                }
+                            });
+                        }
+                    })
+                })
+            },
+            restrict: 'A'
+        }
+    }])
+    .directive('drawSourceDifPercent', ['$document', '$timeout', '$compile', function ($document, $timeout, $compile) {
+        function calculatePercent(fVal, sVal) {
+            var f = parseInt(fVal);
+            var s = parseInt(sVal);
+            if (f === 0 && s === 0) {
+                return 0;
+            }
+            else if (s === 0) {
+                return 100;
+            }
+            return parseInt(((f - s) / s) * 100);
+        }
+
+        function getCellTemplate(currentValue, percent) {
+            if (percent !== 0) {
+                var styleClass = percent > 0 ? "up" : "down";
+                var icon = percent > 0
+                    ? "<i class=\"fa fa-long-arrow-up\"></i>"
+                    : "<i class=\"fa fa-long-arrow-down\"></i>";
+                return "<div class=\"cell-content\">" +
+                    "<div class=\"count-val\">" + currentValue + "</div>" +
+                    "<div class=\"diff-percent-wrapper " + styleClass + "\">" +
+                    icon + "<span class=\"percent-val\">" + Math.abs(percent) + "</span>" +
+                    "</div></div>"
+            }
+            else {
+                return "<div class=\"cell-content\">" +
+                    "<div class=\"count-val\">" + currentValue + "</div>" +
+                    "<div class=\"diff-percent-wrapper\"></div></div>"
+            }
+        }
+
+        return {
+            link: function (scope, element, attrs) {
+                $timeout(function () {
+                    var sourceRows = $(element).find('tr');
+                    angular.forEach(sourceRows, function (fRow, idx) {
+                        if (sourceRows.length > idx + 1) {
+                            var sRow = $(sourceRows[idx + 1]);
+                            var sCells = sRow.find('td.source-num');
+                            angular.forEach($(fRow).find('td.source-num'), function (cell, i) {
+                                cell = $(cell);
+                                var diff_percent = calculatePercent(cell.text(), $(sCells[i]).text());
+                                cell.html(getCellTemplate(cell.text(), diff_percent));
+                                //$compile($(cell).contents())(scope);
+                            })
+                        }
+                    })
+                })
+            },
+            restrict: 'A'
+        }
+    }])
+    .filter('formatPrice', function () {
+        return function (input) {
+            var num_str = input.toString();
+            var result = num_str.split(/(?=(?:...)*$)/).join(' ');
+            return result
         };
     })
     .controller('ApplicationCtrl', ['$scope', '$timeout', 'Auth', 'ngDialog', function ($scope, $timeout, Auth, ngDialog) {
@@ -1819,16 +1899,57 @@ angular.module('OrderManagerApp', [
         vm.currentPeriod = {};
         vm.statistic = {};
         vm.orderSourcesStatictic = null;
+        vm.isStatisticLoaded = false;
+
+        vm.orderSourceList = ['Second', 'VK', 'Посоветовали', 'Повторный', 'Листовка', 'Рассылка', 'Mail.ru', 'Yandex',
+            'Другое', 'Не задано'];
+
+        vm.customRange = {
+            dateStart: {
+                val: null,
+                isOpen: false,
+                onDateClick: function () {
+                    vm.customRange.dateEnd.isOpen = false;
+                    vm.customRange.dateStart.isOpen = !vm.customRange.dateStart.isOpen;
+                }
+            },
+            dateEnd: {
+                val: null,
+                isOpen: false,
+                onDateClick: function () {
+                    vm.customRange.dateStart.isOpen = false;
+                    vm.customRange.dateEnd.isOpen = !vm.customRange.dateEnd.isOpen;
+                }
+            }
+        };
 
         vm.setPeriodRange = setPeriodRange;
+        vm.setCustomPeriodRange = setCustomPeriodRange;
         vm.selectOrderSourceTab = onSelectOrderSourceTab;
+        vm.getOrderStatByName = getOrderStatByName;
 
         function onSelectOrderSourceTab() {
             if (!vm.orderSourcesStatictic) {
                 StatisticService.getOrderSourcesStatistic().then(function (stats) {
-                    vm.orderSourcesStatictic = stats;
+                    vm.orderSourcesStatictic = stats.sources_stats;
                 })
             }
+        }
+
+        function getOrderStatByName(row, sourceName) {
+            var count = 0;
+            row.stats.some(function (value, index, _ary) {
+                if (angular.equals(value.where_was_found, sourceName)) {
+                    count = value.count;
+                    return true;
+                }
+            });
+            return count;
+        }
+
+        function setCustomPeriodRange(range) {
+            vm.currentPeriod.range = range;
+            setPeriodRange(vm.CUSTOM_PERIOD);
         }
 
         function setPeriodRange(periodName) {
@@ -1857,7 +1978,7 @@ angular.module('OrderManagerApp', [
                 };
             }
             else if (angular.equals(periodName, vm.CUSTOM_PERIOD)) {
-                throw Error('Custom period not implemented yet!')
+                vm.currentPeriod.name = null;
             }
             else {
                 throw Error('Period name is unavailable!')
@@ -1866,6 +1987,7 @@ angular.module('OrderManagerApp', [
             if (!!vm.currentPeriod.range) {
                 StatisticService.getStatisticInfo(vm.currentPeriod.range).then(function (statistic) {
                     vm.statistic = statistic;
+                    vm.isStatisticLoaded = true;
                 })
             }
         }

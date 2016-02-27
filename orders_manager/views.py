@@ -777,7 +777,7 @@ class StatisticView(APIView):
         }
 
     def _get_order_sources_statistic(self):
-        return Order.objects.sources_statistic_for_last_months()
+        return Order.objects.sources_statistic_for_last_months(num_month=12)
 
 
 def _raise_denied_if_has_no_perm(user, short_perm):
