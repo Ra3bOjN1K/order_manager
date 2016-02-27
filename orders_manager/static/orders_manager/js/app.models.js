@@ -393,4 +393,36 @@ angular.module('OrderManagerApp')
                     return _animatorDebtService.post({action: 'pay_debt', debt_id: debtId});
                 }
             }
-    }]);
+        }])
+    .factory('StatisticService', [
+        '$q', '$rootScope', 'Restangular', function ($q, $rootScope, Restangular) {
+            var restAngular = Restangular.withConfig(function (RestangularConfigurer) {
+                RestangularConfigurer.setBaseUrl('/api/v1/');
+                RestangularConfigurer.setRequestSuffix('/');
+            });
+            var _animatorDebtService = restAngular.all('statistic');
+
+            return {
+                getStatisticInfo: function (periodRange) {
+                    var deferred = $q.defer();
+                    _animatorDebtService.customGET('', {
+                        'start': periodRange.start,
+                        'end': periodRange.end
+                    }).then(function (stats) {
+                        deferred.resolve(stats);
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
+                },
+                getOrderSourcesStatistic: function () {
+                    var deferred = $q.defer();
+                    _animatorDebtService.customGET('', {'type': 'order_sources'}).then(function (stats) {
+                        deferred.resolve(stats);
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
+                }
+            }
+        }]);

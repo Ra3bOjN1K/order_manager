@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from django.db import models, transaction
-from django.db.models import Q
+from datetime import datetime, date
+from django.db import models
+from django.db.models import Q, Sum, Count
 from django.contrib.auth.models import User
 from orders_manager.roles import (Manager as ProjectManager, Animator,
-    Photographer, AbstractUserRole, Superuser)
+    Photographer, AbstractUserRole)
 from orders_manager.utils.data_utils import (generate_str, format_date,
     trim_phone_number)
 
@@ -80,6 +81,18 @@ class UserProfileManager(models.Manager):
             Q(user__groups__name='animator') |
             Q(user__groups__name='photographer')
         ).order_by('user__groups__name').all()
+
+    def executors_salary_for_period(self, start, end):
+        start = datetime.strptime(start, '%Y-%m-%d %H:%M')
+        end = datetime.strptime(end, '%Y-%m-%d %H:%M')
+        result = []
+        for executor in self.all_executors():
+            result.append({
+                'user_name': executor.get_full_name(),
+                'user_role': executor.get_role_name(),
+                'total_salary': executor.get_salary_for_period(start, end)[1]
+            })
+        return result
 
 
 class DayOffManager(models.Manager):
@@ -260,6 +273,18 @@ class ProgramManager(models.Manager):
         return super(ProgramManager, self).all().filter(
             is_active=True).order_by('id')
 
+    def programs_to_orders_count(self, period_start, period_end):
+        start = datetime.strptime(period_start, '%Y-%m-%d %H:%M')
+        end = datetime.strptime(period_end, '%Y-%m-%d %H:%M')
+        result = []
+        for program in self.all():
+            result.append({
+                'program_name': program.title,
+                'orders_count': program.order_set.filter(
+                    celebrate_date__range=[start, end]).count()
+            })
+        return result
+
 
 class ProgramPriceManager(models.Manager):
     def create(self, **kwargs):
@@ -314,7 +339,8 @@ class AdditionalServiceManager(models.Manager):
         try:
             service = self.get(id=kwargs.get('id'))
 
-            for attr_name in ('num_executors', 'price', 'title', 'executor_rate'):
+            for attr_name in (
+                    'num_executors', 'price', 'title', 'executor_rate'):
                 setattr(service, attr_name, kwargs.get(attr_name))
 
             service.possible_executors = UserProfile.objects.none()
@@ -492,19 +518,54 @@ class OrdersManager(models.Manager):
                 for ex in item.get('executors'):
                     executor_id = ex.get('id')
                     if executor_id and item.get('service_id'):
-                        order_serv_obj = OrderServiceExecutors.objects.create(**{
-                            'executor_id': executor_id,
-                            'additional_service_id': item.get('service_id')
-                        })
+                        order_serv_obj = OrderServiceExecutors.objects.create(
+                            **{
+                                'executor_id': executor_id,
+                                'additional_service_id': item.get('service_id')
+                            })
                         order.additional_services_executors.add(order_serv_obj)
                         order.save()
 
-            # order.additional_services.clear()
-            # for service_id in self._get_additional_services(**kwargs):
-            #     serv = AdditionalService.objects.get(id=service_id)
-            #     order.additional_services.add(serv)
+                        # order.additional_services.clear()
+                        # for service_id in self._get_additional_services(**kwargs):
+                        #     serv = AdditionalService.objects.get(id=service_id)
+                        #     order.additional_services.add(serv)
 
         except self.model.DoesNotExist:
             order = self.create(**kwargs)
 
         return order
+
+    def count_orders_for_period(self, start, end):
+        start = datetime.strptime(start, '%Y-%m-%d %H:%M')
+        end = datetime.strptime(end, '%Y-%m-%d %H:%M')
+        return self.filter(celebrate_date__range=[start, end]).count()
+
+    def total_orders_price_for_period(self, start, end):
+        start = datetime.strptime(start, '%Y-%m-%d %H:%M')
+        end = datetime.strptime(end, '%Y-%m-%d %H:%M')
+        total_prices = self.filter(
+            celebrate_date__range=[start, end]
+        ).aggregate(tp=Sum('total_price_with_discounts'))
+        return total_prices.get('tp')
+
+    def sources_statistic_for_last_months(self, num_month=6):
+        month_names = ('Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                       'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь',
+                       'Декабрь')
+
+        def calc_month(idx, current_month_id):
+            month_id = current_month_id - idx
+            while month_id < 1:
+                month_id += 12
+            return month_id, month_names[month_id - 1]
+
+        today_month = date.today().month
+        res = []
+        for i in range(num_month):
+            month_num, month_name = calc_month(i, today_month)
+            db_res = self.filter(
+                celebrate_date__month=month_num
+            ).values('where_was_found').annotate(count=Count('pk')).distinct()
+            res.append({'month': month_name, 'stats': db_res})
+        return res

@@ -73,8 +73,11 @@ class UserProfile(models.Model):
     def get_month_salary_info(self):
         today = date.today()
         first_day = today.replace(day=1)
+        return self.get_salary_for_period(first_day, today)
+
+    def get_salary_for_period(self, start, end):
         orders = self.orders.filter(
-            celebrate_date__range=[first_day, today]).all()
+            celebrate_date__range=[start, end]).all()
         salary = 0
         for order in orders:
             salary += order.get_executor_salary(self)

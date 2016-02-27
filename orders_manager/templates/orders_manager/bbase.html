@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="{% static "orders_manager/css/day_off_dlg_style.css" %}"/>
     <link rel="stylesheet" href="{% static "orders_manager/css/sms_delivery.css" %}"/>
     <link rel="stylesheet" href="{% static "orders_manager/css/animator_debts.css" %}"/>
+    <link rel="stylesheet" href="{% static "orders_manager/css/statistic.css" %}"/>
     <link rel="shortcut icon" href="{% static 'orders_manager/img/favicon.png' %}" type="image/png"/>
     <link href='https://fonts.googleapis.com/css?family=Lora:400,400italic,700&subset=cyrillic,latin,latin-ext'
           rel='stylesheet' type='text/css'>
@@ -83,7 +84,7 @@
                     <a class="menu-item" ng-click="dlgManager.smsDelivery.showDlg()"><b class="fa fa-envelope-o"></b>
                         <span>СМС-рассылка</span></a>
 
-                    <a class="menu-item" ng-click=""><b class="fa fa-line-chart"></b>
+                    <a class="menu-item" ng-click="dlgManager.statistic.showDlg()"><b class="fa fa-line-chart"></b>
                         <span>Статистика</span></a>
                 {% endif %}
                 {% if not request.user|user_is:"superuser" and not request.user|user_is:"manager" %}
@@ -228,6 +229,9 @@
 <script type="text/ng-template" id="animator_debts_template.html">
     <div ng-include="'/static/dialog_templates/animator_debts_template.html'"></div>
 </script>
+<script type="text/ng-template" id="statistic_template.html">
+    <div ng-include="'/static/dialog_templates/statistic_template.html'"></div>
+</script>
 <script type="text/ng-template" id="dayoff_template.html">
     <div ng-include="'/static/dialog_templates/dayoff_template.html'"></div>
 </script>
@@ -245,6 +249,7 @@
 <script type="text/javascript" src="{% static "vendors/js/ui-grid-stable.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendors/js/angular-messages.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendors/js/jquery.price_format.2.0.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendors/js/jq_price_format_prototype.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendors/js/nya-bs-select.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendors/js/angular-formly-templates-bootstrap.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendors/js/angular-animate.min.js" %}"></script>

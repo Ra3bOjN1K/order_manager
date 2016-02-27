@@ -11,10 +11,12 @@ from django.views.generic.edit import FormView
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.generics import (ListAPIView, RetrieveUpdateDestroyAPIView,
     RetrieveAPIView, ListCreateAPIView, CreateAPIView)
 from rest_framework.response import Response
 from guardian.mixins import PermissionRequiredMixin
+
 from orders_manager.models import (UserProfile, Client, Order, ClientChild,
     Program, ProgramPrice, AdditionalService, Discount, User, DayOff,
     AnimatorDebt)
@@ -710,7 +712,8 @@ class AnimatorDebtListView(ListCreateAPIView):
         from django.db.models import Q
         filter_param = self.request.query_params.get('filter')
         if filter_param == 'my_only':
-            _raise_denied_if_has_no_perm(self.request.user, 'see_program_details')
+            _raise_denied_if_has_no_perm(self.request.user,
+                                         'see_program_details')
             return AnimatorDebt.objects.filter(
                 Q(paid=False) &
                 Q(executor=self.request.user.profile)
@@ -722,12 +725,59 @@ class AnimatorDebtListView(ListCreateAPIView):
         if request.data:
             action = request.data.get('action')
             if action == 'pay_debt':
-                _raise_denied_if_has_no_perm(self.request.user, 'delete_program')
+                _raise_denied_if_has_no_perm(self.request.user,
+                                             'delete_program')
                 debt = AnimatorDebt.objects.get(id=request.data.get('debt_id'))
                 debt.paid = not debt.paid
                 debt.save()
                 return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class StatisticView(APIView):
+    def get(self, request, *args, **kwargs):
+        if request.query_params:
+            if request.query_params.get('start') and request.query_params.get('end'):
+                period = (
+                    request.query_params.get('start'),
+                    request.query_params.get('end')
+                )
+                return Response(
+                    status=status.HTTP_200_OK,
+                    data={
+                        'orders_stats': self._get_orders_statistic(period),
+                        'finance_stats': self._get_finance_statistic(period)
+                    }
+                )
+            elif request.query_params.get('type'):
+                t = request.query_params.get('type')
+                if t == 'order_sources':
+                    return Response(
+                        status=status.HTTP_200_OK,
+                        data={
+                            'sources_stats': self._get_order_sources_statistic()
+                        }
+                    )
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def _get_orders_statistic(self, period):
+        prog_to_count = Program.objects.programs_to_orders_count(*period)
+        return {
+            'all_count': Order.objects.count_orders_for_period(*period),
+            'program_to_orders_count': prog_to_count
+        }
+
+    def _get_finance_statistic(self, period):
+        total = Order.objects.total_orders_price_for_period(*period)
+        salary = UserProfile.objects.executors_salary_for_period(*period)
+        return {
+            'total': total,
+            'salary': salary,
+            'income': total - sum([s.get('total_salary') for s in salary])
+        }
+
+    def _get_order_sources_statistic(self):
+        return Order.objects.sources_statistic_for_last_months()
 
 
 def _raise_denied_if_has_no_perm(user, short_perm):

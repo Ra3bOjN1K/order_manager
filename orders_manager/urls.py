@@ -46,6 +46,7 @@ urlpatterns = [
     url(r'^api/v1/days_off/$', views.DayOffListView.as_view()),
     url(r'^api/v1/days_off/(?P<pk>[\d]+)/$', views.DayOffView.as_view()),
     url(r'^api/v1/animator_debts/$', views.AnimatorDebtListView.as_view()),
+    url(r'^api/v1/statistic/$', views.StatisticView.as_view()),
 
     url(r'^orders/$', views.ShowAllOrdersListView.as_view(),
         name='orders_list'),

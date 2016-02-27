@@ -148,6 +148,12 @@ angular.module('OrderManagerApp', [
             restrict: 'A'
         }
     })
+    .filter('formatPrice', function() {
+        return function(input) {
+            var n = new NumberFormat(input, {prefix: '', centSeparator: ',', thousandsSeparator: '.', allowNegative: true});
+            return n;
+        };
+    })
     .controller('ApplicationCtrl', ['$scope', '$timeout', 'Auth', 'ngDialog', function ($scope, $timeout, Auth, ngDialog) {
 
         $scope.basePage = {
@@ -260,6 +266,15 @@ angular.module('OrderManagerApp', [
                 showDlg: function () {
                     ngDialog.open({
                         template: 'animator_debts_template.html',
+                        showClose: false,
+                        closeByDocument: false
+                    })
+                }
+            },
+            statistic: {
+                showDlg: function () {
+                    ngDialog.open({
+                        template: 'statistic_template.html',
                         showClose: false,
                         closeByDocument: false
                     })
@@ -1793,6 +1808,97 @@ angular.module('OrderManagerApp', [
         }])
     .controller('SmsDeliveryCtrl', [function () {
         var vm = this;
+    }])
+    .controller('StatisticPanelCtrl', ['StatisticService', function (StatisticService) {
+        var vm = this;
+        vm.CURRENT_MONTH = 'current_month';
+        vm.LAST_MONTH = 'last_month';
+        vm.PREV_MONTH = 'prev_month';
+        vm.CURRENT_YEAR = 'current_year';
+        vm.CUSTOM_PERIOD = 'custom_period';
+        vm.currentPeriod = {};
+        vm.statistic = {};
+        vm.orderSourcesStatictic = null;
+
+        vm.setPeriodRange = setPeriodRange;
+        vm.selectOrderSourceTab = onSelectOrderSourceTab;
+
+        function onSelectOrderSourceTab() {
+            if (!vm.orderSourcesStatictic) {
+                StatisticService.getOrderSourcesStatistic().then(function (stats) {
+                    vm.orderSourcesStatictic = stats;
+                })
+            }
+        }
+
+        function setPeriodRange(periodName) {
+            if (angular.equals(periodName, vm.CURRENT_MONTH)) {
+                vm.currentPeriod = {
+                    name: vm.CURRENT_MONTH,
+                    range: getCurrentMonthPeriodRange()
+                };
+            }
+            else if (angular.equals(periodName, vm.LAST_MONTH)) {
+                vm.currentPeriod = {
+                    name: vm.LAST_MONTH,
+                    range: getLastMonthPeriodRange()
+                };
+            }
+            else if (angular.equals(periodName, vm.PREV_MONTH)) {
+                vm.currentPeriod = {
+                    name: vm.PREV_MONTH,
+                    range: getPreviousMonthPeriodRange()
+                };
+            }
+            else if (angular.equals(periodName, vm.CURRENT_YEAR)) {
+                vm.currentPeriod = {
+                    name: vm.CURRENT_YEAR,
+                    range: getCurrentYearPeriodRange()
+                };
+            }
+            else if (angular.equals(periodName, vm.CUSTOM_PERIOD)) {
+                throw Error('Custom period not implemented yet!')
+            }
+            else {
+                throw Error('Period name is unavailable!')
+            }
+
+            if (!!vm.currentPeriod.range) {
+                StatisticService.getStatisticInfo(vm.currentPeriod.range).then(function (statistic) {
+                    vm.statistic = statistic;
+                })
+            }
+        }
+
+        function getCurrentMonthPeriodRange() {
+            return {
+                'start': moment().startOf('month').format('YYYY-MM-DD HH:mm'),
+                'end': moment().format('YYYY-MM-DD HH:mm')
+            }
+        }
+
+        function getLastMonthPeriodRange() {
+            return {
+                'start': moment().subtract(30, 'days').format('YYYY-MM-DD HH:mm'),
+                'end': moment().format('YYYY-MM-DD HH:mm')
+            }
+        }
+
+        function getPreviousMonthPeriodRange() {
+            return {
+                'start': moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD HH:mm'),
+                'end': moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD HH:mm')
+            }
+        }
+
+        function getCurrentYearPeriodRange() {
+            return {
+                'start': moment().startOf('year').format('YYYY-MM-DD HH:mm'),
+                'end': moment().format('YYYY-MM-DD HH:mm')
+            }
+        }
+
+        setPeriodRange(vm.CURRENT_MONTH);
     }])
     .controller('AnimatorDebtsCtrl', [
         '$rootScope', 'AnimatorDebtService', 'Auth', function ($rootScope, AnimatorDebtService, Auth) {

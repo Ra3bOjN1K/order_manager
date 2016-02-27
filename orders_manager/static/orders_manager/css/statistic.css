@@ -1,0 +1,217 @@
+.statistic-panel {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  background: #fcfcfc;
+  height: 600px;
+  padding: 2px 0 0;
+  width: 1000px;
+}
+.statistic-panel .periods-menu {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-align-items: center;
+  align-items: center;
+  height: 46px;
+  margin: 4px 8px;
+  padding-left: 12px;
+}
+.statistic-panel .periods-menu button {
+  height: 32px;
+  margin: 0 2px;
+  min-width: 120px;
+}
+.statistic-panel .periods-menu button.checked {
+  background: #bbb;
+  border: 2px solid #aaa;
+}
+.statistic-panel hr.divider {
+  border-color: #ddd;
+  margin: 0;
+  padding: 0;
+}
+.statistic-panel .statistic-body {
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  background: #fff;
+  padding-top: 4px;
+}
+.statistic-panel .statistic-body .nav-tabs li a {
+  border-radius: 0;
+}
+.statistic-panel .statistic-body .nav-tabs li.active a {
+  background: #fcfcfc;
+  border-bottom-color: #fcfcfc !important;
+}
+.statistic-panel .statistic-body .tab-pane.active {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  background: #fcfcfc;
+  height: 549px;
+  padding-top: 8px;
+}
+.statistic-panel .stats-content {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  padding-left: 12px;
+}
+.statistic-panel .common-stats-wrapper {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  margin: 12px 0 8px 0;
+}
+.statistic-panel .common-stats-wrapper .line-info {
+  margin: 0 8px;
+}
+.statistic-panel .common-stats-wrapper .l-title {
+  color: #333;
+  font-weight: bolder;
+  text-decoration: underline;
+}
+.statistic-panel .orders-stats-wrapper,
+.statistic-panel .finance-stats-wrapper {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-flex: 1 1 400px;
+  flex: 1 1 400px;
+  margin: 0 8px 8px;
+  padding: 12px;
+  position: relative;
+}
+.statistic-panel .orders-stats-wrapper table,
+.statistic-panel .finance-stats-wrapper table {
+  width: 100%;
+}
+.statistic-panel .orders-stats-wrapper .table-title,
+.statistic-panel .finance-stats-wrapper .table-title {
+  font-weight: bolder;
+}
+.statistic-panel .orders-stats-wrapper thead, .statistic-panel .orders-stats-wrapper tbody, .statistic-panel .orders-stats-wrapper tfoot, .statistic-panel .orders-stats-wrapper tr, .statistic-panel .orders-stats-wrapper td, .statistic-panel .orders-stats-wrapper th,
+.statistic-panel .finance-stats-wrapper thead,
+.statistic-panel .finance-stats-wrapper tbody,
+.statistic-panel .finance-stats-wrapper tfoot,
+.statistic-panel .finance-stats-wrapper tr,
+.statistic-panel .finance-stats-wrapper td,
+.statistic-panel .finance-stats-wrapper th {
+  display: block;
+}
+.statistic-panel .orders-stats-wrapper tr:after,
+.statistic-panel .finance-stats-wrapper tr:after {
+  clear: both;
+  content: ' ';
+  display: block;
+  visibility: hidden;
+}
+.statistic-panel .orders-stats-wrapper thead th,
+.statistic-panel .finance-stats-wrapper thead th {
+  color: #777;
+  font-size: 11pt;
+  height: 30px;
+}
+.statistic-panel .orders-stats-wrapper tbody,
+.statistic-panel .finance-stats-wrapper tbody {
+  max-height: 320px;
+  min-height: 60px;
+  overflow-y: auto;
+}
+.statistic-panel .orders-stats-wrapper tbody td, .statistic-panel .orders-stats-wrapper thead th, .statistic-panel .orders-stats-wrapper tfoot th, .statistic-panel .orders-stats-wrapper tfoot td,
+.statistic-panel .finance-stats-wrapper tbody td,
+.statistic-panel .finance-stats-wrapper thead th,
+.statistic-panel .finance-stats-wrapper tfoot th,
+.statistic-panel .finance-stats-wrapper tfoot td {
+  float: left;
+}
+.statistic-panel .orders-stats-wrapper thead th:first-child,
+.statistic-panel .orders-stats-wrapper tbody td:first-child,
+.statistic-panel .orders-stats-wrapper tfoot th:first-child,
+.statistic-panel .finance-stats-wrapper thead th:first-child,
+.statistic-panel .finance-stats-wrapper tbody td:first-child,
+.statistic-panel .finance-stats-wrapper tfoot th:first-child {
+  width: 260px;
+}
+.statistic-panel .orders-stats-wrapper thead th:nth-child(2),
+.statistic-panel .orders-stats-wrapper tbody td:nth-child(2),
+.statistic-panel .orders-stats-wrapper tfoot td:nth-child(2),
+.statistic-panel .finance-stats-wrapper thead th:nth-child(2),
+.statistic-panel .finance-stats-wrapper tbody td:nth-child(2),
+.statistic-panel .finance-stats-wrapper tfoot td:nth-child(2) {
+  width: 130px;
+}
+.statistic-panel .finance-stats-wrapper {
+  -webkit-flex: 2 2 400px;
+  flex: 2 2 400px;
+}
+.statistic-panel .finance-stats-wrapper tbody {
+  max-height: 330px;
+  min-height: 120px;
+}
+.statistic-panel .finance-stats-wrapper thead th:first-child,
+.statistic-panel .finance-stats-wrapper tbody td:first-child,
+.statistic-panel .finance-stats-wrapper tfoot th:first-child {
+  width: 200px;
+}
+.statistic-panel .finance-stats-wrapper thead th:nth-child(2),
+.statistic-panel .finance-stats-wrapper tbody td:nth-child(2),
+.statistic-panel .finance-stats-wrapper tfoot td:nth-child(2) {
+  width: 100px;
+}
+.statistic-panel .finance-stats-wrapper thead th:nth-child(3),
+.statistic-panel .finance-stats-wrapper tbody td:nth-child(3),
+.statistic-panel .finance-stats-wrapper tfoot td:nth-child(3) {
+  width: 130px;
+}

@@ -206,6 +206,9 @@ body:after {
   font-size: 12pt;
   margin-right: .8em;
 }
+.top-nav-menu .menu-item span {
+  font-size: 10.5pt;
+}
 .top-nav-menu .menu-item span:hover,
 .top-nav-menu .menu-item span:focus {
   text-decoration: underline;

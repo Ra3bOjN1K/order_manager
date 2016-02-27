@@ -279,11 +279,9 @@ angular.module('OrderManagerApp')
             link: function (scope, elem, attrs, ctrl) {
                 if (!ctrl) return;
 
-
                 ctrl.$formatters.unshift(function (a) {
                     return $filter('number')(ctrl.$modelValue)
                 });
-
 
                 ctrl.$parsers.unshift(function (viewValue) {
 

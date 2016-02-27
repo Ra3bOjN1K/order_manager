@@ -1,0 +1,88 @@
+<div class="sms-delivery-content" ng-controller="StatisticPanelCtrl as vm" xmlns="http://www.w3.org/1999/html">
+    <div class="panel panel-default dialog-wrapper">
+        <div class="panel-heading dialog-header">
+            <div class="title">Статистика</div>
+            <div class="ngdialog-close"></div>
+        </div>
+        <div class="panel-body statistic-panel">
+            <div class="statistic-body">
+                <uib-tabset justified="true">
+                    <uib-tab heading="Заказы" active="true">
+                        <hr class="divider">
+                        <div class="periods-menu">
+                            <button ng-click="vm.setPeriodRange(vm.CURRENT_MONTH)"
+                                    ng-class="{'checked': vm.currentPeriod.name === vm.CURRENT_MONTH}">Этот месяц
+                            </button>
+                            <button ng-click="vm.setPeriodRange(vm.LAST_MONTH)"
+                                    ng-class="{'checked': vm.currentPeriod.name === vm.LAST_MONTH}">Последний месяц</button>
+                            <button ng-click="vm.setPeriodRange(vm.PREV_MONTH)"
+                                    ng-class="{'checked': vm.currentPeriod.name === vm.PREV_MONTH}">Прошлый месяц</button>
+                            <button ng-click="vm.setPeriodRange(vm.CURRENT_YEAR)"
+                                    ng-class="{'checked': vm.currentPeriod.name === vm.CURRENT_YEAR}">Этот год</button>
+                            <button ng-click="vm.setPeriodRange(vm.CUSTOM_PERIOD)"
+                                    ng-class="{'checked': vm.currentPeriod.name === vm.CUSTOM_PERIOD}">Задать период</button>
+                        </div>
+                        <hr class="divider">
+                        <div class="common-stats-wrapper">
+                            <div class="line-info">
+                                <span class="l-title">Оборот за период:</span> {{ vm.statistic.finance_stats.total }}руб.
+                            </div>
+                            <div class="line-info">
+                                <span class="l-title">Доход за период:</span> {{ vm.statistic.finance_stats.income }}руб.
+                            </div>
+                        </div>
+                        <div class="stats-content">
+                            <div class="orders-stats-wrapper">
+                                <span class="table-title">Статистика по заказам</span>
+                                <table class="table table-hover table-condensed">
+                                    <thead>
+                                    <tr>
+                                        <th>Название программы</th>
+                                        <th class="text-center">Заказов</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="item in vm.statistic.orders_stats.program_to_orders_count">
+                                        <td>{{ item.program_name }}</td>
+                                        <td class="text-center">{{ item.orders_count }}</td>
+                                    </tr>
+                                    </tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <th class="text-left">Всего заказов:</th>
+                                        <td class="text-center">{{ vm.statistic.orders_stats.all_count }}</td>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="finance-stats-wrapper">
+                                <span class="table-title">Статистика по зарплате исполнителей</span>
+                                <table class="table table-hover table-condensed">
+                                    <thead>
+                                    <tr>
+                                        <th>Имя исполнителя</th>
+                                        <th class="text-center">Должность</th>
+                                        <th class="text-center">Зарплата</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="item in vm.statistic.finance_stats.salary">
+                                        <td>{{ item.user_name }}</td>
+                                        <td class="text-center">{{ item.user_role }}</td>
+                                        <td class="text-right">{{ item.total_salary | formatPrice }} руб.</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab heading="Источники" select="vm.selectOrderSourceTab()">
+                        <div class="source-stats-wrapper">
+
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+    </div>
+</div>
