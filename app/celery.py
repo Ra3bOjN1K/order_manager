@@ -37,6 +37,11 @@ app.conf.update(
             'task': 'orders_manager.tasks.set_debtors',
             'schedule': crontab(minute='*/30', hour='6-23'),
             'args': (),
+        },
+        'run-generating-sms-messages': {
+            'task': 'orders_manager.tasks.run_generating_sms_messages',
+            'schedule': crontab(minute=0, hour=2),
+            'args': (),
         }
     }
 )

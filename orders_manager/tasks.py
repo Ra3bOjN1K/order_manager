@@ -279,3 +279,27 @@ def create_debt_for_order(order):
         executor=order.program_executors.first(),
         debt=order.total_price_with_discounts - order.cost_of_the_way
     ).save()
+
+
+@app.task
+def run_generating_sms_messages():
+    from orders_manager.models import SmsDeliveryEvent, SmsDeliveryMessage
+    sms = []
+    for event in SmsDeliveryEvent.objects.all():
+        for order in _get_target_orders(event):
+            sms_msg = SmsDeliveryMessage(event=event, order=order)
+            sms.append(sms_msg)
+            sms_msg.save()
+    return sms
+
+
+def _get_target_orders(delivery_event):
+    from orders_manager.models import Order
+    today = datetime.date.today()
+    if delivery_event.type == 'after':
+        target_date = today + datetime.timedelta(days=delivery_event.days_num)
+    else:
+        target_date = today - datetime.timedelta(days=delivery_event.days_num)
+    d_min = datetime.datetime.combine(target_date, datetime.time.min)
+    d_max = datetime.datetime.combine(target_date, datetime.time.max)
+    return Order.objects.filter(celebrate_date__range=(d_min, d_max)).all()

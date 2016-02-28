@@ -367,6 +367,35 @@ class AnimatorDebt(models.Model):
     paid = models.BooleanField(default=False)
 
 
+class SmsDeliveryEvent(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    type = models.CharField(max_length=6)
+    days_num = models.IntegerField()
+    template = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'sms_delivery_event'
+
+
+class SmsDeliveryMessage(models.Model):
+    event = models.ForeignKey(SmsDeliveryEvent, related_name='sms_messages')
+    order = models.ForeignKey(Order)
+    is_checked = models.BooleanField(default=False)
+    is_sent = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'sms_delivery_message'
+
+    def __str__(self):
+        return '{0} [{1}->{2}]'.format(
+            self.event.name,
+            self.order.celebrate_date,
+            self.order.program.title
+        )
+
+
 def set_superuser_permissions(sender, instance, created, **kwargs):
     from orders_manager.roles import Superuser
 
