@@ -1901,8 +1901,8 @@ angular.module('OrderManagerApp', [
         vm.orderSourcesStatictic = null;
         vm.isStatisticLoaded = false;
 
-        vm.orderSourceList = ['Second', 'VK', 'Посоветовали', 'Повторный', 'Листовка', 'Рассылка', 'Mail.ru', 'Yandex',
-            'Другое', 'Не задано'];
+        vm.orderSourceList = ['Google', 'Yandex', 'Second', 'VK', 'Посоветовали', 'Повторный', 'Листовка', 'Рассылка',
+            'Mail.ru', 'Другое', 'Не задано'];
 
         vm.customRange = {
             dateStart: {
