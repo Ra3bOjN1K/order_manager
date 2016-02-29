@@ -1886,9 +1886,111 @@ angular.module('OrderManagerApp', [
                 }, 0, 1);
             })
         }])
-    .controller('SmsDeliveryCtrl', [function () {
-        var vm = this;
-    }])
+    .controller('SmsDeliveryCtrl', [
+        '$scope', '$timeout', 'SmsDeliveryService',
+        function ($scope, $timeout, SmsDeliveryService) {
+
+            var vm = this;
+            vm.event = {
+                list: [],
+                checked: {
+                    id: null,
+                    name: '',
+                    type: 'before', // before | after
+                    days_num: 1,
+                    template: ''
+                },
+                isEventsLoaded: false,
+                onNewEventCreate: onNewEventCreate,
+                onSelect: onEventSelect,
+                onSave: onEventSave,
+                onDelete: onEventDelete
+            };
+            vm.smsMessage = {
+                list: []
+            };
+            vm.onScheduledModeSelect = onScheduledModeSelect;
+
+            function onScheduledModeSelect() {
+                SmsDeliveryService.getDeliveryEvents().then(function (events) {
+                    vm.event.list = events;
+                    vm.event.isEventsLoaded = true;
+                });
+
+                SmsDeliveryService.getMessagesForDeliver().then(function (messages) {
+                    vm.smsMessage.list = messages;
+                });
+            }
+
+            function onNewEventCreate() {
+                var hasNewEvent = vm.event.list.some(function (e) {
+                   return e.id === null;
+                });
+                if (!hasNewEvent) {
+                    var newEvent = {
+                        id: null,
+                        name: 'Новое имя события',
+                        type: 'before',
+                        days_num: 1,
+                        template: ''
+                    };
+                    vm.event.list.unshift(newEvent);
+                    vm.event.checked = newEvent;
+                }
+            }
+
+            function onEventSelect(event) {
+                vm.event.checked = {
+                    id: event.id,
+                    name: event.name,
+                    type: event.type,
+                    days_num: event.days_num,
+                    template: event.template
+                }
+            }
+
+            function onEventSave() {
+                SmsDeliveryService.saveDeliverEvent(vm.event.checked).then(function (newEvent) {
+                    angular.forEach(vm.event.list, function (item, idx) {
+                        if (item.id === null) {
+                            vm.event.list.splice(idx, 1);
+                        }
+                    });
+
+                    var found = vm.event.list.some(function (item, idx) {
+                        if (item.id === newEvent.id) {
+                            vm.event.list[idx] = newEvent;
+                            return true;
+                        }
+                    });
+
+                    if (!found) {
+                        vm.event.list.unshift(newEvent);
+                    }
+                })
+            }
+
+            function onEventDelete(event) {
+                if (event.id === null) {
+                    vm.event.list.some(function (item, idx) {
+                        if (item.id === null) {
+                            vm.event.list.splice(idx, 1);
+                            return true;
+                        }
+                    })
+                }
+                else {
+                    SmsDeliveryService.deleteDeliverEvent(event.id).then(function () {
+                        vm.event.list.some(function (item, idx) {
+                            if (item.id === event.id) {
+                                vm.event.list.splice(idx, 1);
+                                return true;
+                            }
+                        })
+                    })
+                }
+            }
+        }])
     .controller('StatisticPanelCtrl', ['StatisticService', function (StatisticService) {
         var vm = this;
         vm.CURRENT_MONTH = 'current_month';

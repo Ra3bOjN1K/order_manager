@@ -19,6 +19,7 @@
     @include init-flex-position(column);
     background: #fcfcfc;
     height: 526px;
+    position: relative;
   }
 
   .manual-mode-wrapper {
@@ -40,15 +41,15 @@
       height: 56px;
       margin-top: 4px;
     }
-  }
 
-  .msg-body {
-    @include init-flex-position(column);
-    @include flex(1 1);
-    @include justify-content(center);
-    @include align-items(center);
+    .msg-body {
+      @include init-flex-position(column);
+      @include flex(1 1);
+      @include justify-content(center);
+      @include align-items(center);
+    }
 
-    textarea {
+    .msg-body textarea {
       border-radius: 2px;
       font-size: 11pt;
       height: 150px;
@@ -57,15 +58,191 @@
       width: 450px;
     }
 
-    .msg-tips {
+    .msg-body .msg-tips {
       color: #888;
       font-size: 10pt;
       margin-top: 4px;
     }
 
-    .tip-title {
+    .msg-body .tip-title {
       color: #333;
     }
   }
 
+  .scheduled-mode-wrapper {
+    @include init-flex-position(row);
+    @include flex(1 1);
+
+    .title {
+      @include init-flex-position(row);
+      @include align-items(center);
+      @include justify-content(center);
+      color: #333;
+      font-size: 11pt;
+      position: relative;
+    }
+
+    .scheduled-events-block {
+      @include init-flex-position(column);
+      border-right: 1px solid #ddd;
+      margin: 12px 8px 12px 12px;
+      padding-right: 16px;
+      width: 350px;
+    }
+
+    .scheduled-events-block > .edit-event-block {
+      @include init-flex-position(column);
+      @include justify-content(flex-start);
+      background: #fff;
+      border: 1px solid #bbb;
+      border-radius: 2px;
+      height: 192px;
+      margin-bottom: 8px;
+      margin-top: 4px;
+      padding: 9px;
+    }
+
+    .scheduled-events-block > .event-list-block {
+      @include flex(1 1);
+      margin-top: 4px;
+    }
+
+    .checking-messages-block {
+      @include init-flex-position(column);
+      @include flex(1 1);
+      margin: 12px 12px 12px 8px;
+    }
+  }
+
+  .scheduled-events-block > .edit-event-block {
+    .form-group {
+      @include init-flex-position(row);
+      @include align-items(center);
+      @include flex(1 1);
+      margin-bottom: 3px;
+    }
+
+    label {
+      color: #666;
+      font-size: 9pt;
+      margin: 0 4px 0 0;
+      padding: 0;
+    }
+
+    input,
+    select,
+    textarea {
+      font-size: 10pt;
+      height: 28px;
+      padding: 3px 8px;
+    }
+
+    textarea {
+      height: 62px;
+      line-height: 1;
+    }
+
+    .form-group.event-name {
+      max-height: 28px;
+    }
+
+    #e-name {
+      min-width: 200px;
+    }
+
+    .form-group.event-days {
+      max-width: 120px;
+    }
+
+    .event-delay {
+      @include init-flex-position(row);
+    }
+
+    #e-days {
+      width: 80px;
+    }
+
+    #e-type {
+      min-width: 140px;
+    }
+
+    .event-msg {
+      height: 200px;
+    }
+
+    #e-msg {
+      min-width: 200px;
+      resize: none;
+    }
+
+    button {
+      @include align-self(center);
+      width: 120px;
+    }
+  }
+
+  .event-list-title {
+    @include init-flex-position(row);
+    @include align-items(center);
+    @include justify-content(space-between);
+    color: #333;
+    font-size: 11pt;
+
+    span {
+      margin-left: 110px;
+    }
+
+    .add-event {
+      @include init-flex-position(row);
+      @include align-items(center);
+      color: #67b168;
+      cursor: hand;
+      cursor: pointer;
+      font-size: 14pt;
+      text-decoration: none;
+    }
+
+    .add-event:hover {
+      color: darken(#67b168, 10%);
+    }
+  }
+
+  .scheduled-events-block > .event-list-block {
+    .event-item {
+      @include init-flex-position(row);
+      @include align-items(center);
+      @include justify-content(flex-start);
+      background: #fff;
+      border: 1px solid #bbb;
+      border-radius: 2px;
+      color: #333;
+      cursor: hand;
+      cursor: pointer;
+      font-size: 11pt;
+      height: 28px;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .event-item a {
+      @include init-flex-position(row);
+      @include align-items(center);
+      color: #a94442;
+      cursor: hand;
+      cursor: pointer;
+      font-size: 14pt;
+      margin: 0 8px 0 4px;
+      text-decoration: none;
+
+      &:hover {
+        color: darken(#a94442, 10%);
+      }
+    }
+
+    .event-item:hover {
+      background: #eee;
+      border: 1px solid #aaa;
+      color: #444;
+    }
+  }
 }

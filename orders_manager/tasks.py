@@ -297,9 +297,9 @@ def _get_target_orders(delivery_event):
     from orders_manager.models import Order
     today = datetime.date.today()
     if delivery_event.type == 'after':
-        target_date = today + datetime.timedelta(days=delivery_event.days_num)
-    else:
         target_date = today - datetime.timedelta(days=delivery_event.days_num)
+    else:
+        target_date = today + datetime.timedelta(days=delivery_event.days_num)
     d_min = datetime.datetime.combine(target_date, datetime.time.min)
     d_max = datetime.datetime.combine(target_date, datetime.time.max)
     return Order.objects.filter(celebrate_date__range=(d_min, d_max)).all()

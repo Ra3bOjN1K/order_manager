@@ -4,7 +4,7 @@ from django.contrib.auth.models import Permission
 from rest_framework import serializers
 from orders_manager.models import (UserProfile, Client, Order, Program,
     AdditionalService, ClientChild, ProgramPrice, Discount, DayOff,
-    AnimatorDebt)
+    AnimatorDebt, SmsDeliveryEvent, SmsDeliveryMessage)
 
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -282,3 +282,39 @@ class AnimatorDebtSerializer(DynamicFieldsModelSerializer):
             'celebrations_num': month_num,
             'salary': salary
         }
+
+
+class SmsDeliveryEventSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = SmsDeliveryEvent
+
+
+class SmsDeliveryEventListSerializer(serializers.ListSerializer):
+    child = SmsDeliveryEventSerializer()
+
+
+class SmsDeliveryMessageSerializer(DynamicFieldsModelSerializer):
+    order = serializers.SerializerMethodField()
+    event = SmsDeliveryEventSerializer(required_fields=['name'])
+    message = serializers.SerializerMethodField()
+
+    class Meta:
+        model = SmsDeliveryMessage
+
+    def get_order(self, obj):
+        return {
+            'order': {
+                'client': {
+                    'name': obj.order.client.name,
+                    'phone': obj.order.client.phone,
+                    'phone_2': obj.order.client.phone_2,
+                }
+            }
+        }
+
+    def get_message(self, obj):
+        return obj.format_message()
+
+
+class SmsDeliveryMessageListSerializer(serializers.ListSerializer):
+    child = SmsDeliveryMessageSerializer()

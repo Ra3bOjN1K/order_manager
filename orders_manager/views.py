@@ -16,14 +16,14 @@ from rest_framework.generics import (ListAPIView, RetrieveUpdateDestroyAPIView,
     RetrieveAPIView, ListCreateAPIView, CreateAPIView)
 from rest_framework.response import Response
 from guardian.mixins import PermissionRequiredMixin
-
 from orders_manager.models import (UserProfile, Client, Order, ClientChild,
     Program, ProgramPrice, AdditionalService, Discount, User, DayOff,
-    AnimatorDebt)
+    AnimatorDebt, SmsDeliveryEvent, SmsDeliveryMessage)
 from orders_manager.serializers import (UserProfileSerializer, ClientSerializer,
     OrderSerializer, ClientChildrenSerializer, ProgramSerializer,
     ProgramPriceSerializer, AdditionalServiceSerializer, DiscountSerializer,
-    DayOffSerializer, AnimatorDebtSerializer)
+    DayOffSerializer, AnimatorDebtSerializer, SmsDeliveryEventListSerializer,
+    SmsDeliveryMessageListSerializer, SmsDeliveryEventSerializer)
 from orders_manager.roles import get_user_role
 from orders_manager.google_apis import GoogleApiHandler
 from orders_manager.tasks import (send_order_to_users_google_calendar,
@@ -734,10 +734,58 @@ class AnimatorDebtListView(ListCreateAPIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+class SmsDeliveryView(APIView):
+    TARGET_EVENTS = 'events'
+    TARGET_MESSAGES = 'messages'
+
+    def get(self, request, *args, **kwargs):
+        if request.query_params:
+            if request.query_params.get('target'):
+                target = request.query_params.get('target')
+                if target == self.TARGET_EVENTS:
+                    return Response(
+                        status=status.HTTP_200_OK,
+                        data=self._get_delivery_events_serialized()
+                    )
+                elif target == self.TARGET_MESSAGES:
+                    return Response(
+                        status=status.HTTP_200_OK,
+                        data=self._get_delivery_messages_serialized()
+                    )
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, *args, **kwargs):
+        if request.data:
+            target = request.data.get('target')
+            if target == 'event':
+                _raise_denied_if_has_no_perm(self.request.user,
+                                             'delete_program')
+                action = request.data.get('action')
+                if action == 'save':
+                    event = SmsDeliveryEvent.objects.update_or_create(
+                        **request.data.get('data'))
+                    d = SmsDeliveryEventSerializer(event)
+                    return Response(status=status.HTTP_200_OK, data=d.data)
+                elif action == 'delete':
+                    event_id = request.data.get('event_id')
+                    SmsDeliveryEvent.objects.get(id=event_id).delete()
+                    return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def _get_delivery_events_serialized(self):
+        events = SmsDeliveryEvent.objects.all().order_by('-created')
+        return SmsDeliveryEventListSerializer(events).data
+
+    def _get_delivery_messages_serialized(self):
+        messages = SmsDeliveryMessage.objects.filter(is_checked=False).all()
+        return SmsDeliveryMessageListSerializer(messages).data
+
+
 class StatisticView(APIView):
     def get(self, request, *args, **kwargs):
         if request.query_params:
-            if request.query_params.get('start') and request.query_params.get('end'):
+            if request.query_params.get('start') and request.query_params.get(
+                    'end'):
                 period = (
                     request.query_params.get('start'),
                     request.query_params.get('end')

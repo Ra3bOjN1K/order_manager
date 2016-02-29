@@ -11,19 +11,74 @@
                         <div class="filters">Тут будут фильтры</div>
                         <div class="msg-body">
                             <textarea class="sms-msg" placeholder="Введите сообщение для отправки"></textarea>
+
                             <div class="msg-tips"><span class="tip-title">[%client_name%]</span> - имя клиента</div>
                         </div>
                         <button class="btn btn-default btn-lg">Отправить</button>
                     </div>
                 </uib-tab>
-                <uib-tab heading="По расписанию">
+                <uib-tab heading="По расписанию" select="vm.onScheduledModeSelect()">
                     <div class="scheduled-mode-wrapper">
-                        <div class="filters">Тут будут фильтры</div>
-                        <div class="msg-body">
-                            <textarea class="sms-msg" placeholder="Введите сообщение для отправки"></textarea>
-                            <div class="msg-tips"><span class="tip-title">[%client_name%]</span> - имя клиента</div>
+                        <div class="scheduled-events-block">
+                            <span class="title">Создание/редактирование события</span>
+
+                            <div class="edit-event-block">
+                                <div class="form-group event-name">
+                                    <label for="e-name">Имя:</label>
+                                    <input class="form-control" ng-model="vm.event.checked.name" type="text"
+                                           id="e-name">
+                                </div>
+                                <div class="event-delay">
+                                    <div class="form-group event-days">
+                                        <label for="e-days">Дней:</label>
+                                        <input class="form-control" ng-model="vm.event.checked.days_num" type="number"
+                                               min="1"
+                                               id="e-days">
+                                    </div>
+                                    <div class="form-group event-type">
+                                        <label for="e-type"></label>
+                                        <select class="form-control" ng-model="vm.event.checked.type" id="e-type">
+                                            <option value="before" selected>до праздника</option>
+                                            <option value="after">после праздника</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group event-msg">
+                                    <label for="e-msg"></label>
+                                    <textarea class="form-control" ng-model="vm.event.checked.template"
+                                              placeholder="Введите текст сообщения" id="e-msg"></textarea>
+                                </div>
+                                <button ng-click="vm.event.onSave()">Сохранить</button>
+                            </div>
+                            <!-- <hr class="divider"/> -->
+                            <div class="event-list-title">
+                                <span>Список событий</span>
+                                <a class="add-event" ng-click="vm.event.onNewEventCreate()">
+                                    <i class="fa fa-plus-square"></i>
+                                </a>
+                            </div>
+
+                            <div class="event-list-block">
+                                <div class="empty-event-list"
+                                     ng-if="vm.event.list.length === 0 && vm.event.isEventsLoaded">Список событий пуст.
+                                </div>
+                                <div class="event-item"
+                                     ng-repeat="event in vm.event.list"
+                                     ng-if="vm.event.list.length > 0 && vm.event.isEventsLoaded"
+                                     ng-click="vm.event.onSelect(event)">
+                                    <a class="event-delete" ng-click="vm.event.onDelete(event)">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                    <div class="event-name">{{ event.name }}</div>
+                                </div>
+                            </div>
                         </div>
-                        <button class="btn btn-default btn-lg">Отправить</button>
+                        <div class="checking-messages-block">
+                            <span class="title">Панель управления cooбщениями</span>
+
+                            <div class="checked-message-info"></div>
+                            <div class="messages-block"></div>
+                        </div>
                     </div>
                 </uib-tab>
                 <uib-tab heading="Настройка API">

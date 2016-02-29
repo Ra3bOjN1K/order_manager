@@ -425,4 +425,59 @@ angular.module('OrderManagerApp')
                     return deferred.promise;
                 }
             }
-        }]);
+        }])
+    .factory('SmsDeliveryService', [
+        '$q', '$rootScope', 'Restangular', function ($q, $rootScope, Restangular) {
+            var restAngular = Restangular.withConfig(function (RestangularConfigurer) {
+                RestangularConfigurer.setBaseUrl('/api/v1/');
+                RestangularConfigurer.setRequestSuffix('/');
+            });
+            var _smsDeliveryService = restAngular.all('sms_delivery');
+
+            return {
+                getDeliveryEvents: function () {
+                    var deferred = $q.defer();
+                    _smsDeliveryService.customGET('', {'target': 'events'}).then(function (events) {
+                        deferred.resolve(events);
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
+                },
+                getMessagesForDeliver: function () {
+                    var deferred = $q.defer();
+                    _smsDeliveryService.customGET('', {'target': 'messages'}).then(function (messages) {
+                        deferred.resolve(messages);
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
+                },
+                saveDeliverEvent: function (event) {
+                    var deferred = $q.defer();
+                    _smsDeliveryService.post({
+                        'target': 'event',
+                        'action': 'save',
+                        'data': event
+                    }).then(function (data) {
+                        deferred.resolve(data);
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
+                },
+                deleteDeliverEvent: function (eventId) {
+                    var deferred = $q.defer();
+                    _smsDeliveryService.post({
+                        'target': 'event',
+                        'action': 'delete',
+                        'event_id': eventId
+                    }).then(function () {
+                        deferred.resolve();
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
+                }
+            }
+    }]);

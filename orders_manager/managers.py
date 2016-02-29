@@ -569,3 +569,28 @@ class OrdersManager(models.Manager):
             ).values('where_was_found').annotate(count=Count('pk')).distinct()
             res.append({'month': month_name, 'stats': db_res})
         return res
+
+
+class SmsDeliveryEventManager(models.Manager):
+    def create(self, **kwargs):
+        from orders_manager.models import SmsDeliveryEvent
+        event = SmsDeliveryEvent(
+            name=kwargs.get('name'),
+            days_num=kwargs.get('days_num'),
+            type=kwargs.get('type'),
+            template=kwargs.get('template')
+        )
+        event.save()
+        return event
+
+    def update_or_create(self, defaults=None, **kwargs):
+        try:
+            event = self.get(id=kwargs.get('id'))
+            for attr_name in (
+                    'name', 'days_num', 'type', 'template'):
+                setattr(event, attr_name, kwargs.get(attr_name))
+            event.save()
+        except self.model.DoesNotExist:
+            event = self.create(**kwargs)
+        return event
+

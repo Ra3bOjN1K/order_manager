@@ -7,7 +7,8 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from orders_manager.managers import (UserProfileManager, ClientManager,
     ProgramManager, AdditionalServiceManager, OrdersManager,
-    ClientChildrenManager, ProgramPriceManager, DayOffManager)
+    ClientChildrenManager, ProgramPriceManager, DayOffManager,
+    SmsDeliveryEventManager)
 from orders_manager.utils.data_utils import calculate_age
 from orders_manager.roles import ROLES, get_user_role
 from oauth2client.django_orm import CredentialsField
@@ -374,6 +375,8 @@ class SmsDeliveryEvent(models.Model):
     template = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
 
+    objects = SmsDeliveryEventManager()
+
     class Meta:
         db_table = 'sms_delivery_event'
 
@@ -393,6 +396,11 @@ class SmsDeliveryMessage(models.Model):
             self.event.name,
             self.order.celebrate_date,
             self.order.program.title
+        )
+
+    def format_message(self):
+        return self.event.template.format(
+            client_name=self.order.client.name,
         )
 
 
