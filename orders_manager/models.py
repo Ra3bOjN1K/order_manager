@@ -368,6 +368,11 @@ class AnimatorDebt(models.Model):
     paid = models.BooleanField(default=False)
 
 
+class SmsDeliveryCredentials(models.Model):
+    login = models.CharField(max_length=60)
+    password = models.CharField(max_length=120)
+
+
 class SmsDeliveryEvent(models.Model):
     name = models.CharField(max_length=100, unique=True)
     type = models.CharField(max_length=6)

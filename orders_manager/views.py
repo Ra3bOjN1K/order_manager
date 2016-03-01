@@ -469,9 +469,16 @@ class OrderListView(ListCreateAPIView):
 
         user_role = get_user_role(self.request.user)
         if user_role in ('manager', 'superuser'):
-            queryset = Order.objects.all()
+            if self.request.query_params.get('date_range'):
+                date_range = self.request.query_params.get('date_range')
+                if not date_range == 'None':
+                    import json
+                    date_range = json.loads(date_range)
+                    period = (date_range.get('start'), date_range.get('end'))
+                    return Order.objects.get_order_list_for_period(*period)
+            return Order.objects.all()
         else:
-            queryset = Order.objects.filter(
+            return Order.objects.filter(
                 (
                     Q(program_executors__user_id=self.request.user.id) |
                     Q(
@@ -480,8 +487,6 @@ class OrderListView(ListCreateAPIView):
                 & Q(celebrate_date__gte=datetime.date.today())
             ).distinct('id')
 
-        return queryset
-
     def get_serializer(self, *args, **kwargs):
         user_role = get_user_role(self.request.user)
         if user_role not in ('manager', 'superuser'):
@@ -489,6 +494,8 @@ class OrderListView(ListCreateAPIView):
                 'id', 'celebrate_date', 'celebrate_time', 'program',
                 'duration', 'is_only_service_executor'
             ]})
+        elif self.request.query_params.get('date_range'):
+            kwargs.update({'required_fields': ['client']})
         return super(OrderListView, self).get_serializer(*args, **kwargs)
 
 
@@ -770,6 +777,17 @@ class SmsDeliveryView(APIView):
                     event_id = request.data.get('event_id')
                     SmsDeliveryEvent.objects.get(id=event_id).delete()
                     return Response(status=status.HTTP_200_OK)
+            action = request.data.get('action')
+            if action == 'send':
+                _raise_denied_if_has_no_perm(self.request.user, 'delete_program')
+                mode = request.data.get('mode')
+                messages = request.data.get('messages')
+                if mode == 'manual' and messages:
+                    self.send_sms_messages_from_manual(messages)
+                    return Response(status=status.HTTP_200_OK)
+                elif mode == 'scheduled' and messages:
+                    self.send_sms_messages_from_scheduled(messages)
+                    return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def _get_delivery_events_serialized(self):
@@ -779,6 +797,12 @@ class SmsDeliveryView(APIView):
     def _get_delivery_messages_serialized(self):
         messages = SmsDeliveryMessage.objects.filter(is_checked=False).all()
         return SmsDeliveryMessageListSerializer(messages).data
+
+    def send_sms_messages_from_manual(self, messages):
+        pass
+
+    def send_sms_messages_from_scheduled(self, messages):
+        pass
 
 
 class StatisticView(APIView):

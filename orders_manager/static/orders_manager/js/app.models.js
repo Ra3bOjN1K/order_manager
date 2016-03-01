@@ -93,7 +93,18 @@ angular.module('OrderManagerApp')
                             _allOrders.splice(idx, 1)
                         }
                     });
-                }
+                },
+
+                getClientsFromOrdersForPeriod: function (dateRange) {
+                    var deferred = $q.defer();
+                    _orderService.getList({'date_range': dateRange}).then(function (clients) {
+                        deferred.resolve(clients);
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
+                },
+
             }
         }
     ])
@@ -474,6 +485,19 @@ angular.module('OrderManagerApp')
                         'event_id': eventId
                     }).then(function () {
                         deferred.resolve();
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
+                },
+                sendMessages: function (messages, mode) {
+                    var deferred = $q.defer();
+                    _smsDeliveryService.post({
+                        'action': 'send',
+                        'mode': mode,
+                        'messages': messages
+                    }).then(function (res) {
+                        deferred.resolve(res);
                     }, function (error) {
                         deferred.reject(error);
                     });

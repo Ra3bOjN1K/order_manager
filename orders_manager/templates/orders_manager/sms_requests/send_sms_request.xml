@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+    <auth>
+        <login>375292186376</login>
+        <password>5945078</password>
+    </auth>
+    <message>
+        <from>tilibom.by</from>
+        <text>Тестовое сообщение.</text>
+        <recipient>375292186376</recipient>
+    </message>
+</request>

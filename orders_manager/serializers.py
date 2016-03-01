@@ -303,12 +303,11 @@ class SmsDeliveryMessageSerializer(DynamicFieldsModelSerializer):
 
     def get_order(self, obj):
         return {
-            'order': {
-                'client': {
-                    'name': obj.order.client.name,
-                    'phone': obj.order.client.phone,
-                    'phone_2': obj.order.client.phone_2,
-                }
+            'client': {
+                'id': obj.order.client.id,
+                'name': obj.order.client.name,
+                'phone': obj.order.client.phone,
+                'phone_2': obj.order.client.phone_2,
             }
         }
 

@@ -570,6 +570,12 @@ class OrdersManager(models.Manager):
             res.append({'month': month_name, 'stats': db_res})
         return res
 
+    def get_order_list_for_period(self, start, end):
+        start = datetime.strptime(start, '%Y-%m-%d %H:%M')
+        end = datetime.strptime(end, '%Y-%m-%d %H:%M')
+        return self.filter(
+            celebrate_date__range=[start, end]).all()
+
 
 class SmsDeliveryEventManager(models.Manager):
     def create(self, **kwargs):

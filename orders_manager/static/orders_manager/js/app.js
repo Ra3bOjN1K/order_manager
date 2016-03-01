@@ -1887,8 +1887,8 @@ angular.module('OrderManagerApp', [
             })
         }])
     .controller('SmsDeliveryCtrl', [
-        '$scope', '$timeout', 'SmsDeliveryService',
-        function ($scope, $timeout, SmsDeliveryService) {
+        '$scope', '$timeout', 'SmsDeliveryService', 'OrderService',
+        function ($scope, $timeout, SmsDeliveryService, OrderService) {
 
             var vm = this;
             vm.event = {
@@ -1907,9 +1907,33 @@ angular.module('OrderManagerApp', [
                 onDelete: onEventDelete
             };
             vm.smsMessage = {
-                list: []
+                list: [],
+                onDisableClick: onDisableMessageClick
             };
+            vm.dateRange = {
+                dateStart: {
+                    val: null,
+                    isOpen: false,
+                    onDateClick: function () {
+                        vm.dateRange.dateEnd.isOpen = false;
+                        vm.dateRange.dateStart.isOpen = !vm.dateRange.dateStart.isOpen;
+                    }
+                },
+                dateEnd: {
+                    val: null,
+                    isOpen: false,
+                    onDateClick: function () {
+                        vm.dateRange.dateStart.isOpen = false;
+                        vm.dateRange.dateEnd.isOpen = !vm.dateRange.dateEnd.isOpen;
+                    }
+                }
+            };
+            vm.foundClientList = [];
+            vm.msgTextInManualMode = '';
             vm.onScheduledModeSelect = onScheduledModeSelect;
+            vm.dateFilterApply = dateFilterApply;
+            vm.sendMessagesImScheduledMode = sendMessagesImScheduledMode;
+            vm.sendMessagesImManualMode = sendMessagesImManualMode;
 
             function onScheduledModeSelect() {
                 SmsDeliveryService.getDeliveryEvents().then(function (events) {
@@ -1918,7 +1942,11 @@ angular.module('OrderManagerApp', [
                 });
 
                 SmsDeliveryService.getMessagesForDeliver().then(function (messages) {
-                    vm.smsMessage.list = messages;
+                    vm.smsMessage.list = [];
+                    angular.forEach(messages, function (msg) {
+                        msg.disabled = false;
+                        vm.smsMessage.list.push(msg);
+                    });
                 });
             }
 
@@ -1989,6 +2017,44 @@ angular.module('OrderManagerApp', [
                         })
                     })
                 }
+            }
+
+            function onDisableMessageClick(message) {
+                message.disabled = !message.disabled;
+            }
+
+            function dateFilterApply(range) {
+                OrderService.getClientsFromOrdersForPeriod(range).then(function (clients) {
+                    vm.foundClientList = clients;
+                })
+            }
+
+            function sendMessagesImManualMode() {
+                var targetMsgList = [];
+                angular.forEach(vm.foundClientList, function (item) {
+                    targetMsgList.push({
+                        client_id: parseInt(item.client.id),
+                        message: vm.msgTextInManualMode
+                    });
+                });
+                SmsDeliveryService.sendMessages(targetMsgList, 'manual').then(function (res) {
+                    console.log(res);
+                })
+            }
+
+            function sendMessagesImScheduledMode() {
+                var targetMsgList = [];
+                angular.forEach(vm.smsMessage.list, function (msg) {
+                    if (!msg.disabled) {
+                        targetMsgList.push({
+                            client_id: msg.order.client.id,
+                            message: msg.message
+                        });
+                    }
+                });
+                SmsDeliveryService.sendMessages(targetMsgList, 'scheduled').then(function (res) {
+                    console.log(res);
+                })
             }
         }])
     .controller('StatisticPanelCtrl', ['StatisticService', function (StatisticService) {

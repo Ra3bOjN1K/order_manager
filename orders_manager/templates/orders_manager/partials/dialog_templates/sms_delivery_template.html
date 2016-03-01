@@ -8,13 +8,35 @@
             <uib-tabset justified="true">
                 <uib-tab heading="Ручной режим" active="true">
                     <div class="manual-mode-wrapper">
-                        <div class="filters">Тут будут фильтры</div>
-                        <div class="msg-body">
-                            <textarea class="sms-msg" placeholder="Введите сообщение для отправки"></textarea>
-
-                            <div class="msg-tips"><span class="tip-title">[%client_name%]</span> - имя клиента</div>
+                        <div class="filters">
+                            <div class="client-counter">
+                                <span>Выбрано клиентов: </span>
+                                <span>{{ vm.foundClientList.length }}</span>
+                            </div>
+                            <div class="custom-date-range">
+                                <input type="text" datetime-picker="dd.MM.yyyy" class="custom-date-start"
+                                       ng-model="vm.dateRange.dateStart.val" close-text="OK"
+                                       date-text="Дата" enable-time="false" readonly
+                                       ng-click="vm.dateRange.dateStart.onDateClick()"
+                                       is-open="vm.dateRange.dateStart.isOpen"/> -
+                                <input type="text" datetime-picker="dd.MM.yyyy" class="custom-date-end"
+                                       ng-model="vm.dateRange.dateEnd.val" close-text="OK"
+                                       date-text="Дата" enable-time="false" readonly
+                                       ng-click="vm.dateRange.dateEnd.onDateClick()"
+                                       is-open="vm.dateRange.dateEnd.isOpen"/>
+                                <button on-custom-period-range="vm.dateFilterApply(range)"
+                                        class="custom-period-btn">Применить фильтр
+                                </button>
+                            </div>
+                            <button class="btn-select-all" ng-click="vm.dateFilterApply('None')">Выбрать всех</button>
                         </div>
-                        <button class="btn btn-default btn-lg">Отправить</button>
+                        <div class="msg-body">
+                            <textarea class="sms-msg" ng-model="vm.msgTextInManualMode"
+                                      placeholder="Введите сообщение для отправки"></textarea>
+                            <div class="msg-tips"><span class="tip-title">{client_name}</span> - имя клиента</div>
+                        </div>
+                        <button class="btn btn-default btn-lg"
+                                ng-click="vm.sendMessagesImManualMode()">Отправить</button>
                     </div>
                 </uib-tab>
                 <uib-tab heading="По расписанию" select="vm.onScheduledModeSelect()">
@@ -75,9 +97,32 @@
                         </div>
                         <div class="checking-messages-block">
                             <span class="title">Панель управления cooбщениями</span>
-
-                            <div class="checked-message-info"></div>
-                            <div class="messages-block"></div>
+                            <div class="messages-block">
+                                <div class="messages-wrapper">
+                                    <div class="message-item" ng-class="{'disabled': message.disabled}"
+                                         ng-repeat="message in vm.smsMessage.list">
+                                        <div class="message-header">
+                                            <div class="msg-meta">
+                                                <div class="msg-event-name"><span>Событие:</span>{{ message.event.name }}</div>
+                                                <div class="client-info">
+                                                    <span>Клиент:</span>
+                                                    <div class="msg-client-name">{{ message.order.client.name }}</div>
+                                                    <div class="msg-client-phone">
+                                                        (тел. {{ message.order.client.phone }})
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <a class="msg-disabled" ng-click="vm.smsMessage.onDisableClick(message)">
+                                                <i class="fa fa-ban"></i>
+                                            </a>
+                                        </div>
+                                        <div class="msg-text">{{ message.message }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="messages-control-block">
+                                <button ng-click="vm.sendMessagesImScheduledMode()">Отправить</button>
+                            </div>
                         </div>
                     </div>
                 </uib-tab>
