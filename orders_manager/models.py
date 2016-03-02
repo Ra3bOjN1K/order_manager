@@ -371,6 +371,7 @@ class AnimatorDebt(models.Model):
 class SmsDeliveryCredentials(models.Model):
     login = models.CharField(max_length=60)
     password = models.CharField(max_length=120)
+    sender = models.CharField(max_length=60)
 
 
 class SmsDeliveryEvent(models.Model):

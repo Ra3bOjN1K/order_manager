@@ -304,18 +304,18 @@ def _get_target_orders(delivery_event):
     return Order.objects.filter(celebrate_date__range=(d_min, d_max)).all()
 
 
-@app.task
+# @app.task
 def send_sms_messages_bulk(msg_data, replace_names=False):
     from orders_manager.models import Client
     from orders_manager.sms_delivery_service import SmsDeliveryService
     clients = Client.objects.filter(
-        pk__in=[i.client_id for i in msg_data]).all()
+        pk__in=[i.get('client_id') for i in msg_data]).all()
     messages = []
     for client in clients:
         for item in msg_data:
-            if item.client_id == client.id:
-                msg = (item.message.format(client_name=client.name)
-                       if replace_names else item.message)
+            if item.get('client_id') == client.id:
+                msg = (item.get('message').format(client_name=client.name)
+                       if replace_names else item.get('message'))
                 messages.append({
                     'recipient': client.phone,
                     'message': msg

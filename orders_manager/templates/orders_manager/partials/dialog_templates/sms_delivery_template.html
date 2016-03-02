@@ -126,9 +126,29 @@
                         </div>
                     </div>
                 </uib-tab>
-                <uib-tab heading="Настройка API">
-                    <div class="words-wrapper">
-
+                <uib-tab heading="Настройка API" select="vm.onSmsApiSettingsSelect()">
+                    <div class="api-settings-wrapper">
+                        <div class="api-settings">
+                            <div class="form-group">
+                                <label for="api-login">Логин пользователя:</label>
+                                <input class="form-control" ng-model="vm.smsApiSettings.login" type="text"
+                                       id="api-login">
+                            </div>
+                            <div class="form-group">
+                                <label for="api-apikey">Apikey:</label>
+                                <input class="form-control" ng-model="vm.smsApiSettings.apikey" type="text"
+                                       id="api-apikey">
+                            </div>
+                            <div class="form-group">
+                                <label for="api-sender">Имя отправителя:</label>
+                                <input class="form-control" ng-model="vm.smsApiSettings.sender" type="text"
+                                       id="api-sender">
+                            </div>
+                            <div class="settings-controls">
+                                <button class="btn-save-api-settings"
+                                        ng-click="vm.smsApiSettings.saveSettings()">Сохранить</button>
+                            </div>
+                        </div>
                     </div>
                 </uib-tab>
             </uib-tabset>

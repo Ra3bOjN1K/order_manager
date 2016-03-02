@@ -26,6 +26,7 @@ from orders_manager.serializers import (UserProfileSerializer, ClientSerializer,
     SmsDeliveryMessageListSerializer, SmsDeliveryEventSerializer)
 from orders_manager.roles import get_user_role
 from orders_manager.google_apis import GoogleApiHandler
+from orders_manager.sms_delivery_service import SmsDeliveryService
 from orders_manager.tasks import (send_order_to_users_google_calendar,
     delete_order_from_users_google_calendar, send_sms_messages_bulk)
 
@@ -777,17 +778,46 @@ class SmsDeliveryView(APIView):
                     event_id = request.data.get('event_id')
                     SmsDeliveryEvent.objects.get(id=event_id).delete()
                     return Response(status=status.HTTP_200_OK)
+            elif target == 'api_settings':
+                sms_service = SmsDeliveryService()
+                sms_service_settings = sms_service.get_api_settings()
+                action = request.data.get('action')
+                if action == 'get':
+                    return Response(
+                        status=status.HTTP_200_OK,
+                        data={
+                            'login': sms_service_settings['login'],
+                            'apikey': sms_service_settings['apikey'],
+                            'sender': sms_service_settings['sender']
+                        }
+                    )
+                if action == 'save':
+                    sms_service.save_api_settings(
+                        login=request.data.get('login'),
+                        apikey=request.data.get('apikey'),
+                        sender=request.data.get('sender')
+                    )
+                    return Response(status=status.HTTP_200_OK)
             action = request.data.get('action')
             if action == 'send':
-                _raise_denied_if_has_no_perm(self.request.user, 'delete_program')
-                mode = request.data.get('mode')
-                messages = request.data.get('messages')
-                if mode == 'manual' and messages:
-                    send_sms_messages_bulk.apply(messages, replace_names=True)
-                    return Response(status=status.HTTP_200_OK)
-                elif mode == 'scheduled' and messages:
-                    send_sms_messages_bulk.apply(messages)
-                    return Response(status=status.HTTP_200_OK)
+                try:
+                    _raise_denied_if_has_no_perm(self.request.user, 'delete_program')
+                    mode = request.data.get('mode')
+                    messages = request.data.get('messages')
+                    if mode == 'manual' and messages:
+                        send_sms_messages_bulk(messages, replace_names=True)
+                        return Response(status=status.HTTP_200_OK)
+                    elif mode == 'scheduled' and messages:
+                        send_sms_messages_bulk(messages)
+                        return Response(status=status.HTTP_200_OK)
+                except Exception as ex:
+                    return Response(
+                        status=status.HTTP_400_BAD_REQUEST,
+                        data={
+                            'status': 'error',
+                            'message': ex.args[0]
+                        }
+                    )
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def _get_delivery_events_serialized(self):

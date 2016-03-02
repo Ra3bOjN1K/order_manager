@@ -502,6 +502,31 @@ angular.module('OrderManagerApp')
                         deferred.reject(error);
                     });
                     return deferred.promise;
+                },
+                getApiSettings: function () {
+                    var deferred = $q.defer();
+                    _smsDeliveryService.post({
+                        'target': 'api_settings',
+                        'action': 'get'
+                    }).then(function (res) {
+                        deferred.resolve(res);
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
+                },
+                saveApiSettings: function (settings) {
+                    var deferred = $q.defer();
+                    _smsDeliveryService.post({
+                        'target': 'api_settings',
+                        'action': 'save',
+                        'settings': settings
+                    }).then(function (res) {
+                        deferred.resolve(res);
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
                 }
             }
     }]);

@@ -1928,12 +1928,39 @@ angular.module('OrderManagerApp', [
                     }
                 }
             };
+            vm.smsApiSettings = {
+                login: '',
+                apikey: '',
+                sender: '',
+                saveSettings: saveSmsApiSettings
+            };
             vm.foundClientList = [];
             vm.msgTextInManualMode = '';
             vm.onScheduledModeSelect = onScheduledModeSelect;
+            vm.onSmsApiSettingsSelect = onSmsApiSettingsSelect;
             vm.dateFilterApply = dateFilterApply;
             vm.sendMessagesImScheduledMode = sendMessagesImScheduledMode;
             vm.sendMessagesImManualMode = sendMessagesImManualMode;
+
+            function onSmsApiSettingsSelect () {
+                loadSmsApiSettings();
+            }
+
+            function loadSmsApiSettings () {
+                SmsDeliveryService.getApiSettings().then(function (settings) {
+                    vm.smsApiSettings.login = settings.login;
+                    vm.smsApiSettings.apikey = settings.apikey;
+                    vm.smsApiSettings.sender = settings.sender;
+                })
+            }
+
+            function saveSmsApiSettings () {
+                SmsDeliveryService.saveApiSettings({
+                    'login': vm.smsApiSettings.login,
+                    'apikey': vm.smsApiSettings.apikey,
+                    'sender': vm.smsApiSettings.sender
+                })
+            }
 
             function onScheduledModeSelect() {
                 SmsDeliveryService.getDeliveryEvents().then(function (events) {

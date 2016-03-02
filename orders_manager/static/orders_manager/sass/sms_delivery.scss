@@ -399,4 +399,43 @@
       width: 120px;
     }
   }
+
+  .api-settings-wrapper {
+    @include init-flex-position(column);
+    @include justify-content(center);
+    @include align-items(center);
+    @include flex(1 1);
+  }
+
+  .api-settings-wrapper .api-settings {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 320px;
+    max-width: 480px;
+    min-width: 480px;
+    padding: 24px;
+
+    .form-group {
+      margin-bottom: 8px;
+    }
+
+    label {
+      color: #666;
+      font-size: 11pt;
+    }
+
+    .settings-controls {
+      @include init-flex-position(column);
+      @include align-items(center);
+      @include justify-content(center);
+    }
+
+    .btn-save-api-settings {
+      font-size: 13pt;
+      height: 36px;
+      margin-top: 16px;
+      width: 160px;
+    }
+  }
 }
