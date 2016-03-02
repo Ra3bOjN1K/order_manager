@@ -423,16 +423,21 @@ class OrdersManager(models.Manager):
         from orders_manager.models import (Order, AdditionalService,
             ClientChild, OrderServiceExecutors, UserProfile)
 
+        celebrate_date = kwargs.get('celebrate_date')
+
         order = Order()
         order.code = '{0}-{1}'.format(
-            format_date(pattern='%Y%m%d'),
+            format_date(
+                datetime.combine(celebrate_date, datetime.min.time()),
+                pattern='%Y%m%d'
+            ),
             generate_str(num_chars=3)
         )
 
         order.author = self._get_author(**kwargs)
         order.client_id = self._get_client_id(**kwargs)
         order.children_num = kwargs.get('children_num')
-        order.celebrate_date = kwargs.get('celebrate_date')
+        order.celebrate_date = celebrate_date
         order.celebrate_time = kwargs.get('celebrate_time')
         order.celebrate_place = kwargs.get('celebrate_place')
         order.address = kwargs.get('address')

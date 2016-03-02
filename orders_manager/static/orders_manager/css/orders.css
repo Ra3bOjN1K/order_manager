@@ -685,6 +685,14 @@
   margin: 2px;
   width: auto;
 }
+.event-window-background .address-house input {
+  padding: 1px 6px !important;
+  text-align: center;
+}
+.event-window-background .address-apartment input.apartment-field {
+  padding: 1px 6px !important;
+  text-align: center;
+}
 .event-window-background .order-program-select {
   width: 150px;
 }
