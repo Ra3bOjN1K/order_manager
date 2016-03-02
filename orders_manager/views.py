@@ -792,10 +792,11 @@ class SmsDeliveryView(APIView):
                         }
                     )
                 if action == 'save':
+                    settings = request.data.get('settings')
                     sms_service.save_api_settings(
-                        login=request.data.get('login'),
-                        apikey=request.data.get('apikey'),
-                        sender=request.data.get('sender')
+                        login=settings.get('login'),
+                        apikey=settings.get('apikey'),
+                        sender=settings.get('sender')
                     )
                     return Response(status=status.HTTP_200_OK)
             action = request.data.get('action')

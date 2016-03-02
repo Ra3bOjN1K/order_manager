@@ -66,7 +66,7 @@ class SmsDeliveryService:
             end_bulk_idx = start_bulk_idx + self.SIZE_MESSAGES_BULK
             self._send_messages_bulk_response(
                 settings['login'],
-                settings['password'],
+                settings['apikey'],
                 package[start_bulk_idx:end_bulk_idx]
             )
             start_bulk_idx = end_bulk_idx
