@@ -27,7 +27,7 @@ from orders_manager.serializers import (UserProfileSerializer, ClientSerializer,
 from orders_manager.roles import get_user_role
 from orders_manager.google_apis import GoogleApiHandler
 from orders_manager.tasks import (send_order_to_users_google_calendar,
-    delete_order_from_users_google_calendar)
+    delete_order_from_users_google_calendar, send_sms_messages_bulk)
 
 
 class PopulateDatabaseView(View):
@@ -783,10 +783,10 @@ class SmsDeliveryView(APIView):
                 mode = request.data.get('mode')
                 messages = request.data.get('messages')
                 if mode == 'manual' and messages:
-                    self.send_sms_messages_from_manual(messages)
+                    send_sms_messages_bulk.apply(messages, replace_names=True)
                     return Response(status=status.HTTP_200_OK)
                 elif mode == 'scheduled' and messages:
-                    self.send_sms_messages_from_scheduled(messages)
+                    send_sms_messages_bulk.apply(messages)
                     return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -797,12 +797,6 @@ class SmsDeliveryView(APIView):
     def _get_delivery_messages_serialized(self):
         messages = SmsDeliveryMessage.objects.filter(is_checked=False).all()
         return SmsDeliveryMessageListSerializer(messages).data
-
-    def send_sms_messages_from_manual(self, messages):
-        pass
-
-    def send_sms_messages_from_scheduled(self, messages):
-        pass
 
 
 class StatisticView(APIView):

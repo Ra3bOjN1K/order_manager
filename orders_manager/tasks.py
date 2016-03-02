@@ -128,7 +128,6 @@ def _get_order_summary(order, full_desc=False):
 def send_order_to_users_google_calendar(
         order_id, send_email=True, is_full_description=None,
         is_new_order=False):
-
     from orders_manager.models import Order, UserProfile
     from orders_manager.google_apis import GoogleApiHandler
 
@@ -303,3 +302,24 @@ def _get_target_orders(delivery_event):
     d_min = datetime.datetime.combine(target_date, datetime.time.min)
     d_max = datetime.datetime.combine(target_date, datetime.time.max)
     return Order.objects.filter(celebrate_date__range=(d_min, d_max)).all()
+
+
+@app.task
+def send_sms_messages_bulk(msg_data, replace_names=False):
+    from orders_manager.models import Client
+    from orders_manager.sms_delivery_service import SmsDeliveryService
+    clients = Client.objects.filter(
+        pk__in=[i.client_id for i in msg_data]).all()
+    messages = []
+    for client in clients:
+        for item in msg_data:
+            if item.client_id == client.id:
+                msg = (item.message.format(client_name=client.name)
+                       if replace_names else item.message)
+                messages.append({
+                    'recipient': client.phone,
+                    'message': msg
+                })
+
+    sms_service = SmsDeliveryService()
+    sms_service.send_messages(messages)

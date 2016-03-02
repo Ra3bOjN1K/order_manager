@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <request>
     <auth>
-        <login>375292186376</login>
-        <password>5945078</password>
+        <login>{{ credentials.login }}</login>
+        <password>{{ credentials.password }}</password>
     </auth>
     <message>
-        <from>tilibom.by</from>
-        <text>Тестовое сообщение.</text>
-        <recipient>375292186376</recipient>
+        <from>{{ sender }}</from>
+        <text>{{ message }}</text>
+        <recipient>{{ recipient }}</recipient>
     </message>
 </request>
