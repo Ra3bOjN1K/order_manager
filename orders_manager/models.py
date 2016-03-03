@@ -407,7 +407,7 @@ class SmsDeliveryMessage(models.Model):
     def format_message(self):
         import locale
         locale.setlocale(locale.LC_ALL, 'ru_RU.utf8')
-        f_date = '{:%d %b}'.format(self.order.celebrate_date)
+        f_date = '{:%-d %b}'.format(self.order.celebrate_date)
         return self.event.template.format(
             client_name=self.order.client.name,
             program=self.order.program.title,
