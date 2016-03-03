@@ -763,46 +763,47 @@ class SmsDeliveryView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, *args, **kwargs):
-        if request.data:
-            target = request.data.get('target')
-            if target == 'event':
-                _raise_denied_if_has_no_perm(self.request.user,
-                                             'delete_program')
+        try:
+            if request.data:
+                target = request.data.get('target')
+                if target == 'event':
+                    _raise_denied_if_has_no_perm(self.request.user,
+                                                 'delete_program')
+                    action = request.data.get('action')
+                    if action == 'save':
+                        event = SmsDeliveryEvent.objects.update_or_create(
+                            **request.data.get('data'))
+                        d = SmsDeliveryEventSerializer(event)
+                        return Response(status=status.HTTP_200_OK, data=d.data)
+                    elif action == 'delete':
+                        event_id = request.data.get('event_id')
+                        SmsDeliveryEvent.objects.get(id=event_id).delete()
+                        return Response(status=status.HTTP_200_OK)
+                elif target == 'api_settings':
+                    sms_service = SmsDeliveryService()
+                    sms_service_settings = sms_service.get_api_settings()
+                    action = request.data.get('action')
+                    if action == 'get':
+                        return Response(
+                            status=status.HTTP_200_OK,
+                            data={
+                                'login': sms_service_settings['login'],
+                                'apikey': sms_service_settings['apikey'],
+                                'sender': sms_service_settings['sender']
+                            }
+                        )
+                    if action == 'save':
+                        settings = request.data.get('settings')
+                        sms_service.save_api_settings(
+                            login=settings.get('login'),
+                            apikey=settings.get('apikey'),
+                            sender=settings.get('sender')
+                        )
+                        return Response(status=status.HTTP_200_OK)
                 action = request.data.get('action')
-                if action == 'save':
-                    event = SmsDeliveryEvent.objects.update_or_create(
-                        **request.data.get('data'))
-                    d = SmsDeliveryEventSerializer(event)
-                    return Response(status=status.HTTP_200_OK, data=d.data)
-                elif action == 'delete':
-                    event_id = request.data.get('event_id')
-                    SmsDeliveryEvent.objects.get(id=event_id).delete()
-                    return Response(status=status.HTTP_200_OK)
-            elif target == 'api_settings':
-                sms_service = SmsDeliveryService()
-                sms_service_settings = sms_service.get_api_settings()
-                action = request.data.get('action')
-                if action == 'get':
-                    return Response(
-                        status=status.HTTP_200_OK,
-                        data={
-                            'login': sms_service_settings['login'],
-                            'apikey': sms_service_settings['apikey'],
-                            'sender': sms_service_settings['sender']
-                        }
-                    )
-                if action == 'save':
-                    settings = request.data.get('settings')
-                    sms_service.save_api_settings(
-                        login=settings.get('login'),
-                        apikey=settings.get('apikey'),
-                        sender=settings.get('sender')
-                    )
-                    return Response(status=status.HTTP_200_OK)
-            action = request.data.get('action')
-            if action == 'send':
-                try:
-                    _raise_denied_if_has_no_perm(self.request.user, 'delete_program')
+                if action == 'send':
+                    _raise_denied_if_has_no_perm(self.request.user,
+                                                 'delete_program')
                     mode = request.data.get('mode')
                     messages = request.data.get('messages')
                     if mode == 'manual' and messages:
@@ -811,14 +812,24 @@ class SmsDeliveryView(APIView):
                     elif mode == 'scheduled' and messages:
                         send_sms_messages_bulk(messages)
                         return Response(status=status.HTTP_200_OK)
-                except Exception as ex:
-                    return Response(
-                        status=status.HTTP_400_BAD_REQUEST,
-                        data={
-                            'status': 'error',
-                            'message': ex.args[0]
-                        }
-                    )
+                elif action == 'moderated_message':
+                    _raise_denied_if_has_no_perm(self.request.user,
+                                                 'delete_program')
+                    msg_id = request.data.get('message_id')
+                    value = request.data.get('value')
+                    if msg_id:
+                        sms_msg = SmsDeliveryMessage.objects.get(id=msg_id)
+                        sms_msg.is_checked = value
+                        sms_msg.save()
+                        return Response(status=status.HTTP_200_OK)
+        except Exception as ex:
+            return Response(
+                status=status.HTTP_400_BAD_REQUEST,
+                data={
+                    'status': 'error',
+                    'message': ex.args[0]
+                }
+            )
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def _get_delivery_events_serialized(self):

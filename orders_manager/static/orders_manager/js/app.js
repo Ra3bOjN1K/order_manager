@@ -2047,7 +2047,9 @@ angular.module('OrderManagerApp', [
             }
 
             function onDisableMessageClick(message) {
-                message.disabled = !message.disabled;
+                SmsDeliveryService.markSmsMessageChecked(message.id, !message.disabled).then(function () {
+                    message.disabled = !message.disabled;
+                })
             }
 
             function dateFilterApply(range) {
@@ -2074,6 +2076,7 @@ angular.module('OrderManagerApp', [
                 angular.forEach(vm.smsMessage.list, function (msg) {
                     if (!msg.disabled) {
                         targetMsgList.push({
+                            id: msg.id,
                             client_id: msg.order.client.id,
                             message: msg.message
                         });

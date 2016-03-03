@@ -490,6 +490,19 @@ angular.module('OrderManagerApp')
                     });
                     return deferred.promise;
                 },
+                markSmsMessageChecked: function (messageId, isChecked) {
+                    var deferred = $q.defer();
+                    _smsDeliveryService.post({
+                        'action': 'moderated_message',
+                        'message_id': messageId,
+                        'value': isChecked
+                    }).then(function (res) {
+                        deferred.resolve(res);
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
+                },
                 sendMessages: function (messages, mode) {
                     var deferred = $q.defer();
                     _smsDeliveryService.post({
