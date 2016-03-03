@@ -323,9 +323,10 @@ def send_sms_messages_bulk(msg_data, replace_names=False):
 
     sms_service = SmsDeliveryService()
     sms_service.send_messages(messages)
-    sms_ids = [i.id for i in msg_data if hasattr(i, 'id')]
+    sms_ids = [i.get('id') for i in msg_data if i.get('id')]
     if sms_ids:
         for sms_model in SmsDeliveryMessage.objects.filter(pk__in=sms_ids):
             sms_model.is_checked = True
             sms_model.is_sent = True
             sms_model.save()
+    return sms_ids

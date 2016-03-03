@@ -2083,7 +2083,13 @@ angular.module('OrderManagerApp', [
                     }
                 });
                 SmsDeliveryService.sendMessages(targetMsgList, 'scheduled').then(function (res) {
-                    console.log(res);
+                    angular.forEach(vm.smsMessage.list, function (loc_msg, idx) {
+                        angular.forEach(res.sent, function (res_msg) {
+                            if (parseInt(loc_msg.id) === parseInt(res_msg)) {
+                                vm.smsMessage.list.splice(idx, 1);
+                            }
+                        })
+                    })
                 })
             }
         }])

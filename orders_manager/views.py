@@ -810,8 +810,13 @@ class SmsDeliveryView(APIView):
                         send_sms_messages_bulk(messages, replace_names=True)
                         return Response(status=status.HTTP_200_OK)
                     elif mode == 'scheduled' and messages:
-                        send_sms_messages_bulk(messages)
-                        return Response(status=status.HTTP_200_OK)
+                        sent_ids = send_sms_messages_bulk(messages)
+                        return Response(
+                            status=status.HTTP_200_OK,
+                            data={
+                                'sent': sent_ids
+                            }
+                        )
                 elif action == 'moderated_message':
                     _raise_denied_if_has_no_perm(self.request.user,
                                                  'delete_program')
