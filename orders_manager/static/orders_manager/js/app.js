@@ -2067,7 +2067,7 @@ angular.module('OrderManagerApp', [
                     });
                 });
                 SmsDeliveryService.sendMessages(targetMsgList, 'manual').then(function (res) {
-                    console.log(res);
+                    vm.foundClientList = [];
                 })
             }
 
