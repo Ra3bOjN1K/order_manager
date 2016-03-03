@@ -2137,6 +2137,7 @@ angular.module('OrderManagerApp', [
         vm.setCustomPeriodRange = setCustomPeriodRange;
         vm.selectOrderSourceTab = onSelectOrderSourceTab;
         vm.getOrderStatByName = getOrderStatByName;
+        vm.getTotalMonthStatistic = getTotalMonthStatistic;
 
         function onSelectOrderSourceTab() {
             if (!vm.orderSourcesStatictic) {
@@ -2155,6 +2156,14 @@ angular.module('OrderManagerApp', [
                 }
             });
             return count;
+        }
+
+        function getTotalMonthStatistic(row) {
+            var totalCount = 0;
+            angular.forEach(row.stats, function (item) {
+                totalCount += item.count;
+            });
+            return totalCount;
         }
 
         function setCustomPeriodRange(range) {

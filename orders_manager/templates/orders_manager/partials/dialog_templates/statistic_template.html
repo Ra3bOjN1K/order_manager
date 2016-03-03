@@ -103,6 +103,7 @@
                                 <tr>
                                     <th class="text-center"></th>
                                     <th class="text-center" ng-repeat="s in vm.orderSourceList">{{ s }}</th>
+                                    <th class="text-center" ng-if="vm.orderSourceList.length > 0">Всего</th>
                                 </tr>
                                 </thead>
                                 <tbody  draw-source-dif-percent>
@@ -110,6 +111,9 @@
                                     <td class="text-center month-name">{{ p.month }}</td>
                                     <td class="text-center source-num"
                                         ng-repeat="s in vm.orderSourceList">{{ vm.getOrderStatByName(p, s) }}</td>
+                                    <td class="text-center source-num" ng-if="vm.orderSourceList.length > 0">
+                                        {{ vm.getTotalMonthStatistic(p) }}
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>
