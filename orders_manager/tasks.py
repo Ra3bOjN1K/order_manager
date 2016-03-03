@@ -320,6 +320,7 @@ def send_sms_messages_bulk(msg_data, replace_names=False):
                     'recipient': client.phone,
                     'message': msg
                 })
+
     sms_service = SmsDeliveryService()
     sms_service.send_messages(messages)
     sms_ids = [i.id for i in msg_data if hasattr(i, 'id')]
