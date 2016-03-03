@@ -230,6 +230,30 @@
   padding-right: 16px;
   width: 350px;
 }
+.panel-sms-delivery .scheduled-mode-wrapper .msg-tips {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  color: #777;
+  font-size: 8pt;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.panel-sms-delivery .scheduled-mode-wrapper .msg-tips .tip-title {
+  color: #222;
+  margin-left: 4px;
+}
 .panel-sms-delivery .scheduled-mode-wrapper .scheduled-events-block > .edit-event-block {
   display: -moz-box;
   -moz-box-orient: vertical;
@@ -246,7 +270,7 @@
   background: #fff;
   border: 1px solid #bbb;
   border-radius: 2px;
-  height: 192px;
+  height: 220px;
   margin-bottom: 8px;
   margin-top: 4px;
   padding: 9px;
@@ -286,7 +310,6 @@
   align-items: center;
   -webkit-flex: 1 1;
   flex: 1 1;
-  margin-bottom: 3px;
 }
 .panel-sms-delivery .scheduled-events-block > .edit-event-block label {
   color: #666;
@@ -306,13 +329,18 @@
   line-height: 1;
 }
 .panel-sms-delivery .scheduled-events-block > .edit-event-block .form-group.event-name {
+  margin-bottom: 3px;
   max-height: 28px;
 }
 .panel-sms-delivery .scheduled-events-block > .edit-event-block #e-name {
   min-width: 200px;
 }
 .panel-sms-delivery .scheduled-events-block > .edit-event-block .form-group.event-days {
+  margin: 0;
   max-width: 120px;
+}
+.panel-sms-delivery .scheduled-events-block > .edit-event-block .event-type {
+  margin: 0;
 }
 .panel-sms-delivery .scheduled-events-block > .edit-event-block .event-delay {
   display: -moz-box;
@@ -325,6 +353,7 @@
   -webkit-flex-direction: row;
   display: flex;
   flex-direction: row;
+  margin-bottom: 3px;
 }
 .panel-sms-delivery .scheduled-events-block > .edit-event-block #e-days {
   width: 80px;
@@ -334,6 +363,7 @@
 }
 .panel-sms-delivery .scheduled-events-block > .edit-event-block .event-msg {
   height: 200px;
+  margin-bottom: 0;
 }
 .panel-sms-delivery .scheduled-events-block > .edit-event-block #e-msg {
   min-width: 200px;

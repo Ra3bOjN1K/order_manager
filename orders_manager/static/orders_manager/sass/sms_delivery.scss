@@ -153,13 +153,28 @@
       width: 350px;
     }
 
+    .msg-tips {
+      @include init-flex-position(row);
+      @include justify-content(center);
+      @include flex-wrap(wrap);
+      color: #777;
+      font-size: 8pt;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .msg-tips .tip-title {
+      color: #222;
+      margin-left: 4px;
+    }
+
     .scheduled-events-block > .edit-event-block {
       @include init-flex-position(column);
       @include justify-content(flex-start);
       background: #fff;
       border: 1px solid #bbb;
       border-radius: 2px;
-      height: 192px;
+      height: 220px;
       margin-bottom: 8px;
       margin-top: 4px;
       padding: 9px;
@@ -182,7 +197,6 @@
       @include init-flex-position(row);
       @include align-items(center);
       @include flex(1 1);
-      margin-bottom: 3px;
     }
 
     label {
@@ -206,6 +220,7 @@
     }
 
     .form-group.event-name {
+      margin-bottom: 3px;
       max-height: 28px;
     }
 
@@ -214,11 +229,17 @@
     }
 
     .form-group.event-days {
+      margin: 0;
       max-width: 120px;
+    }
+
+    .event-type {
+      margin: 0;
     }
 
     .event-delay {
       @include init-flex-position(row);
+      margin-bottom: 3px;
     }
 
     #e-days {
@@ -231,6 +252,7 @@
 
     .event-msg {
       height: 200px;
+      margin-bottom: 0;
     }
 
     #e-msg {
