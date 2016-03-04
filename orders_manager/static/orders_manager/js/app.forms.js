@@ -1162,9 +1162,18 @@ angular.module('OrderManagerApp')
                                 if (!!newVal && !!newVal.value) {
                                     ProgramService.getProgramPrices(newVal.value).then(function (prices) {
                                         var price_opts = [];
-                                        $scope.formState.programPrices.list = prices;
+                                        var cpPrices = [];
+                                        angular.forEach(prices, function (item) {
+                                            if (item.duration === 60) {
+                                                cpPrices.unshift(item);
+                                            }
+                                            else {
+                                                cpPrices.push(item);
+                                            }
+                                        });
+                                        $scope.formState.programPrices.list = cpPrices;
 
-                                        angular.forEach(prices, function (price) {
+                                        angular.forEach(cpPrices, function (price) {
                                             var item = {
                                                 name: price.duration + ' мин.',
                                                 value: price.id
