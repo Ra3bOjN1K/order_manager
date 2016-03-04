@@ -328,6 +328,10 @@ body:after {
   cursor: hand;
   cursor: pointer;
 }
+.user-profile-panel .user-menu-item {
+  cursor: hand;
+  cursor: pointer;
+}
 .user-profile-panel .btn-group.open {
   background: #3b4655;
 }

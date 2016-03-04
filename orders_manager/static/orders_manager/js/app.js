@@ -234,7 +234,9 @@ angular.module('OrderManagerApp', [
             return result
         };
     })
-    .controller('ApplicationCtrl', ['$scope', '$timeout', 'Auth', 'ngDialog', function ($scope, $timeout, Auth, ngDialog) {
+    .controller('ApplicationCtrl', [
+        '$scope', '$timeout', 'Auth', 'ngDialog', 'OrderService',
+        function ($scope, $timeout, Auth, ngDialog, OrderService) {
 
         $scope.basePage = {
             loading: true
@@ -252,6 +254,10 @@ angular.module('OrderManagerApp', [
             hasPermission: function (permission) {
                 return Auth.hasPermission(permission)
             }
+        };
+
+        $scope.syncGoogleCalendar = function () {
+            OrderService.syncGoogleCalendar();
         };
 
         $scope.dlgManager = {

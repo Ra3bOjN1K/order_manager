@@ -211,6 +211,11 @@ body {
     }
   }
 
+  .user-menu-item {
+    cursor: hand;
+    cursor: pointer;
+  }
+
   .btn-group.open {
     background: darken(#455264, 5%);
   }

@@ -28,7 +28,8 @@ from orders_manager.roles import get_user_role
 from orders_manager.google_apis import GoogleApiHandler
 from orders_manager.sms_delivery_service import SmsDeliveryService
 from orders_manager.tasks import (send_order_to_users_google_calendar,
-    delete_order_from_users_google_calendar, send_sms_messages_bulk)
+    delete_order_from_users_google_calendar, send_sms_messages_bulk,
+    sync_month_orders_to_google_calendar)
 
 
 class PopulateDatabaseView(View):
@@ -422,6 +423,11 @@ class OrderListView(ListCreateAPIView):
     serializer_class = OrderSerializer
 
     def post(self, request, *args, **kwargs):
+        if request.data.get('action') == 'sync_google_calendar':
+            _raise_denied_if_has_no_perm(self.request.user, 'see_orders')
+            sync_month_orders_to_google_calendar(self.request.user.id)
+            return Response(status=status.HTTP_200_OK, data='all right')
+
         _raise_denied_if_has_no_perm(self.request.user, 'add_order')
 
         user_id = (request.user.user.id if hasattr(request.user, 'user') else
@@ -482,8 +488,7 @@ class OrderListView(ListCreateAPIView):
             return Order.objects.filter(
                 (
                     Q(program_executors__user_id=self.request.user.id) |
-                    Q(
-                        additional_services_executors__executor_id=self.request.user.id)
+                    Q(additional_services_executors__executor_id=self.request.user.id)
                 )
                 & Q(celebrate_date__gte=datetime.date.today())
             ).distinct('id')
@@ -557,7 +562,8 @@ class ProgramPriceListView(ListCreateAPIView):
 
     def get_queryset(self):
         _raise_denied_if_has_no_perm(self.request.user, 'see_program_prices')
-        return ProgramPrice.objects.filter(program__id=self.kwargs.get('pk'))
+        return ProgramPrice.objects.filter(
+            program__id=self.kwargs.get('pk')).order_by('duration').all()
 
     def post(self, request, *args, **kwargs):
         if request.data.get('mode'):

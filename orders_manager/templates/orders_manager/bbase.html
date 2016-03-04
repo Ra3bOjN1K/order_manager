@@ -108,21 +108,26 @@
                             {% if not user.is_superuser %}
                                 {% verbatim %}
                                 <li role="menuitem">
-                                    <a ng-click="dlgManager.userProfile.showDlg()"><b class="fa fa-user"></b>
-                                        Профиль</a>
+                                    <a ng-click="dlgManager.userProfile.showDlg()" class="user-menu-item">
+                                        <b class="fa fa-user"></b> Профиль</a>
+                                </li>
+                                <li role="menuitem">
+                                    <a ng-click="syncGoogleCalendar()"
+                                       class="user-menu-item"><b class="fa fa-exchange"></b> Google sync</a>
                                 </li>
                                 {% endverbatim %}
                             {% endif %}
                             {% verbatim %}
                             <li role="menuitem">
-                                <a ng-click="dlgManager.changePwd.showDlg()">
+                                <a ng-click="dlgManager.changePwd.showDlg()" class="user-menu-item">
                                     <b class="fa fa-unlock-alt"></b> Сменить пароль
                                 </a>
                             </li>
                             {% endverbatim %}
                             <li class="divider"></li>
                             <li role="menuitem">
-                                <a href="{% url "orders_manager:logout" %}"><b class="fa fa-sign-out"></b> Выйти</a>
+                                <a href="{% url "orders_manager:logout" %}" class="user-menu-item">
+                                    <b class="fa fa-sign-out"></b> Выйти</a>
                             </li>
                         </ul>
                     </div>

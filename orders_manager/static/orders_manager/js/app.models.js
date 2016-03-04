@@ -104,7 +104,15 @@ angular.module('OrderManagerApp')
                     });
                     return deferred.promise;
                 },
-
+                syncGoogleCalendar: function () {
+                    var deferred = $q.defer();
+                    _orderService.post({'action': 'sync_google_calendar'}).then(function () {
+                        deferred.resolve();
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
+                }
             }
         }
     ])

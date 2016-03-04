@@ -8,6 +8,27 @@ from app.celery import app
 from celery.utils.log import get_task_logger
 
 
+def sync_month_orders_to_google_calendar(user_id):
+    import datetime
+    import calendar
+    from orders_manager.models import Order
+
+    today = datetime.date.today()
+    mr = calendar.monthrange(today.year, today.month)
+    orders = Order.objects.filter(
+        Q(celebrate_date__range=[
+            today.replace(day=mr[0]), today.replace(day=mr[1])]) &
+        (
+            Q(program_executors__user_id=user_id) |
+            Q(additional_services_executors__executor_id=user_id)
+        )
+    ).all()
+
+    for order in orders:
+        send_order_to_users_google_calendar.apply(
+            args=[order.id], kwargs={'send_email': False})
+
+
 @app.task
 def cyclically_update_orders_to_google_calendars():
     import datetime
