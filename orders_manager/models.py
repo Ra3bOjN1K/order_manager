@@ -372,6 +372,7 @@ class SmsDeliveryCredentials(models.Model):
     login = models.CharField(max_length=60)
     password = models.CharField(max_length=120)
     sender = models.CharField(max_length=60, default='')
+    transliterate = models.BooleanField(default=False)
 
 
 class SmsDeliveryEvent(models.Model):

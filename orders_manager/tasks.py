@@ -294,11 +294,13 @@ def set_debtors():
 
 def create_debt_for_order(order):
     from orders_manager.models import AnimatorDebt
-    AnimatorDebt(
-        order=order,
-        executor=order.program_executors.first(),
-        debt=order.total_price_with_discounts - order.cost_of_the_way
-    ).save()
+    first_executor = order.program_executors.first()
+    if first_executor:
+        AnimatorDebt(
+            order=order,
+            executor=first_executor,
+            debt=order.total_price_with_discounts - order.cost_of_the_way
+        ).save()
 
 
 @app.task
@@ -329,13 +331,18 @@ def _get_target_orders(delivery_event):
 def send_sms_messages_bulk(msg_data, replace_names=False):
     from orders_manager.models import Client, SmsDeliveryMessage
     from orders_manager.sms_delivery_service import SmsDeliveryService
+    from orders_manager.transliterate_service import (transliterate_message,
+        need_transliteration)
+
     clients = Client.objects.filter(
         pk__in=[i.get('client_id') for i in msg_data]).all()
     messages = []
     for client in clients:
         for item in msg_data:
             if item.get('client_id') == client.id:
-                msg = (item.get('message').format(client_name=client.name)
+                client_name = (transliterate_message(client.name)
+                               if need_transliteration() else client.name)
+                msg = (item.get('message').format(client_name=client_name)
                        if replace_names else item.get('message'))
                 messages.append({
                     'recipient': client.phone,

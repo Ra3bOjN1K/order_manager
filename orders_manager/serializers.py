@@ -4,7 +4,8 @@ from django.contrib.auth.models import Permission
 from rest_framework import serializers
 from orders_manager.models import (UserProfile, Client, Order, Program,
     AdditionalService, ClientChild, ProgramPrice, Discount, DayOff,
-    AnimatorDebt, SmsDeliveryEvent, SmsDeliveryMessage)
+    AnimatorDebt, SmsDeliveryEvent, SmsDeliveryMessage, SmsDeliveryCredentials)
+from orders_manager.transliterate_service import transliterate_message
 
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -312,7 +313,11 @@ class SmsDeliveryMessageSerializer(DynamicFieldsModelSerializer):
         }
 
     def get_message(self, obj):
-        return obj.format_message()
+        settings = SmsDeliveryCredentials.objects.first()
+        message = obj.format_message()
+        if settings and settings.transliterate:
+            message = transliterate_message(message)
+        return message
 
 
 class SmsDeliveryMessageListSerializer(serializers.ListSerializer):

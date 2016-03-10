@@ -787,23 +787,19 @@ class SmsDeliveryView(APIView):
                         return Response(status=status.HTTP_200_OK)
                 elif target == 'api_settings':
                     sms_service = SmsDeliveryService()
-                    sms_service_settings = sms_service.get_api_settings()
                     action = request.data.get('action')
                     if action == 'get':
                         return Response(
                             status=status.HTTP_200_OK,
-                            data={
-                                'login': sms_service_settings['login'],
-                                'apikey': sms_service_settings['apikey'],
-                                'sender': sms_service_settings['sender']
-                            }
+                            data=sms_service.get_api_settings()
                         )
                     if action == 'save':
                         settings = request.data.get('settings')
                         sms_service.save_api_settings(
                             login=settings.get('login'),
                             apikey=settings.get('apikey'),
-                            sender=settings.get('sender')
+                            sender=settings.get('sender'),
+                            transliteration=settings.get('transliteration')
                         )
                         return Response(status=status.HTTP_200_OK)
                 action = request.data.get('action')
@@ -823,6 +819,21 @@ class SmsDeliveryView(APIView):
                                 'sent': sent_ids
                             }
                         )
+                if action == 'update_message_transliteration':
+                    from orders_manager.transliterate_service import \
+                        transliterate_message, need_transliteration
+                    message = request.data.get('message', '')
+                    return Response(
+                        status=status.HTTP_200_OK,
+                        data={
+                            'message': (
+                                transliterate_message(message)
+                                if need_transliteration()
+                                else transliterate_message(
+                                    message, reverse=False)
+                            )
+                        }
+                    )
                 elif action == 'moderated_message':
                     _raise_denied_if_has_no_perm(self.request.user,
                                                  'delete_program')
@@ -833,6 +844,7 @@ class SmsDeliveryView(APIView):
                         sms_msg.is_checked = value
                         sms_msg.save()
                         return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
             return Response(
                 status=status.HTTP_400_BAD_REQUEST,
@@ -841,7 +853,6 @@ class SmsDeliveryView(APIView):
                     'message': ex.args[0]
                 }
             )
-        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def _get_delivery_events_serialized(self):
         events = SmsDeliveryEvent.objects.all().order_by('-created')

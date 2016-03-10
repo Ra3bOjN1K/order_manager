@@ -13,3 +13,4 @@ celery
 django-celery
 flower
 requests
+transliterate

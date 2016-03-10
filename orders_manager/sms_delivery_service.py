@@ -10,18 +10,20 @@ class SmsDeliveryService:
     SIZE_MESSAGES_BULK = 300
     REQUEST_TIMEOUT = 3  # sec
 
-    def save_api_settings(self, login, apikey, sender):
+    def save_api_settings(self, login, apikey, sender, transliteration):
         credential = SmsDeliveryCredentials.objects.first()
         if credential:
             credential.login = login
             credential.password = apikey
             credential.sender = sender
+            credential.transliterate = transliteration
             credential.save()
         else:
             SmsDeliveryCredentials(
                 login=login,
                 password=apikey,
-                sender=sender
+                sender=sender,
+                transliterate=transliteration
             ).save()
 
     def get_api_settings(self):
@@ -30,9 +32,10 @@ class SmsDeliveryService:
             return {
                 'login': settings.login,
                 'apikey': settings.password,
-                'sender': settings.sender
+                'sender': settings.sender,
+                'transliterate': settings.transliterate
             }
-        return {'login': '', 'apikey': '', 'sender': ''}
+        return {'login': '', 'apikey': '', 'sender': '', 'transliterate': False}
 
     def _generate_package(self, messages, sender):
         package = []

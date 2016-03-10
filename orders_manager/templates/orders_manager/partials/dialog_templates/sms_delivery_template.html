@@ -5,7 +5,7 @@
             <div class="ngdialog-close"></div>
         </div>
         <div class="panel-body panel-sms-delivery">
-            <uib-tabset justified="true">
+            <uib-tabset justified="true" select="vm.onManualModeSelect()">
                 <uib-tab heading="Ручной режим" active="true">
                     <div class="manual-mode-wrapper">
                         <div class="filters">
@@ -31,6 +31,8 @@
                             <button class="btn-select-all" ng-click="vm.dateFilterApply('None')">Выбрать всех</button>
                         </div>
                         <div class="msg-body">
+                            <a class="update-transliteration-btn"
+                               ng-click="vm.updateMessageTransliteration()"><i class="fa fa-refresh"></i></a>
                             <textarea class="sms-msg" ng-model="vm.msgTextInManualMode"
                                       placeholder="Введите сообщение для отправки"></textarea>
                             <div class="msg-tips"><span class="tip-title">{client_name}</span> - имя клиента</div>
@@ -148,6 +150,11 @@
                                 <label for="api-sender">Имя отправителя:</label>
                                 <input class="form-control" ng-model="vm.smsApiSettings.sender" type="text"
                                        id="api-sender">
+                            </div>
+                            <div class="transliteration">
+                                <input class="transliteration-checkbox" ng-model="vm.smsApiSettings.transliteration"
+                                       type="checkbox" id="api-transliteration">
+                                <label for="api-transliteration">Включить транслитерацию сообщений</label>
                             </div>
                             <div class="settings-controls">
                                 <button class="btn-save-api-settings"

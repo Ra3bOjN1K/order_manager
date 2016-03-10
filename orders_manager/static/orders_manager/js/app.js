@@ -1938,15 +1938,18 @@ angular.module('OrderManagerApp', [
                 login: '',
                 apikey: '',
                 sender: '',
+                transliteration: false,
                 saveSettings: saveSmsApiSettings
             };
             vm.foundClientList = [];
             vm.msgTextInManualMode = '';
+            vm.onManualModeSelect = onManualModeSelect;
             vm.onScheduledModeSelect = onScheduledModeSelect;
             vm.onSmsApiSettingsSelect = onSmsApiSettingsSelect;
             vm.dateFilterApply = dateFilterApply;
             vm.sendMessagesImScheduledMode = sendMessagesImScheduledMode;
             vm.sendMessagesImManualMode = sendMessagesImManualMode;
+            vm.updateMessageTransliteration = updateMessageTransliteration;
 
             function onSmsApiSettingsSelect () {
                 loadSmsApiSettings();
@@ -1957,6 +1960,7 @@ angular.module('OrderManagerApp', [
                     vm.smsApiSettings.login = settings.login;
                     vm.smsApiSettings.apikey = settings.apikey;
                     vm.smsApiSettings.sender = settings.sender;
+                    vm.smsApiSettings.transliteration = settings.transliterate;
                 })
             }
 
@@ -1964,8 +1968,21 @@ angular.module('OrderManagerApp', [
                 SmsDeliveryService.saveApiSettings({
                     'login': vm.smsApiSettings.login,
                     'apikey': vm.smsApiSettings.apikey,
-                    'sender': vm.smsApiSettings.sender
+                    'sender': vm.smsApiSettings.sender,
+                    'transliteration': vm.smsApiSettings.transliteration
                 })
+            }
+
+            function updateMessageTransliteration() {
+                SmsDeliveryService.updateMessageTransliteration(vm.msgTextInManualMode).then(function (data) {
+                    if (!!data) {
+                        vm.msgTextInManualMode = data.message;
+                    }
+                })
+            }
+
+            function onManualModeSelect() {
+                // have no implementation, yet
             }
 
             function onScheduledModeSelect() {

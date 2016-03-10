@@ -548,6 +548,18 @@ angular.module('OrderManagerApp')
                         deferred.reject(error);
                     });
                     return deferred.promise;
+                },
+                updateMessageTransliteration: function (message) {
+                    var deferred = $q.defer();
+                    _smsDeliveryService.post({
+                        'action': 'update_message_transliteration',
+                        'message': message
+                    }).then(function (res) {
+                        deferred.resolve(res);
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
                 }
             }
     }]);
