@@ -295,6 +295,7 @@ def set_debtors():
 def create_debt_for_order(order):
     from orders_manager.models import AnimatorDebt
     first_executor = order.program_executors.first()
+
     if first_executor:
         AnimatorDebt(
             order=order,
