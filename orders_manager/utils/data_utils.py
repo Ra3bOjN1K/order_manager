@@ -36,7 +36,7 @@ def trim_phone_number(phone):
     return None
 
 
-def calculate_age(born):
+def calculate_age(born, next_age=True):
     today = datetime.date.today()
     try:
         birthday = born.replace(year=today.year)
@@ -45,9 +45,10 @@ def calculate_age(born):
         # a leap year
         birthday = born.replace(year=today.year, month=born.month + 1, day=1)
     if birthday > today:
-        return today.year - born.year - 1
+        age = today.year - born.year - 1
     else:
-        return today.year - born.year
+        age = today.year - born.year
+    return age + 1 if next_age else age
 
 
 if __name__ == '__main__':

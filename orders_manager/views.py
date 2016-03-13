@@ -280,52 +280,58 @@ class ClientListView(ListCreateAPIView):
         return super(ClientListView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        if request.data.get('mode') == 'quick_create':
-            _raise_denied_if_has_no_perm(self.request.user, 'add_client')
+        try:
+            if request.data.get('mode') == 'quick_create':
+                _raise_denied_if_has_no_perm(self.request.user, 'add_client')
 
-            client = Client.objects.update_or_create(**{
-                'name': request.data.get('name'),
-                'phone': request.data.get('phone'),
-                'phone_2': request.data.get('phone_2')
-            })
-            ClientChild.objects.update_or_create(**{
-                'client_id': client.id,
-                'name': request.data.get('child_name'),
-                'age': request.data.get('child_age'),
-                'celebrate_date': request.data.get('celebrate_date')
-            })
-            client_ser = self.get_serializer(client)
-            return Response(client_ser.data)
+                client = Client.objects.update_or_create(**{
+                    'name': request.data.get('name'),
+                    'phone': request.data.get('phone'),
+                    'phone_2': request.data.get('phone_2')
+                })
+                ClientChild.objects.update_or_create(**{
+                    'client_id': client.id,
+                    'name': request.data.get('child_name'),
+                    'age': request.data.get('child_age'),
+                    'celebrate_date': request.data.get('celebrate_date')
+                })
+                client_ser = self.get_serializer(client)
+                return Response(client_ser.data)
 
-        elif request.data.get('mode') == 'delete':
-            _raise_denied_if_has_no_perm(self.request.user, 'delete_client')
+            elif request.data.get('mode') == 'delete':
+                _raise_denied_if_has_no_perm(self.request.user, 'delete_client')
 
-            client_id = request.data.get('client_id')
-            client = Client.objects.get(id=client_id)
-            client_orders = client.order_set.all()
-            if client_orders:
-                client.deactivate()
+                client_id = request.data.get('client_id')
+                client = Client.objects.get(id=client_id)
+                client_orders = client.order_set.all()
+                if client_orders:
+                    client.deactivate()
+                else:
+                    client.delete()
+                return Response(status=status.HTTP_200_OK)
             else:
-                client.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            _raise_denied_if_has_no_perm(self.request.user, 'add_client')
+                _raise_denied_if_has_no_perm(self.request.user, 'add_client')
 
-            client = Client.objects.update_or_create(**{
-                'id': request.data.get('id'),
-                'name': request.data.get('name'),
-                'phone': request.data.get('phone'),
-                'phone_2': request.data.get('phone_2'),
-                'email': request.data.get('email'),
-                'vk_link': request.data.get('vk_link'),
-                'odnoklassniki_link': request.data.get('odnoklassniki_link'),
-                'instagram_link': request.data.get('instagram_link'),
-                'facebook_link': request.data.get('facebook_link'),
-                'secondby_link': request.data.get('secondby_link'),
-                'comments': request.data.get('comments'),
-            })
-            client_ser = self.get_serializer(client)
-            return Response(client_ser.data)
+                client = Client.objects.update_or_create(**{
+                    'id': request.data.get('id'),
+                    'name': request.data.get('name'),
+                    'phone': request.data.get('phone'),
+                    'phone_2': request.data.get('phone_2'),
+                    'email': request.data.get('email'),
+                    'vk_link': request.data.get('vk_link'),
+                    'odnoklassniki_link': request.data.get('odnoklassniki_link'),
+                    'instagram_link': request.data.get('instagram_link'),
+                    'facebook_link': request.data.get('facebook_link'),
+                    'secondby_link': request.data.get('secondby_link'),
+                    'comments': request.data.get('comments'),
+                })
+                client_ser = self.get_serializer(client)
+                return Response(client_ser.data)
+        except Exception as ex:
+            return Response(
+                status=status.HTTP_400_BAD_REQUEST,
+                data={'error': ex.args[0]}
+            )
 
 
 class ClientView(RetrieveAPIView):

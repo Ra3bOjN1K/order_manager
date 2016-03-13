@@ -147,8 +147,19 @@ class ClientManager(models.Manager):
             if kwargs.get('id'):
                 client = self.get(id=kwargs.pop('id'))
             else:
-                client = self.get(phone=trim_phone_number(kwargs.get('phone')))
+                client = self.get(
+                    Q(phone=trim_phone_number(kwargs.get('phone'))) &
+                    Q(is_active=True)
+                )
             for attr, val in kwargs.items():
+                if attr == 'phone':
+                    exists_cl = self.filter(
+                        ~Q(id=client.id) &
+                        Q(phone=val) &
+                        Q(is_active=True)
+                    ).all()
+                    if exists_cl:
+                        raise ValueError('Client with same phone already exists.')
                 setattr(client, attr, val)
             client.save()
         except self.model.DoesNotExist:
@@ -173,10 +184,10 @@ class ClientChildrenManager(models.Manager):
         if kwargs.get('birthday'):
             client_child.birthday = kwargs.get('birthday')
         else:
-            current_age = kwargs.get('age')
+            next_age = kwargs.get('age')
             celebrate_date = kwargs.get('celebrate_date')
             client_child.birthday = self._calculate_child_birthday(
-                current_age, celebrate_date)
+                next_age, celebrate_date)
         client_child.save()
         return client_child
 
@@ -204,7 +215,7 @@ class ClientChildrenManager(models.Manager):
             child = self.create(**kwargs)
         return child
 
-    def _calculate_child_birthday(self, current_age, celebrate_date):
+    def _calculate_child_birthday(self, next_age, celebrate_date):
         from datetime import datetime
 
         def clean_celebrate_date(celebrate_date):
@@ -217,7 +228,7 @@ class ClientChildrenManager(models.Manager):
 
         celebrate_date = clean_celebrate_date(celebrate_date)
         date_time = celebrate_date.replace(
-            year=(celebrate_date.year - (int(current_age) + 1))
+            year=(celebrate_date.year - int(next_age))
         )
         return date_time.strftime('%Y-%m-%d')
 
