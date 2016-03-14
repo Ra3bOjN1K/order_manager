@@ -11,7 +11,7 @@ from orders_manager.managers import (UserProfileManager, ClientManager,
     SmsDeliveryEventManager)
 from orders_manager.utils.data_utils import calculate_age
 from orders_manager.roles import ROLES, get_user_role
-from oauth2client.contrib.django_orm import CredentialsField
+from oauth2client.django_orm import CredentialsField
 
 
 class CredentialsModel(models.Model):
