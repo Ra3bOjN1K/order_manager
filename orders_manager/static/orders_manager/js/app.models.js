@@ -419,12 +419,12 @@ angular.module('OrderManagerApp')
                 RestangularConfigurer.setBaseUrl('/api/v1/');
                 RestangularConfigurer.setRequestSuffix('/');
             });
-            var _animatorDebtService = restAngular.all('statistic');
+            var _statsService = restAngular.all('statistic');
 
             return {
                 getStatisticInfo: function (periodRange) {
                     var deferred = $q.defer();
-                    _animatorDebtService.customGET('', {
+                    _statsService.customGET('', {
                         'start': periodRange.start,
                         'end': periodRange.end
                     }).then(function (stats) {
@@ -436,7 +436,7 @@ angular.module('OrderManagerApp')
                 },
                 getOrderSourcesStatistic: function () {
                     var deferred = $q.defer();
-                    _animatorDebtService.customGET('', {'type': 'order_sources'}).then(function (stats) {
+                    _statsService.customGET('', {'type': 'order_sources'}).then(function (stats) {
                         deferred.resolve(stats);
                     }, function (error) {
                         deferred.reject(error);

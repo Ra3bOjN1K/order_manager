@@ -569,19 +569,24 @@ class OrdersManager(models.Manager):
         month_names = ('Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
                        'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь',
                        'Декабрь')
+        from orders_manager.models import Order
+
+        year = date.today().year
 
         def calc_month(idx, current_month_id):
             month_id = current_month_id - idx
+            m_year = year + (month_id - 1) // 12
             while month_id < 1:
                 month_id += 12
-            return month_id, month_names[month_id - 1]
+            return month_id, month_names[month_id - 1], m_year
 
         today_month = date.today().month
         res = []
         for i in range(num_month):
-            month_num, month_name = calc_month(i, today_month)
-            db_res = self.filter(
-                celebrate_date__month=month_num
+            month_num, month_name, m_year = calc_month(i, today_month)
+            db_res = Order.objects.filter(
+                Q(celebrate_date__month=month_num) &
+                Q(celebrate_date__year=m_year)
             ).values('where_was_found').annotate(count=Count('pk')).distinct()
             res.append({'month': month_name, 'stats': db_res})
         return res
