@@ -585,8 +585,8 @@ class OrdersManager(models.Manager):
         for i in range(num_month):
             month_num, month_name, m_year = calc_month(i, today_month)
             db_res = Order.objects.filter(
-                Q(celebrate_date__month=month_num) &
-                Q(celebrate_date__year=m_year)
+                Q(created__month=month_num) &
+                Q(created__year=m_year)
             ).values('where_was_found').annotate(count=Count('pk')).distinct()
             res.append({'month': month_name, 'stats': db_res})
         return res
