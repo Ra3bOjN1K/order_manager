@@ -17,14 +17,17 @@ angular.module('OrderManagerApp')
             });
 
             return {
-                loadOrders: function (reloadIfExists) {
+                loadOrders: function (reloadIfExists, start, end) {
 
                     if (!!_loadingOrdersPromise) {
                         return _loadingOrdersPromise;
                     }
 
                     function _loadOrders() {
-                        _loadingOrdersPromise = _orderService.getList().then(function (orders) {
+                        _loadingOrdersPromise = _orderService.getList({
+                            'date_range': {'start': start, 'end': end},
+                            'full_data': true
+                        }).then(function (orders) {
                                 _allOrders = orders;
                             })
                             .finally(function () {

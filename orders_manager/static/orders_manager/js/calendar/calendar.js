@@ -31,9 +31,10 @@ angular.module('CalendarApp', ['ui.calendar'])
 
             ExecutorDayOffService.reloadDaysOff();
 
-            OrderService.loadOrders().finally(function () {
-                $rootScope.$broadcast('basePageLoaded')
-            });
+            //OrderService.loadOrders().finally(function () {
+            //    $rootScope.$broadcast('basePageLoaded')
+            //});
+            $rootScope.$broadcast('basePageLoaded');
 
             $scope.$on('orderService:list:updated', function (event, orderList) {
                 $scope.events.addEventList(orderList, ExecutorDayOffService.getDaysOff());
@@ -203,6 +204,8 @@ angular.module('CalendarApp', ['ui.calendar'])
                 }
             };
 
+            var lastViewDateStart;
+
             $scope.uiConfig = {
                 calendar: {
                     aspectRatio: 2.5,
@@ -217,6 +220,14 @@ angular.module('CalendarApp', ['ui.calendar'])
                     lang: 'ru',
                     eventLimit: 2,
                     handleWindowResize: false,
+                    viewRender: function (view, element) {
+                        var start = view.start.format('YYYY-MM-DD HH:mm');
+                        var end = view.end.format('YYYY-MM-DD HH:mm');
+                        if (!angular.equals(lastViewDateStart, start)) {
+                            OrderService.loadOrders(true, start, end);
+                            lastViewDateStart = start;
+                        }
+                    },
                     dayRender: $scope.calendar.renderCellDay,
                     eventRender: $scope.calendar.renderEvent,
                     dayClick: $scope.events.createEvent,

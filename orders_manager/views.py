@@ -502,12 +502,15 @@ class OrderListView(ListCreateAPIView):
     def get_serializer(self, *args, **kwargs):
         user_role = get_user_role(self.request.user)
         if user_role not in ('manager', 'superuser'):
-            kwargs.update({'required_fields': [
-                'id', 'celebrate_date', 'celebrate_time', 'program',
-                'duration', 'is_only_service_executor'
-            ]})
+            if not self.request.query_params.get('full_data', False):
+                kwargs.update({'required_fields': [
+                    'id', 'celebrate_date', 'celebrate_time', 'program',
+                    'duration', 'is_only_service_executor'
+                ]})
         elif self.request.query_params.get('date_range'):
-            kwargs.update({'required_fields': ['client']})
+            if not self.request.query_params.get('full_data'):
+                kwargs.update({'required_fields': [
+                    'client', 'program', 'celebrate_date']})
         return super(OrderListView, self).get_serializer(*args, **kwargs)
 
 
