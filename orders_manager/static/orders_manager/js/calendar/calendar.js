@@ -1,7 +1,9 @@
 angular.module('CalendarApp', ['ui.calendar'])
-    .directive('calendarStyle', function ($rootScope) {
+    .directive('calendarStyle', function ($rootScope, $timeout, OrderService, uiCalendarConfig) {
         return {
             link: function (scope, element, attrs) {
+                var isViewCtrlBtnsInited = false;
+
                 $rootScope.$on('calendarRendered', function (event, data) {
                     element.addClass('panel panel-default');
 
@@ -16,6 +18,20 @@ angular.module('CalendarApp', ['ui.calendar'])
 
                     var today = $(element).find('.fc-day.today');
                     today.attr('id', 'today');
+                    var fcRight = fcToolbar.find('.fc-right');
+                    if (!isViewCtrlBtnsInited) {
+                        var viewCtrlBtns = fcRight.find('.fc-prev-button, .fc-next-button');
+                        viewCtrlBtns.on('click', function () {
+                            var view = uiCalendarConfig.calendars.calendar.fullCalendar('getView');
+                            var start = view.start.format('YYYY-MM-DD HH:mm');
+                            var end = view.end.format('YYYY-MM-DD HH:mm');
+                            $timeout(function () {
+                                OrderService.loadOrders(true, start, end).then(function () {
+                                    //console.log('render --', start + " | " + end);
+                                });
+                            }, 100);
+                        });
+                    }
                     //today.append('<div class="today-border-wrapper"></div>');
                     //
                     //var todayBorderWrapper = today.find('.today-border-wrapper');
@@ -34,13 +50,14 @@ angular.module('CalendarApp', ['ui.calendar'])
             //OrderService.loadOrders().finally(function () {
             //    $rootScope.$broadcast('basePageLoaded')
             //});
+
             $rootScope.$broadcast('basePageLoaded');
 
             $scope.$on('orderService:list:updated', function (event, orderList) {
                 $scope.events.addEventList(orderList, ExecutorDayOffService.getDaysOff());
             });
 
-            $scope.$on('ExecutorDayOffService:list:updated', function(event, dayOffList) {
+            $scope.$on('ExecutorDayOffService:list:updated', function (event, dayOffList) {
                 $scope.events.addEventList(OrderService.getOrders(), dayOffList);
             });
 
@@ -52,23 +69,30 @@ angular.module('CalendarApp', ['ui.calendar'])
                 list: [],
 
                 addEventList: function (modelOrders, modelDaysOff) {
+                    var events = [];
                     $timeout(function () {
-                        $scope.events.list.length = 0;
-                    }).then(function () {
                         angular.forEach(modelDaysOff, function (dayOff) {
                             dayOff.lbl = 'dayOff';
-                            $scope.events.addEvent(dayOff);
+                            events.push($scope.events.prepareEvent(dayOff));
+                            //$scope.events.addEvent(dayOff);
                         })
                     }).then(function () {
                         angular.forEach(modelOrders, function (order) {
                             order.lbl = 'order';
-                            $scope.events.addEvent(order);
+                            events.push($scope.events.prepareEvent(order));
+                            //$scope.events.addEvent(order);
                         })
+                    }).then(function () {
+                        //$scope.events.list.length = 0;
+                        uiCalendarConfig.calendars.calendar.fullCalendar('removeEvents');
+                        uiCalendarConfig.calendars.calendar.fullCalendar('addEventSource', events);
+                        //angular.forEach(events, function (item) {
+                        //    $scope.events.list.push(item);
+                        //});
                     })
                 },
 
-                addEvent: function (model) {
-
+                prepareEvent: function (model) {
                     var modelItem = {
                         label: model.lbl
                     };
@@ -115,8 +139,11 @@ angular.module('CalendarApp', ['ui.calendar'])
                         }
                         modelItem.start = model.date + ' ' + model.time_start;
                     }
+                    return modelItem;
+                },
 
-                    $scope.events.list.push(modelItem);
+                addEvent: function (model) {
+                    $scope.events.list.push($scope.events.prepareEvent(model));
                 },
 
                 createEvent: function (date, jsEvent, view) {
@@ -204,8 +231,6 @@ angular.module('CalendarApp', ['ui.calendar'])
                 }
             };
 
-            var lastViewDateStart;
-
             $scope.uiConfig = {
                 calendar: {
                     aspectRatio: 2.5,
@@ -219,28 +244,28 @@ angular.module('CalendarApp', ['ui.calendar'])
                     timezone: 'Europe/Minsk',
                     lang: 'ru',
                     eventLimit: 2,
+                    lazyFetching: false,
                     handleWindowResize: false,
-                    viewRender: function (view, element) {
-                        var start = view.start.format('YYYY-MM-DD HH:mm');
-                        var end = view.end.format('YYYY-MM-DD HH:mm');
-                        if (!angular.equals(lastViewDateStart, start)) {
-                            OrderService.loadOrders(true, start, end);
-                            lastViewDateStart = start;
-                        }
-                    },
                     dayRender: $scope.calendar.renderCellDay,
                     eventRender: $scope.calendar.renderEvent,
                     dayClick: $scope.events.createEvent,
                     events: $scope.events.list,
                     eventClick: $scope.events.showEvent,
                     eventAfterAllRender: function (view) {
-                        $rootScope.$broadcast('calendarRendered', [view])
+                        $rootScope.$broadcast('calendarRendered', [view]);
+                        //console.log('all_rendered')
                     }
                 }
             };
 
-            $rootScope.$on('renderCalendar', function() {
+            $rootScope.$on('renderCalendar', function () {
                 uiCalendarConfig.calendars.calendar.fullCalendar('render');
+                var view = uiCalendarConfig.calendars.calendar.fullCalendar('getView');
+                var start = view.start.format('YYYY-MM-DD HH:mm');
+                var end = view.end.format('YYYY-MM-DD HH:mm');
+                OrderService.loadOrders(true, start, end).then(function () {
+                    //console.log('render', start + " | " + end);
+                });
             });
 
             $scope.eventSources = [];

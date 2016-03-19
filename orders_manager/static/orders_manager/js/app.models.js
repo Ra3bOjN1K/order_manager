@@ -24,10 +24,14 @@ angular.module('OrderManagerApp')
                     }
 
                     function _loadOrders() {
-                        _loadingOrdersPromise = _orderService.getList({
-                            'date_range': {'start': start, 'end': end},
-                            'full_data': true
-                        }).then(function (orders) {
+                        var args = {};
+                        if (!!start && !!end) {
+                            args = {
+                                'date_range': {'start': start, 'end': end},
+                                'full_data': true
+                            }
+                        }
+                        _loadingOrdersPromise = _orderService.getList(args).then(function (orders) {
                                 _allOrders = orders;
                             })
                             .finally(function () {
@@ -565,4 +569,4 @@ angular.module('OrderManagerApp')
                     return deferred.promise;
                 }
             }
-    }]);
+        }]);
