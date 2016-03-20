@@ -49,6 +49,9 @@
 
   .debt-list-wrapper {
     @include init-flex-position(column);
+    max-height: 400px;
+    min-height: 400px;
+    overflow: auto;
   }
 
   .debt-list {
@@ -57,7 +60,7 @@
     width: 880px;
 
     .program-name {
-      width: 320px;
+      width: 300px;
     }
   }
 

@@ -65,6 +65,9 @@
   -webkit-flex-direction: column;
   display: flex;
   flex-direction: column;
+  max-height: 400px;
+  min-height: 400px;
+  overflow: auto;
 }
 .panel-animators-debt .debt-list {
   font-size: 11pt;
@@ -72,7 +75,7 @@
   width: 880px;
 }
 .panel-animators-debt .debt-list .program-name {
-  width: 320px;
+  width: 300px;
 }
 .panel-animators-debt .debts-header {
   border-bottom: 1px solid #ccc;
