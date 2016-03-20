@@ -501,7 +501,7 @@ angular.module('OrderManagerApp')
                     }).then(function () {
                         deferred.resolve();
                     }, function (error) {
-                        alert(error.message);
+                        alert(error.data.message);
                         deferred.reject(error);
                     });
                     return deferred.promise;
@@ -515,7 +515,7 @@ angular.module('OrderManagerApp')
                     }).then(function (res) {
                         deferred.resolve(res);
                     }, function (error) {
-                        alert(error.message);
+                        alert(error.data.message);
                         deferred.reject(error);
                     });
                     return deferred.promise;
@@ -529,7 +529,7 @@ angular.module('OrderManagerApp')
                     }).then(function (res) {
                         deferred.resolve(res);
                     }, function (error) {
-                        alert(error.message);
+                        alert(error.data.message);
                         deferred.reject(error);
                     });
                     return deferred.promise;
