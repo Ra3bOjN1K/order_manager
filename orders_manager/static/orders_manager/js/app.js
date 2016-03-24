@@ -238,136 +238,136 @@ angular.module('OrderManagerApp', [
         '$scope', '$timeout', 'Auth', 'ngDialog', 'OrderService',
         function ($scope, $timeout, Auth, ngDialog, OrderService) {
 
-        $scope.basePage = {
-            loading: true
-        };
+            $scope.basePage = {
+                loading: true
+            };
 
-        $scope.$on('basePageLoaded', function () {
-            $scope.basePage.loading = false;
-        });
+            $scope.$on('basePageLoaded', function () {
+                $scope.basePage.loading = false;
+            });
 
-        $scope.$on('Calendar.showDayOffDialog', function (event, date, dayOff) {
-            $scope.dlgManager.dayOff.showDlg(date, dayOff);
-        });
+            $scope.$on('Calendar.showDayOffDialog', function (event, date, dayOff) {
+                $scope.dlgManager.dayOff.showDlg(date, dayOff);
+            });
 
-        $scope.auth = {
-            hasPermission: function (permission) {
-                return Auth.hasPermission(permission)
-            }
-        };
-
-        $scope.syncGoogleCalendar = function () {
-            OrderService.syncGoogleCalendar();
-        };
-
-        $scope.dlgManager = {
-            changePwd: {
-                showDlg: function () {
-                    ngDialog.open({
-                        template: 'change_password_template.html',
-                        showClose: false,
-                        closeByDocument: false
-                    });
+            $scope.auth = {
+                hasPermission: function (permission) {
+                    return Auth.hasPermission(permission)
                 }
-            },
-            dayOff: {
-                showDlg: function (date, dayOff) {
-                    $scope.checkedDate = date;
-                    $scope.checkedDayOff = dayOff;
+            };
 
-                    $scope.dayOffDialog = ngDialog.open({
-                        template: 'dayoff_template.html',
-                        showClose: false,
-                        closeByDocument: false,
-                        scope: $scope
-                    });
-                }
-            },
-            userProfile: {
-                showDlg: function () {
-                    ngDialog.open({
-                        template: 'userprofile_template.html',
-                        showClose: false,
-                        closeByDocument: false
-                    });
-                }
-            },
-            clients: {
-                showDlg: function () {
-                    ngDialog.open({
-                        template: 'clients_template.html',
-                        showClose: false,
-                        closeByDocument: false
-                    })
-                }
-            },
-            programsHandbook: {
-                showDlg: function () {
-                    $timeout(function () {
+            $scope.syncGoogleCalendar = function () {
+                OrderService.syncGoogleCalendar();
+            };
+
+            $scope.dlgManager = {
+                changePwd: {
+                    showDlg: function () {
                         ngDialog.open({
-                            template: 'programs_handbook_template.html',
+                            template: 'change_password_template.html',
+                            showClose: false,
+                            closeByDocument: false
+                        });
+                    }
+                },
+                dayOff: {
+                    showDlg: function (date, dayOff) {
+                        $scope.checkedDate = date;
+                        $scope.checkedDayOff = dayOff;
+
+                        $scope.dayOffDialog = ngDialog.open({
+                            template: 'dayoff_template.html',
+                            showClose: false,
+                            closeByDocument: false,
+                            scope: $scope
+                        });
+                    }
+                },
+                userProfile: {
+                    showDlg: function () {
+                        ngDialog.open({
+                            template: 'userprofile_template.html',
+                            showClose: false,
+                            closeByDocument: false
+                        });
+                    }
+                },
+                clients: {
+                    showDlg: function () {
+                        ngDialog.open({
+                            template: 'clients_template.html',
                             showClose: false,
                             closeByDocument: false
                         })
-                    });
-                }
-            },
-            additionalServicesHandbook: {
-                showDlg: function () {
-                    ngDialog.open({
-                        template: 'additional_services_handbook_template.html',
-                        showClose: false,
-                        closeByDocument: false
-                    })
-                }
-            },
-            discountsHandbook: {
-                showDlg: function () {
-                    ngDialog.open({
-                        template: 'discounts_handbook_template.html',
-                        showClose: false,
-                        closeByDocument: false
-                    })
-                }
-            },
-            usersManager: {
-                showDlg: function () {
-                    ngDialog.open({
-                        template: 'users_manager_template.html',
-                        showClose: false,
-                        closeByDocument: false
-                    })
-                }
-            },
-            smsDelivery: {
-                showDlg: function () {
-                    ngDialog.open({
-                        template: 'sms_delivery_template.html',
-                        showClose: false,
-                        closeByDocument: false
-                    })
-                }
-            },
-            animatorDebt: {
-                showDlg: function () {
-                    ngDialog.open({
-                        template: 'animator_debts_template.html',
-                        showClose: false,
-                        closeByDocument: false
-                    })
-                }
-            },
-            statistic: {
-                showDlg: function () {
-                    ngDialog.open({
-                        template: 'statistic_template.html',
-                        showClose: false,
-                        closeByDocument: false
-                    })
+                    }
+                },
+                programsHandbook: {
+                    showDlg: function () {
+                        $timeout(function () {
+                            ngDialog.open({
+                                template: 'programs_handbook_template.html',
+                                showClose: false,
+                                closeByDocument: false
+                            })
+                        });
+                    }
+                },
+                additionalServicesHandbook: {
+                    showDlg: function () {
+                        ngDialog.open({
+                            template: 'additional_services_handbook_template.html',
+                            showClose: false,
+                            closeByDocument: false
+                        })
+                    }
+                },
+                discountsHandbook: {
+                    showDlg: function () {
+                        ngDialog.open({
+                            template: 'discounts_handbook_template.html',
+                            showClose: false,
+                            closeByDocument: false
+                        })
+                    }
+                },
+                usersManager: {
+                    showDlg: function () {
+                        ngDialog.open({
+                            template: 'users_manager_template.html',
+                            showClose: false,
+                            closeByDocument: false
+                        })
+                    }
+                },
+                smsDelivery: {
+                    showDlg: function () {
+                        ngDialog.open({
+                            template: 'sms_delivery_template.html',
+                            showClose: false,
+                            closeByDocument: false
+                        })
+                    }
+                },
+                animatorDebt: {
+                    showDlg: function () {
+                        ngDialog.open({
+                            template: 'animator_debts_template.html',
+                            showClose: false,
+                            closeByDocument: false
+                        })
+                    }
+                },
+                statistic: {
+                    showDlg: function () {
+                        ngDialog.open({
+                            template: 'statistic_template.html',
+                            showClose: false,
+                            closeByDocument: false
+                        })
+                    }
                 }
             }
-        }
-    }])
+        }])
     .controller('ExecutorDayOffCtrl', [
         '$scope', 'ExecutorDayOffForm', 'ExecutorDayOffService',
         function ($scope, ExecutorDayOffForm, ExecutorDayOffService) {
@@ -1951,11 +1951,11 @@ angular.module('OrderManagerApp', [
             vm.sendMessagesImManualMode = sendMessagesImManualMode;
             vm.updateMessageTransliteration = updateMessageTransliteration;
 
-            function onSmsApiSettingsSelect () {
+            function onSmsApiSettingsSelect() {
                 loadSmsApiSettings();
             }
 
-            function loadSmsApiSettings () {
+            function loadSmsApiSettings() {
                 SmsDeliveryService.getApiSettings().then(function (settings) {
                     vm.smsApiSettings.login = settings.login;
                     vm.smsApiSettings.apikey = settings.apikey;
@@ -1964,7 +1964,7 @@ angular.module('OrderManagerApp', [
                 })
             }
 
-            function saveSmsApiSettings () {
+            function saveSmsApiSettings() {
                 SmsDeliveryService.saveApiSettings({
                     'login': vm.smsApiSettings.login,
                     'apikey': vm.smsApiSettings.apikey,
@@ -2002,7 +2002,7 @@ angular.module('OrderManagerApp', [
 
             function onNewEventCreate() {
                 var hasNewEvent = vm.event.list.some(function (e) {
-                   return e.id === null;
+                    return e.id === null;
                 });
                 if (!hasNewEvent) {
                     var newEvent = {

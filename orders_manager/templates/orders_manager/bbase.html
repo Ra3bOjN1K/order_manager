@@ -117,6 +117,14 @@
                                 </li>
                                 {% endverbatim %}
                             {% endif %}
+                            {% if user.is_superuser %}
+                                {% verbatim %}
+                                <li role="menuitem">
+                                    <a href="/api/v1/excel_export/"
+                                       class="user-menu-item"><b class="fa fa-download"></b> Экспорт в excel</a>
+                                </li>
+                                {% endverbatim %}
+                            {% endif %}
                             {% verbatim %}
                             <li role="menuitem">
                                 <a ng-click="dlgManager.changePwd.showDlg()" class="user-menu-item">

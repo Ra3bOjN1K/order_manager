@@ -48,7 +48,7 @@ urlpatterns = [
     url(r'^api/v1/animator_debts/$', views.AnimatorDebtListView.as_view()),
     url(r'^api/v1/statistic/$', views.StatisticView.as_view()),
     url(r'^api/v1/sms_delivery/$', views.SmsDeliveryView.as_view()),
-    url(r'^api/v1/xml_export/$', views.XmlExportView.as_view()),
+    url(r'^api/v1/excel_export/$', views.XmlExportView.as_view()),
 
     url(r'^orders/$', views.ShowAllOrdersListView.as_view(),
         name='orders_list'),

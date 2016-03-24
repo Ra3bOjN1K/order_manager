@@ -17,7 +17,7 @@ from rest_framework.generics import (ListAPIView, RetrieveUpdateDestroyAPIView,
 from rest_framework.response import Response
 from guardian.mixins import PermissionRequiredMixin
 
-from orders_manager.excel_export_service import ExcelExporter
+from orders_manager.excel_export_service import OrderExcelExporter
 from orders_manager.models import (UserProfile, Client, Order, ClientChild,
     Program, ProgramPrice, AdditionalService, Discount, User, DayOff,
     AnimatorDebt, SmsDeliveryEvent, SmsDeliveryMessage)
@@ -923,18 +923,24 @@ class StatisticView(APIView):
 
 class XmlExportView(APIView):
     def get(self, request, *args, **kwargs):
-        _raise_denied_if_has_no_perm(self.request.user, 'add_order')
+        _raise_denied_if_has_no_perm(self.request.user, 'delete_userprofile')
         try:
             from django.contrib.staticfiles import finders
-            exporter = ExcelExporter()
-            excel_file = exporter.build_orders_excel_file(Order.objects.all())
-            fsock = open(excel_file, 'rb')
-            response = HttpResponse(fsock, content_type='binary/octet-stream')
+            exporter = OrderExcelExporter()
+            output = exporter.build_orders_excel_output(Order.objects.all())
+            response = HttpResponse(
+                output.read(),
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
             response['Content-Disposition'] = "attachment; filename=orders.xlsx"
+            return response
         except Exception as ex:
             return Response(
                 status=status.HTTP_400_BAD_REQUEST,
-                data={'message': ex.args[0]}
+                data={
+                    'status': 'error',
+                    'message': ex.args[0]
+                }
             )
 
 
