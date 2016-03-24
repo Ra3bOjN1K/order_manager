@@ -16,6 +16,8 @@ from rest_framework.generics import (ListAPIView, RetrieveUpdateDestroyAPIView,
     RetrieveAPIView, ListCreateAPIView, CreateAPIView)
 from rest_framework.response import Response
 from guardian.mixins import PermissionRequiredMixin
+
+from orders_manager.excel_export_service import ExcelExporter
 from orders_manager.models import (UserProfile, Client, Order, ClientChild,
     Program, ProgramPrice, AdditionalService, Discount, User, DayOff,
     AnimatorDebt, SmsDeliveryEvent, SmsDeliveryMessage)
@@ -917,6 +919,23 @@ class StatisticView(APIView):
 
     def _get_order_sources_statistic(self):
         return Order.objects.sources_statistic_for_last_months(num_month=13)
+
+
+class XmlExportView(APIView):
+    def get(self, request, *args, **kwargs):
+        _raise_denied_if_has_no_perm(self.request.user, 'add_order')
+        try:
+            from django.contrib.staticfiles import finders
+            exporter = ExcelExporter()
+            excel_file = exporter.build_orders_excel_file(Order.objects.all())
+            fsock = open(excel_file, 'rb')
+            response = HttpResponse(fsock, content_type='binary/octet-stream')
+            response['Content-Disposition'] = "attachment; filename=orders.xlsx"
+        except Exception as ex:
+            return Response(
+                status=status.HTTP_400_BAD_REQUEST,
+                data={'message': ex.args[0]}
+            )
 
 
 def _raise_denied_if_has_no_perm(user, short_perm):
