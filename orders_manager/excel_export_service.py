@@ -8,7 +8,8 @@ import xlsxwriter
 class OrderExcelExporter:
     _current_row = 0
     fields = (
-        ('{order.celebrate_date}', 'Дата праздника'),
+        ('created', 'Дата создания заказа'),
+        ('celebrate_date', 'Дата праздника'),
         ('{order.program.title}', 'Программа'),
         ('{order.price}', 'Стоимость программы'),
         ('{order.discount.value}', 'Скидка'),
@@ -45,6 +46,12 @@ class OrderExcelExporter:
                 child = order.client_children.first()
                 if child:
                     value = child.birthday.strftime("%d.%m.%Y")
+            elif i[0] == 'created':
+                value = order.created.strftime("%d.%m.%Y")
+            elif i[0] == 'celebrate_date':
+                from datetime import datetime
+                dt = datetime.combine(order.celebrate_date, order.celebrate_time)
+                value = dt.strftime('%d.%m.%Y %H:%M')
             else:
                 value = i[0].format(order=order)
             worksheet.write(self._current_row, column, value)
