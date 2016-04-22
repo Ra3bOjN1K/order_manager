@@ -1,0 +1,58 @@
+<div class="event-window-background"
+     ng-controller="CalendarEventCtrl as vm" ng-cloak="true">
+    <form ng-class="vm.readOnly ? 'readonly' : ''" class="order-form" name="vm.form"
+          novalidate ng-submit="vm.onOrderSubmit()">
+        <div class="event-window panel panel-default">
+            <div class="event-window__header panel-heading">
+                <button type="button" class="btn btn-default submit-button back-btn"
+                        ng-click="vm.onCloseOrderWindow()">
+                    <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+                </button>
+                <div class="header__title" ng-bind="vm.windowTitle"></div>
+                <button type="button" ng-show="vm.model.id" class="btn btn-danger submit-button"
+                        ng-click="vm.onOrderDelete()" ng-if="vm.canDeleteOrder">Удалить</button>
+            </div>
+            <div class="panel-body event-window__body">
+                <div class="loading-content" ng-show="vm.loadingEvent">
+                    <span>Загрузка...</span>
+                    <img class="loading-content__preloader" src="/static/orders_manager/img/preloader.gif">
+                </div>
+                <div class="create-client-wrapper hidden" show-dialog-content-loading>
+                    <div class="create-client" ng-slide-down="vm.client.expandClientForm" lazy-render duration="0.1">
+                        <form class="create-client-form" name="vm.client.form" novalidate>
+                            <div class="create-client-form__body">
+                                <formly-form form="vm.client.form" model="vm.client.model" fields="vm.client.fields"
+                                             options="vm.client.options"></formly-form>
+                            </div>
+                            <div class="create-client-form__footer">
+                                <a class="btn btn-primary submit-button" ng-disabled="vm.client.form.$invalid"
+                                   ng-click="vm.onCreateClientSubmit()">Сохранить</a>
+                                <a class="btn btn-default submit-button"
+                                   ng-click="vm.onCloseClientForm()">Отмена</a>
+                            </div>
+                        </form>
+                    </div>
+                    <formly-form model="vm.model" form="vm.form" fields="vm.fields" options="vm.options"
+                                 class="order-formly-form"></formly-form>
+                </div>
+                <!-- <div class="consents-panel"></div> -->
+            </div>
+            <div class="event-window__footer panel-footer" ng-show="!vm.loadingEvent && !vm.readOnly">
+                <div class="spacer">
+                    <div class="order-info" ng-show="vm.order.canShowInfo">
+                        <div class="order-info__line">
+                            <span class="order-info__line__lbl">Автор:</span>
+                            <span class="order-info__line__val">{{ vm.order.author | limitTo : 28 }}</span>
+                        </div>
+                        <div class="order-info__line">
+                            <span class="order-info__line__lbl">Дата создания:</span>
+                            <span class="order-info__line__val">{{ vm.order.createdDate }}</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary submit-button"
+                        ng-disabled="vm.form.$invalid" ng-if="vm.canSaveOrder">Сохранить</button>
+            </div>
+        </div>
+    </form>
+</div>

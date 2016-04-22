@@ -1,0 +1,314 @@
+@import 'settings';
+@import '../../../../static/vendors/fonts/arnamuserif/arnamuserif.css';
+
+.order-window-container {
+  @include init-flex-position(column);
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 2;
+}
+
+.order-form-wrapper {
+  @include init-flex-position(column);
+  @include flex(1 1);
+  z-index: 2;
+}
+
+.event-window-background {
+  @include init-flex-position(column);
+  @include flex(1 1);
+}
+
+.order-form {
+  @include init-flex-position(column);
+  @include flex(1 1);
+}
+
+.event-window {
+  @include init-flex-position(column);
+  @include justify-content(space-between);
+  @include flex(1 1);
+  margin: 0;
+
+  .event-window__header {
+    @include init-flex-position(row);
+    @include justify-content(space-between);
+    height: 8em;
+  }
+
+  .event-window__body {
+    @include flex(1 1);
+    height: 8em;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .event-window__footer {
+    @include init-flex-position(row);
+    @include justify-content(space-between);
+    height: 9em;
+  }
+}
+
+.form-group {
+  @include init-flex-position(row);
+
+  label {
+    font-size: 18pt;
+  }
+
+  > div {
+    @include flex(1 1);
+  }
+
+  .field-container {
+    @include init-flex-position(row);
+  }
+
+  .form-control {
+    font-size: 24pt;
+    height: 3em;
+  }
+
+  //.btn.form-control {
+  //  @include init-flex-position(row);
+  //  @include justify-content(space-between);
+  //
+  //  .pull-left {
+  //    padding: 0 0 0 .4em;
+  //  }
+  //}
+
+  input.form-control {
+    padding: 0 0 0 .4em;
+  }
+
+  textarea.form-control {
+    font-size: 24pt;
+    height: 4em;
+  }
+
+  .caret {
+    //height: 1em;
+    //margin-right: .6em;
+    margin-top: .3em;
+    position: relative;
+    visibility: hidden;
+    width: 1em;
+  }
+
+  .caret::before {
+    border-left: .4em solid transparent;
+    border-right: .4em solid transparent;
+    border-top: .4em solid #444;
+    content: ' ';
+    height: 0;
+    left: 0;
+    position: absolute;
+    top: -.3em;
+    visibility: visible;
+    width: 0;
+  }
+
+  .btn-custom {
+    font-size: 22pt;
+    margin-left: .5em;
+    width: 6em;
+  }
+
+  .dropdown-menu {
+    //width: 100%;
+
+    //.inner {
+    //  max-height: 42em !important;
+    //}
+
+    .dropdown-header {
+      font-size: 26pt;
+      top: -1.45em !important;
+    }
+
+    .nya-bs-option.first-in-group.group-item {
+      margin-top: 3.2em !important;
+    }
+
+    ul > li > a {
+      font-size: 28pt;
+      padding: .5em;
+    }
+
+    .glyphicon.glyphicon-ok.check-mark {
+      margin-top: .5em !important;
+    }
+
+    .field-select-data-wrapper {
+      @include init-flex-position(row);
+      @include justify-content(space-between);
+      @include flex(1 1);
+      padding-right: 3em;
+    }
+  }
+
+  .datetime-container {
+    position: relative;
+  }
+}
+
+.address-block {
+  padding-left: 4em;
+}
+
+.order-additional-services-executors-select .control-label:first-child {
+  font-size: 18pt;
+  text-decoration: underline;
+}
+
+.datetime-picker-dropdown {
+  width: 100%;
+
+  table {
+    height: 42em;
+    width: 100%;
+  }
+
+  thead {
+    .pull-left,
+    .pull-right {
+      width: 100%;
+    }
+
+    tr:last-child {
+      height: 4em;
+
+      .text-center {
+        font-size: 22pt !important;
+      }
+    }
+  }
+
+  .btn.btn-default.btn-sm {
+    height: 2em;
+    font-size: 26pt;
+  }
+
+  .btn-group.pull-left {
+    display: none;
+  }
+
+  .btn-group.pull-right {
+    @include init-flex-position(row);
+    @include justify-content(space-between);
+    width: 100%;
+
+    .btn-success {
+      font-size: 26pt;
+      width: 4em;
+    }
+  }
+
+  .time-picker-menu {
+    padding: 4em !important;
+
+    table {
+      height: 20em;
+    }
+
+    tr {
+      @include init-flex-position(row);
+      @include justify-content(space-between);
+      @include align-items(center);
+      //width: 36em;
+    }
+
+    tr.text-center {
+      //@include justify-content(space-around);
+    }
+
+    .text-center td:nth-child(1),
+    .text-center td:nth-child(3) {
+      //margin: 0 4em;
+      width: 26em;
+    }
+
+    tr:nth-child(2) {
+      font-size: 34pt;
+      height: 3.4em;
+    }
+
+    .btn.btn-link {
+      font-size: 34pt;
+    }
+
+    input {
+      height: 3em;
+      //margin: 1em;
+      padding: 0;
+      width: 100% !important;
+    }
+  }
+}
+
+.spacer {
+  font-size: 26pt;
+}
+
+.event-window__header {
+  @include init-flex-position(row);
+  @include align-items(center);
+
+  .header__title {
+    font-size: 22pt;
+  }
+
+  .submit-button {
+    font-size: 22pt;
+  }
+
+  .back-btn {
+    font-size: 36pt;
+    padding: 0 1em;
+  }
+}
+
+.event-window__footer {
+  @include init-flex-position(row);
+  @include align-items(center);
+
+  .submit-button {
+    font-size: 22pt;
+    padding: 1em;
+  }
+}
+
+.create-client {
+  @include single-box-shadow(1px, 1px, 6px, .4px, #aaa);
+  background: #f8f8f8;
+  border: 1px solid #888;
+  border-bottom: 3px solid #7B96B5;
+  border-top: 0;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 5;
+
+  > div {
+    padding: 1em 2em;
+  }
+
+  .submit-button {
+    font-size: 24pt;
+    margin: .5em;
+    padding: .5em 1em ;
+  }
+}
+
+.loading-content {
+  @include init-flex-position(column);
+  @include align-items(center);
+  @include justify-content(center);
+  font-size: 36px;
+}

@@ -370,7 +370,7 @@
   left: 8px;
   position: absolute;
   top: 0;
-  width: 580px;
+  width: 100%;
   z-index: 5;
 }
 .event-window-background span.field-select-data-wrapper {

@@ -1,0 +1,351 @@
+@import url(../../../../static/vendors/fonts/arnamuserif/arnamuserif.css);
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  *zoom: 1;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-align-items: center;
+  align-items: center;
+  background: #fff;
+  color: #666;
+  font-family: 'Lora', serif !important;
+  font-size: 11pt;
+}
+body:after {
+  content: "\0020";
+  display: block;
+  height: 0;
+  clear: both;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+::selection {
+  background: #90C3D4;
+  /* Safari */
+}
+
+::-moz-selection {
+  background: #90C3D4;
+  /* Firefox */
+}
+
+.page-container {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.content-wrapper {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+}
+
+.page-content {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  height: auto;
+}
+
+#calendar {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+}
+#calendar div:nth-child(2) {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+}
+
+.calendar-navbar {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  height: 12em;
+  margin-top: 2em;
+}
+.calendar-navbar .nav-left,
+.calendar-navbar .nav-right {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  margin: 0;
+  padding: 0;
+  max-width: 14.5em;
+  min-width: 14.5em;
+}
+.calendar-navbar .nav-left .btn,
+.calendar-navbar .nav-right .btn {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  color: #888;
+  font-size: 42pt;
+  height: 8em;
+  width: 4em;
+}
+.calendar-navbar .nav-left .btn {
+  -webkit-align-self: flex-start;
+  align-self: flex-start;
+}
+.calendar-navbar .nav-right .btn {
+  -webkit-align-self: flex-end;
+  align-self: flex-end;
+}
+.calendar-navbar .calendar-header {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  font-size: 36pt;
+}
+
+.monthview-datetable {
+  margin: 3em 0 0;
+}
+.monthview-datetable thead tr {
+  background: #fafafa;
+  font-size: 36pt;
+  height: 1.6em;
+}
+.monthview-datetable tbody tr {
+  font-size: 38pt;
+  height: 2em;
+}
+.monthview-datetable tbody tr > td {
+  padding: 0;
+}
+.monthview-datetable tbody tr > td > div {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  height: 2.8em;
+}
+.monthview-datetable tbody tr > td > div.text-muted {
+  color: #ccc;
+}
+.monthview-datetable tbody .monthview-selected {
+  background: #66afe9;
+}
+.monthview-datetable tbody:before {
+  content: "-";
+  display: block;
+  line-height: 2em;
+  color: transparent;
+}
+
+.dayview-allday-table {
+  display: none;
+}
+
+.scrollable {
+  margin: 1em 0;
+  border: 1px solid #666;
+}
+.scrollable table tr {
+  height: 8em;
+}
+.scrollable table tr:nth-child(1),
+.scrollable table tr:nth-child(2),
+.scrollable table tr:nth-child(3),
+.scrollable table tr:nth-child(4),
+.scrollable table tr:nth-child(5),
+.scrollable table tr:nth-child(6),
+.scrollable table tr:nth-last-child(1),
+.scrollable table tr:nth-last-child(2),
+.scrollable table tr:nth-last-child(3) {
+  display: none;
+}
+.scrollable table .calendar-hour-column {
+  font-size: 32pt;
+  padding-top: .7em;
+  width: 3em;
+}
+.scrollable .calendar-event-wrap {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+}
+.scrollable .calendar-event {
+  min-height: 100%;
+}
+.scrollable .calendar-event-inner {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-align-items: center;
+  align-items: center;
+  font-size: 22pt;
+  line-height: 1.2;
+  padding: .1em .6em;
+}
+
+.page-footer {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  height: 12em;
+}
+.page-footer .ctrl-btn {
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -ms-flexbox;
+  -ms-flex-direction: row;
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  -webkit-flex: 1 1;
+  flex: 1 1;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  border: 1px solid #000;
+  border-radius: .2em;
+  font-size: 42pt;
+  margin: .2em .1em;
+}

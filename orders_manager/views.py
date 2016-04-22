@@ -32,6 +32,7 @@ from orders_manager.sms_delivery_service import SmsDeliveryService
 from orders_manager.tasks import (send_order_to_users_google_calendar,
     delete_order_from_users_google_calendar, send_sms_messages_bulk,
     sync_month_orders_to_google_calendar)
+from orders_manager.utils.browser_detector import is_mobile_browser
 
 
 class PopulateDatabaseView(View):
@@ -719,12 +720,23 @@ class DiscountListView(ListCreateAPIView):
 
 class ShowAllOrdersListView(PermissionRequiredMixin, TemplateView):
     permission_required = 'orders_manager.see_orders'
-    template_name = 'orders_manager/list_order.html'
+    # template_name = 'orders_manager/list_order.html'
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
+        if is_mobile_browser(request):
+            pass
         return super(ShowAllOrdersListView, self).dispatch(request, *args,
                                                            **kwargs)
+
+    def get_template_names(self):
+        user = self.request.user
+        user = user if not hasattr(user, 'user') else user.user
+        can_create_order = user.has_perm('orders_manager.add_order')
+        if is_mobile_browser(self.request) and can_create_order:
+            return 'orders_manager/mobile/index.html'
+        else:
+            return 'orders_manager/list_order.html'
 
 
 class AnimatorDebtListView(ListCreateAPIView):

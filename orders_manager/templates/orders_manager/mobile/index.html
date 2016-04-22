@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html ng-app="OrderManagerApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{% block title %}Менеджер заказов{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="shortcut icon" href="{% static 'orders_manager/img/favicon.png' %}" type="image/png"/>
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,400italic,700&subset=cyrillic,latin,latin-ext'
+          rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/fonts/FontAwesome.otf">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/fonts/fontawesome-webfont.eot">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/fonts/fontawesome-webfont.ttf">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/fonts/fontawesome-webfont.woff">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/fonts/fontawesome-webfont.woff2">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/fonts/glyphicons-halflings-regular.eot">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/fonts/glyphicons-halflings-regular.ttf">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/fonts/glyphicons-halflings-regular.woff">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/fonts/glyphicons-halflings-regular.woff2">
+
+
+    <link rel="stylesheet" href="{% static "vendors/css/nya-bs-select.min.css" %}">
+
+
+    <link rel="stylesheet" type="text/css"
+          href="{% static "vendors/css/calendar.min.css" %}"/>
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/mobile.calendar.css" %}"/>
+    <link rel="stylesheet" type="text/css"
+          href="{% static "orders_manager/css/mobile.order_window.css" %}"/>
+
+    <script type="text/javascript" src="{% static "vendors/js/jquery.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/api-check.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/angular.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/ui-bootstrap-tpls-0.14.2.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/angular-locale_ru-ru.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/moment-with-locales.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/lodash.compat.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/restangular.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/calendar-tpls.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/formly.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/angular-formly-templates-bootstrap.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/nya-bs-select.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/ng-slide-down.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/datetime-picker.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/datetime-picker.tpls.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/mask.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/angular-animate.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "vendors/js/angular-messages.min.js" %}"></script>
+
+    <script type="text/javascript" src="{% static "orders_manager/js/mobile/app.js" %}"></script>
+    <script type="text/javascript" src="{% static "orders_manager/js/mobile/app.services.js" %}"></script>
+    <script type="text/javascript" src="{% static "orders_manager/js/mobile/app.order_window.js" %}"></script>
+    <script type="text/javascript" src="{% static "orders_manager/js/app.models.js" %}"></script>
+    <script type="text/javascript" src="{% static "orders_manager/js/app.forms.js" %}"></script>
+    <script type="text/javascript" src="{% static "orders_manager/js/app.auth.js" %}"></script>
+
+    {% load orders_manager_tags %}
+</head>
+<body ng-controller="ApplicationCtrl">
+
+<div class="order-window" ng-controller="OrderWindowCtrl as vm">
+    <div class="order-window-container" ng-if="vm.isOrderWindowOpened()">
+        <div class="order-form-wrapper" ng-include="'/static/dialog_templates/mobile_order_template.html'"></div>
+    </div>
+</div>
+
+<div class="page-container" ng-controller="CalendarCtrl as vm">
+    <div class="content-wrapper" ng-cloak="true">
+        <div class="page-content">
+            <calendar id="calendar"
+                      ng-model="vm.currentCalendarDate"
+                      event-source="vm.eventSource"
+                      calendar-mode="vm.mode"
+                      time-selected="vm.onDateSelected(selectedTime)"
+                      event-selected="vm.editOrder(event)"
+                      format-day-title="dd MMM yyyy"
+                      format-hour-column="H"
+                      starting-day="1"
+                      show-event-detail="false">
+            </calendar>
+        </div>
+        <div class="page-footer">
+            <div class="new-order-btn ctrl-btn" ng-show="vm.isDayMode()"
+                 ng-click="vm.createNewOrder()">Создать заказ</div>
+            <div class="show-month-cal-btn ctrl-btn" ng-show="vm.isDayMode()"
+                 ng-click="vm.showMothCalendar()">Выбрать дату</div>
+            <div class="new-order ctrl-btn" ng-show="vm.isMonthMode()"
+                 ng-click="vm.back()">Назад</div>
+            <div class="change-date ctrl-btn" ng-show="vm.isMonthMode()"
+                 ng-click="vm.showCheckedDayInfo()">Выбрать</div>
+        </div>
+    </div>
+</div>
+
+{% verbatim %}
+
+<script type="text/ng-template" id="error-messages.html">
+    <formly-transclude></formly-transclude>
+    <div ng-messages="fc.$error" ng-if="form.$submitted || options.formControl.$touched" class="error-messages">
+        <div ng-message="{{ ::name }}" ng-repeat="(name, message) in ::options.validation.messages"
+             class="message">{{ message(fc.$viewValue, fc.$modelValue, this) }}
+        </div>
+    </div>
+</script>
+
+{% endverbatim %}
+
+</body>
+</html>
