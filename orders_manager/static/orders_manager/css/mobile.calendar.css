@@ -136,7 +136,7 @@ body:after {
   flex-direction: row;
   -webkit-justify-content: space-between;
   justify-content: space-between;
-  height: 12em;
+  height: 8em;
   margin-top: 2em;
 }
 .calendar-navbar .nav-left,
@@ -180,7 +180,6 @@ body:after {
   justify-content: center;
   color: #888;
   font-size: 42pt;
-  height: 8em;
   width: 4em;
 }
 .calendar-navbar .nav-left .btn {

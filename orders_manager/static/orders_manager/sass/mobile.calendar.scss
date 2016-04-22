@@ -60,7 +60,7 @@ body {
 .calendar-navbar {
   @include init-flex-position(row);
   @include justify-content(space-between);
-  height: 12em;
+  height: 8em;
   margin-top: 2em;
 
   .nav-left,
@@ -80,7 +80,7 @@ body {
       @include justify-content(center);
       color: #888;
       font-size: 42pt;
-      height: 8em;
+      //height: 8em;
       width: 4em;
     }
   }
