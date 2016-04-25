@@ -116,7 +116,9 @@
   flex-direction: row;
   -webkit-justify-content: space-between;
   justify-content: space-between;
+  border-top: .1em solid #888;
   height: 9em;
+  margin: 3em -13px -13px -13px;
 }
 
 .form-group {
@@ -329,6 +331,20 @@
   align-items: center;
 }
 .event-window__header .header__title {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -ms-flexbox;
+  -ms-flex-direction: column;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
   font-size: 22pt;
 }
 .event-window__header .submit-button {
@@ -356,6 +372,9 @@
 .event-window__footer .submit-button {
   font-size: 22pt;
   padding: 1em;
+}
+.event-window__footer .inactive {
+  background: #9fc4e4;
 }
 
 .create-client {

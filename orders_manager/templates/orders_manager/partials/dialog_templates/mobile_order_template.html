@@ -1,14 +1,18 @@
 <div class="event-window-background"
      ng-controller="CalendarEventCtrl as vm" ng-cloak="true">
     <form ng-class="vm.readOnly ? 'readonly' : ''" class="order-form" name="vm.form"
-          novalidate ng-submit="vm.onOrderSubmit()">
+          novalidate ng-submit="vm.onOrderSubmit()" hide-searchboxes>
         <div class="event-window panel panel-default">
             <div class="event-window__header panel-heading">
                 <button type="button" class="btn btn-default submit-button back-btn"
-                        ng-click="vm.onCloseOrderWindow()">
+                        confirm-dlg="Отменить создание заказа?"
+                        confirmed-click="vm.onCloseOrderWindow()">
                     <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
                 </button>
-                <div class="header__title" ng-bind="vm.windowTitle"></div>
+                <div class="header__title">
+                    <span ng-bind="vm.windowTitle"></span>
+                    <span ng-bind="vm.dayOfWeek"></span>
+                </div>
                 <button type="button" ng-show="vm.model.id" class="btn btn-danger submit-button"
                         ng-click="vm.onOrderDelete()" ng-if="vm.canDeleteOrder">Удалить</button>
             </div>
@@ -36,22 +40,23 @@
                                  class="order-formly-form"></formly-form>
                 </div>
                 <!-- <div class="consents-panel"></div> -->
-            </div>
-            <div class="event-window__footer panel-footer" ng-show="!vm.loadingEvent && !vm.readOnly">
-                <div class="spacer">
-                    <div class="order-info" ng-show="vm.order.canShowInfo">
-                        <div class="order-info__line">
-                            <span class="order-info__line__lbl">Автор:</span>
-                            <span class="order-info__line__val">{{ vm.order.author | limitTo : 28 }}</span>
-                        </div>
-                        <div class="order-info__line">
-                            <span class="order-info__line__lbl">Дата создания:</span>
-                            <span class="order-info__line__val">{{ vm.order.createdDate }}</span>
+                <div class="event-window__footer panel-footer" ng-show="!vm.loadingEvent && !vm.readOnly">
+                    <div class="spacer">
+                        <div class="order-info" ng-show="vm.order.canShowInfo">
+                            <div class="order-info__line">
+                                <span class="order-info__line__lbl">Автор:</span>
+                                <span class="order-info__line__val">{{ vm.order.author | limitTo : 28 }}</span>
+                            </div>
+                            <div class="order-info__line">
+                                <span class="order-info__line__lbl">Дата создания:</span>
+                                <span class="order-info__line__val">{{ vm.order.createdDate }}</span>
+                            </div>
                         </div>
                     </div>
+                    <button type="submit" class="btn btn-primary submit-button"
+                            ng-class="vm.client.expandClientForm ? 'inactive' : ''"
+                            ng-disabled="vm.form.$invalid" ng-if="vm.canSaveOrder">Сохранить</button>
                 </div>
-                <button type="submit" class="btn btn-primary submit-button"
-                        ng-disabled="vm.form.$invalid" ng-if="vm.canSaveOrder">Сохранить</button>
             </div>
         </div>
     </form>

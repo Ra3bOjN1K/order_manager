@@ -50,8 +50,9 @@ angular.module('OrderManagerApp')
                 vm.order.canShowInfo = vm.model.author !== undefined && vm.model.created !== undefined;
 
                 if (!!order.code) {
-                    vm.windowTitle = moment(OrderWindowService.getCheckedDate()).format("DD MMMM YYYY");
-                    vm.windowTitle += " | Код заказа: {0}".format(order.code);
+                    vm.windowTitle = moment(OrderWindowService.getCheckedDate()).locale('ru').format("DD MMMM YYYY");
+                    vm.windowTitle += " | Код: {0}".format(order.code);
+                    vm.dayOfWeek = moment(OrderWindowService.getCheckedDate()).locale('ru').format("dddd");
                 }
 
                 vm.options = {
