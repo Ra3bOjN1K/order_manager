@@ -842,55 +842,75 @@ angular.module('OrderManagerApp')
                             }
                         },
                         controller: function ($scope, $sce) {
-                            ClientService.loadClients().then(function () {
 
-                                var clients = ClientService.getClients();
-                                var initial_client = {};
-
-                                $timeout(function () {
-                                    var opts = [{name: '---', value: 0}];
-                                    angular.forEach(clients, function (client) {
-
+                            if (!!$scope.model.client) {
+                                ClientService.getClient($scope.model.client.id).then(function (client) {
+                                    $timeout(function () {
                                         var item = {
                                             name: client.name,
                                             phone: client.phone,
                                             phone2: client.phone_2,
                                             value: client.id
                                         };
+                                        $scope.to.options = [item];
+                                        $scope.model.client = item;
+                                    })
+                                })
+                            }
+                            else {
+                                $scope.model.client = {};
+                            }
 
-                                        if (($scope.model.client !== undefined) && ($scope.model.client.id === item.value)) {
-                                            initial_client = item;
-                                        }
 
-                                        opts.push(item);
-                                    });
-                                    $scope.to.options = opts;
-                                }).then(function () {
-                                    if (!initial_client.id && !!$scope.model.client) {
-                                        ClientService.getClient($scope.model.client.id).then(function (client) {
-                                            var item = {
-                                                name: client.name,
-                                                phone: client.phone,
-                                                phone2: client.phone_2,
-                                                value: client.id
-                                            };
-                                            var hasItem = false;
-                                            angular.forEach($scope.to.options, function (opt) {
-                                                if (opt.value === item.value) {
-                                                    hasItem = true;
-                                                }
-                                            });
-                                            if (!hasItem) {
-                                                $scope.to.options.push(item);
-                                            }
-                                            $scope.model.client = item;
-                                        })
-                                    }
-                                    else {
-                                        $scope.model.client = initial_client;
-                                    }
-                                });
-                            });
+                            //ClientService.loadClients().then(function () {
+                            //
+                            //    var clients = ClientService.getClients();
+                            //    var initial_client = {};
+                            //
+                            //    $timeout(function () {
+                            //        var opts = [{name: '---', value: 0}];
+                            //        angular.forEach(clients, function (client) {
+                            //
+                            //            var item = {
+                            //                name: client.name,
+                            //                phone: client.phone,
+                            //                phone2: client.phone_2,
+                            //                value: client.id
+                            //            };
+                            //
+                            //            if (($scope.model.client !== undefined) && ($scope.model.client.id === item.value)) {
+                            //                initial_client = item;
+                            //            }
+                            //
+                            //            opts.push(item);
+                            //        });
+                            //        $scope.to.options = opts;
+                            //    }).then(function () {
+                            //        if (!initial_client.id && !!$scope.model.client) {
+                            //            ClientService.getClient($scope.model.client.id).then(function (client) {
+                            //                var item = {
+                            //                    name: client.name,
+                            //                    phone: client.phone,
+                            //                    phone2: client.phone_2,
+                            //                    value: client.id
+                            //                };
+                            //                var hasItem = false;
+                            //                angular.forEach($scope.to.options, function (opt) {
+                            //                    if (opt.value === item.value) {
+                            //                        hasItem = true;
+                            //                    }
+                            //                });
+                            //                if (!hasItem) {
+                            //                    $scope.to.options.push(item);
+                            //                }
+                            //                $scope.model.client = item;
+                            //            })
+                            //        }
+                            //        else {
+                            //            $scope.model.client = initial_client;
+                            //        }
+                            //    });
+                            //});
 
                             $scope.onButtonClick = function () {
                                 $scope.$emit('onCreateClientClick', $scope.model.client);

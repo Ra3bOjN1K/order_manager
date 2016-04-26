@@ -170,22 +170,26 @@ angular.module('CalendarApp')
                                     phone: result.phone,
                                     phone2: result.phone_2
                                 };
-                                ClientService.reloadClients().then(function() {
-                                    var clients = ClientService.getClients();
-                                    var opts = [];
-                                    angular.forEach(clients, function(cl) {
-                                        opts.push({
-                                            name: cl.name,
-                                            value: cl.id,
-                                            phone: cl.phone,
-                                            phone2: cl.phone_2
-                                        })
-                                    });
-                                    field.templateOptions.options = opts;
-                                    vm.model.client = client;
-                                }, function(error) {
-                                    console.log(error)
-                                });
+
+                                field.templateOptions.options = [client];
+                                vm.model.client = client;
+
+                                //ClientService.reloadClients().then(function() {
+                                //    var clients = ClientService.getClients();
+                                //    var opts = [];
+                                //    angular.forEach(clients, function(cl) {
+                                //        opts.push({
+                                //            name: cl.name,
+                                //            value: cl.id,
+                                //            phone: cl.phone,
+                                //            phone2: cl.phone_2
+                                //        })
+                                //    });
+                                //    field.templateOptions.options = opts;
+                                //    vm.model.client = client;
+                                //}, function(error) {
+                                //    console.log(error)
+                                //});
                             }
                         });
                         onCloseClientForm();

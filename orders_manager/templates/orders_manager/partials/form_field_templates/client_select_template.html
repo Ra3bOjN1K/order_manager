@@ -4,7 +4,7 @@
                ng-if="options.templateOptions.label">{{ options.templateOptions.label }}</label>
         <div class="field-container">
             <ol class="nya-bs-select col-sm-12 col-xs-12 col-md-12 col-lg12 form-control" ng-model="model[options.key]"
-                data-live-search="true" disabled="options.templateOptions.options.length === 0"
+                data-live-search="false" disabled="options.templateOptions.options.length === 0"
                 optional-directives id="model[options.key]">
                 <hr>
                 <li nya-bs-option="option in options.templateOptions.options track by $index">
