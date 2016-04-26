@@ -52,7 +52,6 @@ angular.module('OrderManagerApp')
                 if (!!order.code) {
                     vm.windowTitle = moment(OrderWindowService.getCheckedDate()).locale('ru').format("DD MMMM YYYY");
                     vm.windowTitle += " | Код: {0}".format(order.code);
-                    vm.dayOfWeek = moment(OrderWindowService.getCheckedDate()).locale('ru').format("dddd");
                 }
 
                 vm.options = {
