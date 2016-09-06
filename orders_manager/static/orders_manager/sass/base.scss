@@ -162,7 +162,9 @@ body {
   .collapsed-menu-item > div {
     @include single-box-shadow(.6px, .6px, 8px, .1px, #222);
     left: 0;
-    margin-top: 1px;
+    top: 34px;
+    transition-duration: 0.0125s;
+    //margin-top: 1px;
     position: absolute;
   }
 }
