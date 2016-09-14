@@ -252,8 +252,8 @@ class Program(models.Model):
 class ProgramPrice(models.Model):
     program = models.ForeignKey(Program, related_name='prices')
     duration = models.IntegerField(null=False, blank=False)
-    price = models.IntegerField(null=False, blank=False)
-    executor_rate = models.IntegerField(default=0)
+    price = models.FloatField(null=False, blank=False)
+    executor_rate = models.FloatField(default=0)
 
     objects = ProgramPriceManager()
 
