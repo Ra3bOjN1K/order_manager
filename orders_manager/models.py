@@ -173,8 +173,8 @@ class ClientChild(models.Model):
 
 class AdditionalService(models.Model):
     title = models.CharField(max_length=200, null=False, blank=False)
-    price = models.IntegerField(null=False, blank=False)
-    executor_rate = models.IntegerField(default=0)
+    price = models.FloatField(null=False, blank=False)
+    executor_rate = models.FloatField(default=0)
     num_executors = models.PositiveSmallIntegerField(default=1)
     possible_executors = models.ManyToManyField(UserProfile,
                                                 related_name='services')
@@ -317,7 +317,7 @@ class Order(models.Model):
                                                related_name='orders')
 
     duration = models.IntegerField(verbose_name='Продолжительность')
-    price = models.IntegerField(verbose_name='Стоимость')
+    price = models.FloatField(verbose_name='Стоимость')
     additional_services_executors = models.ManyToManyField(
         OrderServiceExecutors)
     details = models.TextField(
@@ -329,10 +329,10 @@ class Order(models.Model):
         verbose_name='Откуда узнали о нас?')
     discount = models.ForeignKey(
         Discount, related_name='orders', verbose_name='Скидка')
-    cost_of_the_way = models.IntegerField(
+    cost_of_the_way = models.FloatField(
         verbose_name='Стоимость дороги', default=0)
-    total_price = models.IntegerField(verbose_name='Цена')
-    total_price_with_discounts = models.IntegerField(
+    total_price = models.FloatField(verbose_name='Цена')
+    total_price_with_discounts = models.FloatField(
         verbose_name='Цена с учетом скидки'
     )
 
@@ -364,7 +364,7 @@ class Order(models.Model):
 class AnimatorDebt(models.Model):
     order = models.ForeignKey(Order, related_name='animator_debts')
     executor = models.ForeignKey(UserProfile, related_name='debts')
-    debt = models.IntegerField()
+    debt = models.FloatField()
     paid = models.BooleanField(default=False)
 
 
